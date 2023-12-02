@@ -1,6 +1,6 @@
 // App.js
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -57,14 +57,13 @@ function App() {
         >
           <Toolbar />
           <List>
-            {/* Add your links here */}
-            <ListItem button>
+            <ListItem button component={Link} to="/register">
               <ListItemText primary="Register" />
             </ListItem>
-            <ListItem button>
+            <ListItem button component={Link} to="/calendar">
               <ListItemText primary="Calendar" />
             </ListItem>
-            <ListItem button>
+            <ListItem button component={Link} to="/default">
               <ListItemText primary="Default Calendar" />
             </ListItem>
           </List>
