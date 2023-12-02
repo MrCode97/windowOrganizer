@@ -1,5 +1,5 @@
 // App.js
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
@@ -9,6 +9,7 @@ import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
+import TextField from '@material-ui/core/TextField';
 import Registration from './components/Registration';
 import Calendar from './components/Calendar';
 import DefaultCalendar from './components/DefaultCalendar';
@@ -37,6 +38,14 @@ const useStyles = makeStyles((theme) => ({
 
 function App() {
   const classes = useStyles();
+  const [calendars, setCalendars] = useState([
+    { name: 'Adventskalender Schlieren 8952', details: 'Details for Advent Calendar 1' },
+    { name: 'Adventskalender Basel 4057', details: 'Details for Advent Calendar 2' },
+    { name: 'some other registered calendar', details: 'Details for Advent Calendar 3' },
+    // TODO: this will have to read from a database / backend API which are existing
+  ]);
+  const [selectedCalendar, setSelectedCalendar] = useState(null);
+  const [searchTerm, setSearchTerm] = useState(''); // Add this line
 
   return (
     <Router>
@@ -60,20 +69,26 @@ function App() {
             <ListItem button component={Link} to="/register">
               <ListItemText primary="Register" />
             </ListItem>
-            <ListItem button component={Link} to="/calendar">
-              <ListItemText primary="Calendar" />
-            </ListItem>
-            <ListItem button component={Link} to="/default">
-              <ListItemText primary="Default Calendar" />
-            </ListItem>
+          </List>
+          <TextField
+            label="Search"
+            variant="outlined"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <List>
+            {calendars.filter(calendar => calendar.name.includes(searchTerm)).map((calendar) => (
+              <ListItem button onClick={() => setSelectedCalendar(calendar)}>
+                <ListItemText primary={calendar.name} />
+              </ListItem>
+            ))}
           </List>
         </Drawer>
         <main className={classes.content}>
           <Toolbar />
           <Routes>
-            <Route path="/register" element={<Registration />} />
-            <Route path="/calendar" element={<Calendar />} />
-            <Route path="/default" element={<DefaultCalendar />} />
+            <Route path="/register" element={<Registration setCalendars={setCalendars} />} />
+            <Route path="/calendar" element={<Calendar calendar={selectedCalendar} />} />
           </Routes>
         </main>
       </div>
