@@ -4,7 +4,7 @@ import React from 'react';
 function Calendar() {
   return (
     <div>
-      {/* Calendar display goes here */}
+      This is the calendar page.
     </div>
   );
 }

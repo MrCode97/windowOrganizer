@@ -4,7 +4,7 @@ import React from 'react';
 function Registration() {
   return (
     <div>
-      {/* Registration form goes here */}
+      This is the registration page.
     </div>
   );
 }

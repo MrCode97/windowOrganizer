@@ -1,10 +1,23 @@
 // Sidebar.js
 import React from 'react';
+import { Link } from 'react-router-dom';
+
 
 function Sidebar() {
   return (
     <div>
-      {/* Navigation links and search field go here */}
+      <ul>
+        <li>
+          <Link to="/register">Register</Link>
+        </li>
+        <li>
+          <Link to="/calendar">Calendar</Link>
+        </li>
+        <li>
+          <Link to="/default">Default Calendar</Link>
+        </li>
+      </ul>
+      {/* Search field goes here */}
     </div>
   );
 }

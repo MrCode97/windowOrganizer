@@ -4,7 +4,7 @@ import React from 'react';
 function DefaultCalendar() {
   return (
     <div>
-      {/* Default calendar model goes here */}
+        This is the default calendar page.
     </div>
   );
 }

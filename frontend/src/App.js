@@ -11,9 +11,9 @@ function App() {
     <Router>
       <Sidebar />
       <Routes>
-        <Route path="/register" component={Registration} />
-        <Route path="/calendar" component={Calendar} />
-        <Route path="/default" component={DefaultCalendar} />
+        <Route path="/register" element={<Registration />} />
+        <Route path="/calendar" element={<Calendar />} />
+        <Route path="/default" element={<DefaultCalendar />} />
       </Routes>
     </Router>
   );
