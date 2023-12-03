@@ -1,6 +1,7 @@
 // DefaultCalendar.js
 import React from 'react';
-import { Grid, Typography } from '@mui/material';
+import { Grid, Typography, Box } from '@mui/material';
+import OverviewMap from './OverviewMap';
 import WindowTile from './WindowTile';
 
 function DefaultCalendar({ name, details }) {
@@ -10,19 +11,20 @@ function DefaultCalendar({ name, details }) {
   // other variables
   const window_nrs = Array(24).fill().map((_, index) => index + 1);
 
+  // TODO: limit number of columns to either 6, 4, 3, 2 or 1
+
   return (
-    <div>
+    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
       <Typography variant="h1" align="center">{name}</Typography>
-      <Typography variant="body1">{details}</Typography>
-      <Typography variant="body1">Hello from DefaultCalendar.js</Typography>
-      <Grid container spacing={2}>
+      <OverviewMap calendar_id={calendar_id} />
+      <Grid container spacing={2} justifyContent="center">
         {window_nrs.map((window_nr) =>
-          <Grid item xs={12} sm={6} md={4} lg={3} xl={2}>
+          <Grid item>
             <WindowTile window_nr={window_nr} calendar_id={calendar_id} />
           </Grid>
         )}
       </Grid>
-    </div>
+    </Box>
   );
 }
 
