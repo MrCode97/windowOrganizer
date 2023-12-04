@@ -1,12 +1,27 @@
 // WindowTile.js
 import React from 'react';
 import { Card, CardMedia, CardActionArea, Typography, Paper} from '@mui/material';
+import SlidingWindow from './SlidingWindow';
 
 function WindowTile({ window_nr, calendar_id }) {
   // variables to get from SQL request based on window number and calendar id
   const image_path = "https://www.goenhard.ch/wp-content/uploads/P1130972Adventsfenster_Goenhard_Aarau_2020.jpg" // local path?
   const has_image = true
   const is_free = true
+
+  //state variable to track if SlidingWindow is open or closed
+  const [isSlidingWindowOpen, setSlidingWindowOpen] = React.useState(false);
+
+  // Still need to fetch from backend
+  const windows_coordinates = [[51.505, -0.09]];
+
+  // Event handler for clicking on the CardMedia
+  const handleCardMediaClick = () => {
+    // Open or close the SlidingWindow when the CardMedia is clicked
+    setSlidingWindowOpen(!isSlidingWindowOpen);
+  };
+
+
 
   // other variables
   const is_today = new Date().getDate() === window_nr
@@ -16,7 +31,7 @@ function WindowTile({ window_nr, calendar_id }) {
   const today_margin = is_today ? '0px' : '5px'
   const cardSize = 150
 
-  return (
+  return (<div className="window-tile">
     <Card sx={{
       width: cardSize,
       height: cardSize,
@@ -27,7 +42,9 @@ function WindowTile({ window_nr, calendar_id }) {
       <CardActionArea sx={{
         width: '100%',
         height: '100%',
-      }}>
+      }} 
+      onClick={handleCardMediaClick}
+      >
         <CardMedia
           component="img"
           image={has_image ? image_path : placeholder_path}
@@ -72,7 +89,20 @@ function WindowTile({ window_nr, calendar_id }) {
         </Paper>
       </CardActionArea>
     </Card>  
-  );
+
+    {/* Conditional rendering of SlidingWindow (short-circuit) */}
+    {isSlidingWindowOpen && (
+        <SlidingWindow
+          // Pass any necessary props to SlidingWindow component
+          window_nr={window_nr}
+          calendar_id={calendar_id}
+          onClose={() => setSlidingWindowOpen(false)}
+          windows_coordinates={windows_coordinates}
+        />
+      )}
+  </div>);
+
+
 }
 
 export default WindowTile;

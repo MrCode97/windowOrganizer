@@ -10,6 +10,8 @@ function OverviewMap({ calendar_id}) {
 
   // other variables
   // how to get dynamic icon with number inside?
+  // Ich würde säge mer nehmed uf pngall en adventskalender bild und schnided die 24 törli use, speichered sie einzeln im backend
+  // und fetched sie dynamically
   const icon_path = "https://www.pngall.com/wp-content/uploads/5/Christmas-Star-PNG-Picture-180x180.png"
 
   // calculate center coordinates
