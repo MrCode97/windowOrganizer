@@ -1,10 +1,7 @@
 import React, { useState } from 'react';
 import { Dialog, DialogContent, Typography, Button, TextField, List, ListItem, ListItemText } from '@mui/material';
 import "leaflet/dist/leaflet.css";
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
-import L from 'leaflet';
-
-
+import DrawMap from './DrawMap';
 
 function SlidingWindow({window_nr, calendar_id, onClose, windows_coordinates}) {
 
@@ -43,22 +40,7 @@ function SlidingWindow({window_nr, calendar_id, onClose, windows_coordinates}) {
                 <Typography variant="body1">{address}</Typography>
                 <Typography variant="body1" style={{color: 'blue'}}>{start_time + " - " + end_time}</Typography>
 
-                <MapContainer center={windows_coordinates[0]} zoom={13} scrollWheelZoom={false} style={{ height: "300px", width: "80%", margin: 20}}>
-                    <TileLayer
-                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    />
-                        {windows_coordinates.map((window_coordinates, index) => 
-                            <Marker position={window_coordinates} icon={new L.icon({ iconUrl: icon_path, iconSize: [32, 32]})}>
-                                <Popup>
-                                    <div>{window_nr}. Dezember<br /></div>
-                                    <div>Address: {address}</div>
-                                    <div>Time: {start_time + " - " + end_time}</div>
-                                    <div>Location hint: {location_hint}</div>
-                                </Popup>
-                            </Marker>
-                        )}
-                </MapContainer>
+                <DrawMap center={windows_coordinates[0]} coordinatesList={windows_coordinates} iconPath={icon_path} drawNumbers={false} />
 
                 <Typography variant="body1">Apéro: {has_apero ? "Ja" : "Nein"}</Typography>
                 <Typography variant='body1'>Location Hint: {location_hint}</Typography>

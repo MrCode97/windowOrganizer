@@ -1,8 +1,7 @@
 // OverviewMap.js
 import React from 'react';
 import "leaflet/dist/leaflet.css";
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
-import L from 'leaflet';
+import DrawMap from './DrawMap';
 
 function OverviewMap({ calendar_id}) {
   // variables to get from SQL request based on calendar id
@@ -26,20 +25,7 @@ function OverviewMap({ calendar_id}) {
   const center_coordinates = [sumLatitude / nr_markers, sumLongitude / nr_markers]
   
   return (
-    <MapContainer center={center_coordinates} zoom={13} scrollWheelZoom={false} style={{ height: "300px", width: "80%", margin: 20}}>
-      <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-      />
-      {window_coordinates_list.map((window_coordinates, index) => 
-        <Marker position={window_coordinates} icon={new L.icon({ iconUrl: icon_path, iconSize: [32, 32]})}>
-          <Popup>
-             {index}. Dezember<br />
-             Might want to include address and time.
-          </Popup>
-        </Marker>
-      )}
-    </MapContainer>
+  <DrawMap center={center_coordinates} coordinatesList={window_coordinates_list} iconPath={icon_path} drawNumbers={true} />
   )
 }
 
