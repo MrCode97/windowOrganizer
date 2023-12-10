@@ -4,12 +4,12 @@ const cors = require('cors');
 const bcrypt = require('bcrypt');
 
 const app = express();
-app.use(cors()); // Enable CORS for all routes
+app.use(cors());
 app.use(express.json());
 
 const pool = new Pool({
   user: 'fwe',
-  host: 'localhost', // Docker Compose service name
+  host: 'localhost', // change if deployed
   database: 'adventcalendar',
   password: 'VerySecureAdventsklaenderPW',
   port: 5432,
@@ -33,8 +33,8 @@ app.post('/api/registerUser', async (req, res) => {
       }
       console.log(`User: ${username} registerd successfully!`);
     } catch (error) {
-      console.error('Error checking existing user', error);
-      return res.status(500).json({ error: 'Internal Server Error' });
+        console.error('Error checking existing user', error);
+        return res.status(500).json({ error: 'Internal Server Error' });
     }
   
     // Hash the password before storing it in the database
@@ -42,18 +42,21 @@ app.post('/api/registerUser', async (req, res) => {
   
     // Register the user
     try {
-      await pool.query('INSERT INTO users (username, password) VALUES ($1, $2)', [username, hashedPassword]);
-      res.status(200).json({ message: 'User registered successfully!' });
+        await pool.query('INSERT INTO users (username, password) VALUES ($1, $2)', [username, hashedPassword]);
+        console.log(`User: ${username} registerd successfully!`);
+        res.status(200).json({ message: 'User registered successfully!' });
     } catch (error) {
-      console.error('Error registering user', error);
-      res.status(500).json({ error: 'Internal Server Error' });
+        console.error('Error registering user', error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
   });
+
 
 // Existing route to retrieve users
 app.get('/api/users', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM users');
+    //console.log('result: ', result);
     res.json(result.rows);
   } catch (error) {
     console.error('Error executing query', error);
@@ -61,12 +64,14 @@ app.get('/api/users', async (req, res) => {
   }
 });
 
+
 // New route to register advent calendars
 app.post('/api/registerAdventCalendar', async (req, res) => {
   const { adventCalendarId, username } = req.body;
 
   // Basic validation
   if (!adventCalendarId || !username) {
+    console.log('Invalid request. Missing required parameters.');
     return res.status(400).json({ error: 'Invalid request. Missing required parameters.' });
   }
 
@@ -75,28 +80,35 @@ app.post('/api/registerAdventCalendar', async (req, res) => {
     const userExists = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
 
     if (userExists.rows.length === 0) {
-      return res.status(400).json({ error: 'User does not exist.' });
+        console.log(`User: ${username} does not exist`);
+        return res.status(400).json({ error: 'User does not exist.' });
     }
   } catch (error) {
-    console.error('Error checking user existence', error);
-    return res.status(500).json({ error: 'Internal Server Error' });
+        console.error('Error checking user existence', error);
+        return res.status(500).json({ error: 'Internal Server Error' });
   }
 
   // Check if the calendar is already registered
   try {
-    const existingCalendar = await pool.query('SELECT * FROM advent_calendars WHERE advent_calendar_id = $1', [adventCalendarId]);
+    const existingCalendar = await pool.query('SELECT name FROM adventCalendars WHERE name = $1', [adventCalendarId]);
 
     if (existingCalendar.rows.length > 0) {
-      return res.status(400).json({ error: 'Advent calendar already registered.' });
+        console.log(`Advent calendar: ${adventCalendarId} already registered`);
+        return res.status(400).json({ error: 'Advent calendar already registered.' });
     }
   } catch (error) {
-    console.error('Error checking existing calendar', error);
-    return res.status(500).json({ error: 'Internal Server Error' });
+        console.error('Error checking existing calendar', error);
+        return res.status(500).json({ error: 'Internal Server Error' });
   }
 
   // Register the advent calendar
   try {
-    await pool.query('INSERT INTO advent_calendars (advent_calendar_id, username) VALUES ($1, $2)', [adventCalendarId, username]);
+    // get user id from username
+    const userId = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
+    // register advent calendar
+    await pool.query('INSERT INTO adventCalendar (name) VALUES ($1)', [adventCalendarId]);
+    await pool.query('INSERT INTO adventCalendars (owner, name) VALUES ($1, $2)', [userId.rows[0].id, adventCalendarId]);
+    console.log(`Advent calendar: ${adventCalendarId} registerd successfully!`);
     res.status(200).json({ message: 'Advent calendar registered successfully!' });
   } catch (error) {
     console.error('Error registering advent calendar', error);
@@ -104,6 +116,25 @@ app.post('/api/registerAdventCalendar', async (req, res) => {
   }
 });
 
+
+
+app.get('/api/calendars', async (req, res) => {
+    try {
+      const result = await pool.query('SELECT * FROM adventCalendars');
+      res.json(result.rows);
+    } catch (error) {
+      console.error('Error retrieving calendars', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  });
+  
+
+
 app.listen(7007, () => {
   console.log('Server listening on port 7007');
 });
+
+
+// TODOs:
+// only allow "logged in" users to register calendars
+// refresh navigation bar after registration to render new calendars

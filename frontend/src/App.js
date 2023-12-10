@@ -1,5 +1,4 @@
-// App.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { styled } from '@mui/system';
 import AppBar from '@mui/material/AppBar';
@@ -37,16 +36,25 @@ const MainBox = styled(Box)({
 });
 
 function App() {
-  const [calendars, setCalendars] = useState([
-    { name: 'Adventskalender Schlieren 8952', details: 'Details for Advent Calendar 1' },
-    { name: 'Adventskalender Basel 4057', details: 'Details for Advent Calendar 2' },
-    { name: 'some other registered calendar', details: 'Details for Advent Calendar 3' },
-    // TODO: this will have to read from a database / backend API which are existing
-  ]);
+  const [calendars, setCalendars] = useState([]);
   const [selectedCalendar, setSelectedCalendar] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [showRegistration, setShowRegistration] = useState(false);
 
+  useEffect(() => {
+    // Fetch calendar data when the component mounts
+    const fetchCalendars = async () => {
+      try {
+        const response = await fetch('http://localhost:7007/api/calendars');
+        const data = await response.json();
+        setCalendars(data);
+      } catch (error) {
+        console.error('Error fetching calendars', error);
+      }
+    };
+
+    fetchCalendars();
+  }, []);
 
   return (
     <Router>
