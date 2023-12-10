@@ -5,6 +5,7 @@ const bcrypt = require('bcrypt');
 
 const app = express();
 app.use(cors()); // Enable CORS for all routes
+app.use(express.json());
 
 const pool = new Pool({
   user: 'fwe',
@@ -13,8 +14,6 @@ const pool = new Pool({
   password: 'VerySecureAdventsklaenderPW',
   port: 5432,
 });
-
-app.use(express.json());
 
 // New route to register users
 app.post('/api/registerUser', async (req, res) => {
