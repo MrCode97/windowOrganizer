@@ -7,7 +7,7 @@ Frontend:
 ```bash
 cd adventCalender/frontend
 npm install     # install dependencies
-node index.js   # run
+npm start       # run
 ```
 
 Backend:
