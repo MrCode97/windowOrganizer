@@ -3,18 +3,20 @@ import { Dialog, DialogContent, Typography, Button, TextField, List, ListItem, L
 import "leaflet/dist/leaflet.css";
 import DrawMap from './DrawMap';
 
+// Todo: - address from Backend in a senseful way
+// - test if adding comments works already
+// - fetch time from backend aswell
 function SlidingWindow({window_nr, calendar_id, onClose, windows_coordinates}) {
 
     // window number, location hint text, address, apero flag, start_time, end_time fetched from backend
-    let location_hint = "Open your eyes";
-    let has_apero = true;
     let start_time = "18.00";
     let end_time = "20.00";
     let address = "Stockerstrasse 23, 8050 Zürich";
 
-
     const [newComment, setNewComment] = useState('');
     const [comments, setComments] = useState([]);
+    const [location_hint, setHint] = useState("");
+    const [hasApero, setApero] = useState(false);
 
 
     const handleCommentChange = (event) => {
@@ -26,22 +28,23 @@ function SlidingWindow({window_nr, calendar_id, onClose, windows_coordinates}) {
         // Need to ensure that calendar_ids and window_nrs are actually in our DB 
         // to do so we need to create for every new calendar 24 advent Windows
         // for now we use static variables instead of calendar_id and window_nr
-        const static_calendarId = 1;
-        const static_window_nr = 1;
+
 
         try {
           // Make an API request to fetch comments based on window_nr and calendar_id
-          console.log("We are trying to fetch from backend");
-          const response = await fetch(`http://localhost:7007/api/calendar/comments?calendar_id=${static_calendarId}&window_nr=${static_window_nr}`);
-          console.log("Here we are, waiting for a response");
+          console.log("Calendar id is: " + calendar_id, " Window nr is: " + window_nr);
+          const response = await fetch(`http://localhost:7007/api/calendar/comments?calendar_id=${calendar_id}&window_nr=${window_nr}`);
           const data = await response.json();
           setComments(data.comments);
+          console.log("here we are");
+          setHint(data.location_hint);
+          console.log("Location hint is: " + location_hint);
+          setApero(data.hasApero);
 
-          console.log("We set comments to something");
         } catch (error) {
           console.error('Error fetching comments:', error);
         }
-      }, [setComments]); // dependency array to [window_nr, calendar_id, setComments] once we use dynamic variables calendar_id and window_nr
+      }, [window_nr, calendar_id, setComments, setApero, location_hint]);
 
     useEffect(() => {
         // Fetch comments from the backend when the component mounts
@@ -83,7 +86,7 @@ function SlidingWindow({window_nr, calendar_id, onClose, windows_coordinates}) {
 
                 <DrawMap center={windows_coordinates[0]} coordinatesList={windows_coordinates} iconPath={icon_path} drawNumbers={false} />
 
-                <Typography variant="body1">Apéro: {has_apero ? "Ja" : "Nein"}</Typography>
+                <Typography variant="body1">Apéro: {hasApero ? "Ja" : "Nein"}</Typography>
                 <Typography variant='body1'>Location Hint: {location_hint}</Typography>
 
                 {/* Comment section */}
