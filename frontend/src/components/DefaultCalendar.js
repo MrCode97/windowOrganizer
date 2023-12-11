@@ -5,8 +5,11 @@ import OverviewMap from './OverviewMap';
 import WindowTile from './WindowTile';
 
 function DefaultCalendar({ name, details }) {
+
+
   // variables to get from SQL request
-  const calendar_id = 0 // pass it to windowTiles and send 24 requests or get all info in this component?
+
+  const calendar_id = 1 // pass it to windowTiles and send 24 requests or get all info in this component?
   
   // other variables
   const window_nrs = Array(24).fill().map((_, index) => index + 1);

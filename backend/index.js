@@ -56,7 +56,6 @@ app.post('/api/registerUser', async (req, res) => {
 app.get('/api/users', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM users');
-    //console.log('result: ', result);
     res.json(result.rows);
   } catch (error) {
     console.error('Error executing query', error);
@@ -127,6 +126,45 @@ app.get('/api/calendars', async (req, res) => {
       res.status(500).json({ error: 'Internal Server Error' });
     }
   });
+
+// Logic to add a new comment
+app.post("/api/calendars", async (req, res) => {
+  const { windowId, comment} = req.body;
+  try {
+    // Insert the comment into the database
+    // Checks if comment array exists, if not inserts comment as array else concatenates existing array with new comment array
+    const result = await pool.query(
+      'INSERT INTO adventWindow (id, comments) VALUES ($1, ARRAY[$2]) ON CONFLICT (id) DO UPDATE SET comments = adventWindow.comments || ARRAY[$2]',
+      [windowId, comment]
+    );
+
+    res.json({ success: true, message: 'Comment added successfully' });
+  } catch (error) {
+    console.error('Error adding comment:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
+
+app.get('/api/calendar/comments', async (req, res) => {
+  const { calendar_id, window_nr } = req.query;
+  try {
+    // Fetch comments based on calendar_id and window_nr
+    const result = await pool.query(
+      'SELECT * FROM adventWindow WHERE window_nr = $2 AND calendar_id = $1',
+      [calendar_id, window_nr]
+    );
+    const comments = result.rows.length > 0 ? result.rows[0].comments : [];
+    const hasApero = result.rows[0].apero;
+    const location_hint = result.rows[0].location_hint.length > 0 ? result.rows[0].location_hint : "";
+
+    res.json({ success: true, comments: comments, hasApero: hasApero, location_hint: location_hint});
+  } catch (error) {
+    console.error('Error fetching comments:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
+
+
   
 
 
