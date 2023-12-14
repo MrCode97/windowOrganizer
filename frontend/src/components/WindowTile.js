@@ -21,7 +21,7 @@ function WindowTile({ window_nr, calendar_id }) {
     } catch (error) {
       console.error('Error fetching window:', error);
     }
-  }, []);
+  }, [calendar_id, window_nr]);
 
   // Fetch window from the backend when the component mounts
   useEffect(() => {
