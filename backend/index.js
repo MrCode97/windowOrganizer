@@ -164,9 +164,27 @@ app.get('/api/calendar/comments', async (req, res) => {
   }
 });
 
-
-  
-
+app.get('/api/windowThumbnail', async (req, res) => {
+  const { calendar_id, window_nr } = req.query;
+  try {
+    // Fetch window info based on calendar_id and window_nr
+    const result = await pool.query(
+      'SELECT * FROM adventWindow WHERE window_nr = $2 AND calendar_id = $1',
+      [calendar_id, window_nr]
+    );
+    if (result.rows.length > 0) {
+      // The query returned some rows
+      const imagePaths = result.rows[0].image_paths.length > 0 ? result.rows[0].image_paths : [""];
+      res.json({ success: true, isFree: false, imagePath: imagePaths[0]});
+    } else {
+      // The query did not return any rows
+      res.json({ success: true, isFree: true, imagePath: "" });
+    }
+  } catch (error) {
+    console.error('Error fetching window infos:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
 
 app.listen(7007, () => {
   console.log('Server listening on port 7007');

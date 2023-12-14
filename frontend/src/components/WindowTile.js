@@ -1,15 +1,34 @@
 // WindowTile.js
-import React from 'react';
+import React, { useCallback, useState, useEffect  } from 'react';
 import { Card, CardMedia, CardActionArea, Typography, Paper} from '@mui/material';
 import SlidingWindow from './SlidingWindow';
 
 function WindowTile({ window_nr, calendar_id }) {
   // variables to get from SQL request based on window number and calendar id
-  const image_path = "https://www.goenhard.ch/wp-content/uploads/P1130972Adventsfenster_Goenhard_Aarau_2020.jpg" // local path?
-  const has_image = true
-  const is_free = true
+  const [isFree, setIsFree] = useState(false);
+  const [imagePath, setImagePath] = useState("https://clipground.com/images/christmas-door-clipart-1.jpg");
+  
+  // Make an API request to fetch window infos based on window_nr and calendar_id
+  const fetchWindowThumbnail = useCallback(async () => {
+    try {
+      console.log("Calendar id is: " + calendar_id, " Window nr is: " + window_nr);
+      const response = await fetch(`http://localhost:7007/api/windowThumbnail?calendar_id=${calendar_id}&window_nr=${window_nr}`);
+      const data = await response.json();
+      setIsFree(data.isFree);
+      if (!(data.imagePath === "")) {
+        setImagePath(data.imagePath);
+      }
+    } catch (error) {
+      console.error('Error fetching window:', error);
+    }
+  }, []);
 
-  //state variable to track if SlidingWindow is open or closed
+  // Fetch window from the backend when the component mounts
+  useEffect(() => {
+    fetchWindowThumbnail();
+  }, [fetchWindowThumbnail, /* other dependencies if needed */]);
+
+  // State variable to track if SlidingWindow is open or closed
   const [isSlidingWindowOpen, setSlidingWindowOpen] = React.useState(false);
 
   // Still need to fetch from backend
@@ -21,15 +40,12 @@ function WindowTile({ window_nr, calendar_id }) {
     setSlidingWindowOpen(!isSlidingWindowOpen);
   };
 
-
-
   // other variables
   const is_today = new Date().getDate() === window_nr
-  const placeholder_path = "https://clipground.com/images/christmas-door-clipart-1.jpg"
-  const available_visibility = is_free ? {} : { visibility: "hidden" }
-  const today_border = is_today ? 5 : 0
-  const today_margin = is_today ? '0px' : '5px'
-  const cardSize = 150
+  const is_free_visiblity = isFree ? 'visible' : 'hidden';
+  const today_border = is_today ? 5 : 0;
+  const today_margin = is_today ? '0px' : '5px';
+  const cardSize = 150;
 
   return (<div className="window-tile">
     <Card sx={{
@@ -47,7 +63,7 @@ function WindowTile({ window_nr, calendar_id }) {
       >
         <CardMedia
           component="img"
-          image={has_image ? image_path : placeholder_path}
+          image={imagePath}
           alt="advent window"
           sx={{ width: '100%', height: '100%', objectFit: 'cover'}}
         />
@@ -61,13 +77,13 @@ function WindowTile({ window_nr, calendar_id }) {
             paddingRight: 1,
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center'
+            justifyContent: 'center',
+            visibility: is_free_visiblity
           }}
         >
           <Typography
             variant="body2"
             color="text.secondary"
-            sx={available_visibility}
           >
             Noch frei
           </Typography>
