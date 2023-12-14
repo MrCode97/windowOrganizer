@@ -186,6 +186,36 @@ app.get('/api/windowThumbnail', async (req, res) => {
   }
 });
 
+app.get('/api/calendarMapInfo', async (req, res) => {
+  const { calendar_id } = req.query;
+  try {
+    // Fetch coordwindow info based on calendar_id
+    const result = await pool.query(
+      'SELECT * FROM adventWindow WHERE calendar_id = $1',
+      [calendar_id]
+    );
+    if (result.rows.length > 0) {
+      // The query returned some rows
+      const calendarMapInfos = [];
+      for (const row of result.rows) {
+        calendarMapInfos.push({
+          window_nr: row.window_nr,
+          address_name: row.address_name,
+          address: row.address,
+          time: row.time
+        });
+      }
+      res.json({ success: true, calendarMapInfos: calendarMapInfos});
+    } else {
+      // The query did not return any rows
+      res.json({ success: true, calendarMapInfos: []});
+    }
+  } catch (error) {
+    console.error('Error fetching calendar map infos:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
+
 app.listen(7007, () => {
   console.log('Server listening on port 7007');
 });
