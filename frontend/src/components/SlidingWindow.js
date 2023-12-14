@@ -28,6 +28,7 @@ function SlidingWindow({window_nr, calendar_id, onClose, windows_coordinates}) {
         // Need to ensure that calendar_ids and window_nrs are actually in our DB 
         // to do so we need to create for every new calendar 24 advent Windows
         // for now we use static variables instead of calendar_id and window_nr
+        // pabeer: we could also check whether an SQL returns empty in the backend and link to a window registration page in that case 
 
 
         try {
