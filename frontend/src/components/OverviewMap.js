@@ -40,21 +40,9 @@ function OverviewMap({ calendar_id }) {
   });
   console.log("Outside:", calendarMapInfos);
   console.log("Outside:", window_coordinates_list);
-
-  // calculate center coordinates
-  // possible to adjust zoom level such that all Markers can be seen?
-  let sumLatitude = 0;
-  let sumLongitude = 0;
-  for (const coordinates of window_coordinates_list) {
-    sumLatitude += coordinates.x;
-    sumLongitude += coordinates.y;
-  }
-  const nr_markers = window_coordinates_list.length;
-  const center_coordinates = [sumLatitude / nr_markers, sumLongitude / nr_markers];
-  console.log("Center:", center_coordinates);
   
   return (
-  <DrawMap center={center_coordinates} coordinatesList={window_coordinates_list} iconPath={icon_path} drawNumbers={true} />
+    <DrawMap coordinatesList={window_coordinates_list} iconPath={icon_path} drawNumbers={true} />
   )
 }
 
