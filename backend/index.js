@@ -2,6 +2,8 @@ const express = require('express');
 const { Pool } = require('pg');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const jwt_secret = "jwt_secret_sign_key"; // TODO read from ENV
 
 const app = express();
 app.use(cors());
@@ -85,7 +87,10 @@ app.post('/api/login', async (req, res) => {
     const passwordMatch = await bcrypt.compare(password, hashedPassword);
 
     if (passwordMatch) {
-      res.status(200).json({ message: 'Login successful!' });
+      const token = jwt.sign({ username: result.rows[0].username }, jwt_secret, {
+        expiresIn: '1h', // Token expiration time (adjust as needed)
+      });
+      res.status(200).json({ message: 'Login successful!', token });
     } else {
       res.status(401).json({ error: 'Invalid credentials. Password does not match.' });
     }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { styled } from '@mui/system';
+import Button from '@mui/material/Button';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
@@ -14,6 +15,7 @@ import TextField from '@mui/material/TextField';
 import Registration from './components/Registration';
 import Calendar from './components/Calendar';
 import DefaultCalendar from './components/DefaultCalendar';
+import { useAuth } from './AuthProvider';
 
 const drawerWidth = 240;
 
@@ -36,11 +38,13 @@ const MainBox = styled(Box)({
 });
 
 function App() {
+  const { user, token, logout } = useAuth();
   const [calendars, setCalendars] = useState([]);
   const [selectedCalendar, setSelectedCalendar] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [showRegistration, setShowRegistration] = useState(false);
 
+  console.log('App', user, token);
   useEffect(() => {
     // Fetch calendar data when the component mounts
     const fetchCalendars = async () => {
@@ -64,6 +68,16 @@ function App() {
             <Typography variant="h6" noWrap>
               Welcome to the Advent Calendar
             </Typography>
+            {user && (
+                <Typography variant="h6" noWrap style={{ marginLeft: 'auto' }}>
+                  Welcome {user}
+                </Typography>
+              )}
+              {user && (
+                <Button color="inherit" onClick={logout}>
+                  Logout
+                </Button>
+              )}
           </Toolbar>
         </StyledAppBar>
         <Drawer
