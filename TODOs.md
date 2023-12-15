@@ -1,5 +1,11 @@
 # Project TODO List
 
+- Design / UX
+- Functionality
+- Presentation
+- Admin
+- Deployment
+
 ## Design / UX:
 
 | Task                                                      | Description                                             | Responsible   | Done  |
