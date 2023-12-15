@@ -48,7 +48,7 @@
 
 ## Admin:
 - [ ] Ask Permission / invite David & TA to the GitHub-Repo
-  - Responsible: 
+  - Responsible: Robin
   - Done: - [ ]
 
 ## Deployment:
