@@ -49,6 +49,6 @@
 
 | Task                           | Description                                             | Responsible   | Done  |
 |--------------------------------|---------------------------------------------------------|---------------|-------|
-| Build, Install, Secure Infrastructure | -                                              | [Robin]        | - [ ] |
-| Link Domain to Server           | -                                                     | [Robin]        | - [ ] |
-| Deploy App                      | -                                                     | [Robin]        | - [ ] |
+| Build, Install, Secure Infrastructure | -                                              | Robin        | - [ ] |
+| Link Domain to Server           | -                                                     | Robin        | - [ ] |
+| Deploy App                      | -                                                     | Robin        | - [ ] |
