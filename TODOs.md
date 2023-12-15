@@ -28,7 +28,7 @@
 | Show Numbers on the main Map    | - Frontend implementation                               | Simon        | - [ ] |
 | Picture-Upload Function         | - Frontend and backend implementation                   |         | - [ ] |
 |                                | - Database integration                                 |         | - [ ] |
-| PictureShow: Gallery browsing   | - Frontend and backend implementation                   |         | - [ ] |
+| PictureShow: Gallery browsing   | - Frontend and backend implementation                   |  Leon   | - [ ] |
 |                                | - Database integration                                 |         | - [ ] |
 | Comment-Function                | - Backend implementation primarily                     | Simon | - [ ] |
 
