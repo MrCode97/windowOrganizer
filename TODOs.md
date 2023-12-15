@@ -29,7 +29,7 @@
 | Picture-Upload Function         | - Frontend and backend implementation                   |         | - [ ] |
 |                                | - Database integration                                 |         | - [ ] |
 | PictureShow: Gallery browsing   | - Frontend and backend implementation                   |  Leon   | - [ ] |
-|                                | - Database integration                                 |         | - [ ] |
+|                                | - Database integration                                 |Leon     | - [ ] |
 | Comment-Function                | - Backend implementation primarily                     | Simon | - [ ] |
 
 ## Presentation:
