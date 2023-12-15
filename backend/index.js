@@ -234,6 +234,62 @@ app.post('/api/calendars/addComment', async (req, res) => {
   }
 });
 
+// New route to register window hosting
+app.post('/api/registerWindowHosting', async (req, res) => {
+  const { calendar_id, window_nr, username, addressName, time, locationHint  } = req.body;
+
+  // Check if the user exists
+  try {
+    const userExists = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
+
+    if (userExists.rows.length === 0) {
+      console.log(`User: ${username} does not exist`);
+      return res.status(400).json({ error: 'User does not exist.' });
+    }
+  } catch (error) {
+      console.error('Error checking user existence', error);
+      return res.status(500).json({ error: 'Internal Server Error' });
+  }
+
+  // Check if the window has already been registered in the meantime
+  try {
+    const existingWindow = await pool.query(
+      'SELECT * FROM adventWindow WHERE window_nr = $2 AND calendar_id = $1',
+      [calendar_id, window_nr]
+    );
+
+    if (existingWindow.rows.length > 0) {
+      console.log(`Advent calendar: ${calendar_id} already registered`);
+       return res.status(400).json({ error: 'Advent calendar already registered.' });
+    }
+  } catch (error) {
+      console.error('Error checking existing calendar', error);
+      return res.status(500).json({ error: 'Internal Server Error' });
+  }
+
+  // Register the window hosting
+  try {
+    // get user id from username
+    const userId = await pool.query(
+      'SELECT id FROM users WHERE username = $1',
+      [username]
+    );
+    console.log("Owner id:", userId.rows[0].id);
+    console.log("Calendar id:", calendar_id);
+    console.log("Window nr:", window_nr);
+    // register window hosting
+    await pool.query(
+      'INSERT INTO adventWindow (id, owner, address_name, time, location_hint, window_nr, calendar_id) VALUES (DEFAULT, $1, $2, $3, $4, $5, $6)',
+      [userId.rows[0].id, addressName, time, locationHint, window_nr, calendar_id]
+    );
+    console.log(`Window hosting for calendar ${calendar_id}, window ${window_nr} registered successfully!`);
+    res.status(200).json({ message: 'Window hosting registered successfully!' });
+  } catch (error) {
+    console.error('Error registering window hosting', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 app.listen(7007, () => {
   console.log('Server listening on port 7007');
 });
