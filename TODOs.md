@@ -30,7 +30,7 @@
 |                                | - Database integration                                 |         | - [ ] |
 | PictureShow: Gallery browsing   | - Frontend and backend implementation                   |         | - [ ] |
 |                                | - Database integration                                 |         | - [ ] |
-| Comment-Function                | - Backend implementation primarily                     | Simon        | - [ ] |
+| Comment-Function                | - Backend implementation primarily                     | Simon | - [ ] |
 
 ## Presentation:
 - [ ] Find out what they care about in Presentation
