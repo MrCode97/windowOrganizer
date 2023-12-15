@@ -6,12 +6,13 @@ import DrawMap from './DrawMap';
 // Todo: - address from Backend in a senseful way
 // - test if adding comments works already
 // - fetch time from backend aswell
-function SlidingWindow({window_nr, calendar_id, onClose, windows_coordinates}) {
+function SlidingWindow({window_nr, calendar_id, onClose}) {
 
     // window number, location hint text, address, apero flag, start_time, end_time fetched from backend
     let start_time = "18.00";
     let end_time = "20.00";
     let address = "Stockerstrasse 23, 8050 Zürich";
+    let windows_coordinates = [{x: 51.505, y: -0.09}];
 
     const [newComment, setNewComment] = useState('');
     const [comments, setComments] = useState([]);
