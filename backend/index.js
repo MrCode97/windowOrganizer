@@ -43,7 +43,7 @@ app.post('/api/registerUser', async (req, res) => {
     // Register the user
     try {
         await pool.query('INSERT INTO users (username, password) VALUES ($1, $2)', [username, hashedPassword]);
-        console.log(`User: ${username} registerd successfully!`);
+        console.log(`User: ${username}:${hashedPassword} registerd successfully!`);
         res.status(200).json({ message: 'User registered successfully!' });
     } catch (error) {
         console.error('Error registering user', error);
@@ -63,6 +63,37 @@ app.get('/api/users', async (req, res) => {
   }
 });
 
+app.post('/api/login', async (req, res) => {
+  const { username, password } = req.body;
+
+  // Basic validation
+  if (!username || !password) {
+    return res.status(400).json({ error: 'Invalid request. Missing required parameters.' });
+  }
+
+  // Check if the user exists
+  try {
+    const result = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
+
+    if (result.rows.length === 0) {
+      return res.status(401).json({ error: 'Invalid credentials. User not found.' });
+    }
+
+    const hashedPassword = result.rows[0].password;
+    
+    // Check if the provided password matches the stored hashed password
+    const passwordMatch = await bcrypt.compare(password, hashedPassword);
+
+    if (passwordMatch) {
+      res.status(200).json({ message: 'Login successful!' });
+    } else {
+      res.status(401).json({ error: 'Invalid credentials. Password does not match.' });
+    }
+  } catch (error) {
+    console.error('Error during login', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
 // New route to register advent calendars
 app.post('/api/registerAdventCalendar', async (req, res) => {

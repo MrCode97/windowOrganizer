@@ -42,9 +42,9 @@ CREATE TABLE IF NOT EXISTS adventWindow (
 --Example data
 -- Insert data into users
 INSERT INTO users (username, password) VALUES
-    ('user1', 'password1'),
-    ('user2', 'password2'),
-    ('user3', 'password3'),
+    ('user1', '$2b$10$WyegkCk/niLebmx.exOfm.EMBhscILZ8/UTPHsVNvBIojEcSrr7m6'), --password1
+    ('user2', '$2b$10$GAYsim0m3NxGrcIHLVBl0.qP/SB9TlC9Xe6eVINxhdceqgl2zG/De'), --password2
+    ('user3', '$2b$10$BGa9DGKq1SdKJs8QGK29De3qPxqrDpRg52We6nRgx7LixHi6Ba0Ka'), --password3
     ('user4', 'password4'),
     ('user5', 'password5');
 
