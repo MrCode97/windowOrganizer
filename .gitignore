@@ -63,3 +63,6 @@ __snapshots__/
 /cypress/videos/
 /cypress/screenshots/
 
+# Ignore package-lock files in the backend directory
+backend/node_modules/
+backend/package-lock.json
