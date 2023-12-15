@@ -63,10 +63,10 @@ VALUES
     (3, 'some other registered calendar');
 
 
-INSERT INTO adventWindow (id, owner, address_name, address, apero, time, location_hint, window_nr, calendar_id, image_paths, pictures, comments)
+INSERT INTO adventWindow (owner, address_name, address, apero, time, location_hint, window_nr, calendar_id, image_paths, pictures, comments)
 VALUES
-    (1, 1, 'Pfingstweidstrasse 107, 8005 Zürich', POINT(47.39152336890094, 8.5046484808549649), true, '17:00:00', 'Open your eyes', 1, 1, ARRAY['https://www.goenhard.ch/wp-content/uploads/P1130972Adventsfenster_Goenhard_Aarau_2020.jpg'], ARRAY[]::bytea[], ARRAY['Nice view!', 'Great atmosphere!']),
-    (2, 2, 'Förrlibuckstrasse 190, 8005 Zürich', POINT(47.39238739936754, 8.510283739643468), true, '18:00:00', 'Open your eyes', 4, 1, ARRAY[]::VARCHAR[], ARRAY[]::bytea[], ARRAY['Nice view!', 'Great atmosphere!']),
-    (3, 3, 'Hardturmstrasse 132, 8005 Zürich', POINT(47.39387075500006, 8.511538606053824), true, '19:00:00', 'Open your eyes', 5, 1, ARRAY['https://www.goenhard.ch/wp-content/uploads/P1130972Adventsfenster_Goenhard_Aarau_2020.jpg'], ARRAY[]::bytea[], ARRAY['Nice view!', 'Great atmosphere!']),
-    (4, 4, 'Blumengasse 5, 4051 Basel', POINT(47.5596, 7.5886), false, '20:00:00', 'Look to the left!', 2, 2, ARRAY['https://www.goenhard.ch/wp-content/uploads/P1130972Adventsfenster_Goenhard_Aarau_2020.jpg'], ARRAY[]::bytea[], ARRAY['Amazing location!', 'No apero this time.']),
-    (5, 5, 'Bahnhofquai 15, 8001 Zürich', POINT(47.3769, 8.5417), true, '19:30:00', 'Seriously, you cant see it?', 3, 3, ARRAY['https://www.goenhard.ch/wp-content/uploads/P1130972Adventsfenster_Goenhard_Aarau_2020.jpg'], ARRAY[]::bytea[], ARRAY['Fantastic experience!', 'Loved the apero.']);
+    (1, 'Pfingstweidstrasse 107, 8005 Zürich', POINT(47.39152336890094, 8.5046484808549649), true, '17:00:00', 'Open your eyes', 1, 1, ARRAY['https://www.goenhard.ch/wp-content/uploads/P1130972Adventsfenster_Goenhard_Aarau_2020.jpg'], ARRAY[]::bytea[], ARRAY['Nice view!', 'Great atmosphere!']),
+    (2, 'Förrlibuckstrasse 190, 8005 Zürich', POINT(47.39238739936754, 8.510283739643468), true, '18:00:00', 'Open your eyes', 4, 1, ARRAY[]::VARCHAR[], ARRAY[]::bytea[], ARRAY['Nice view!', 'Great atmosphere!']),
+    (3, 'Hardturmstrasse 132, 8005 Zürich', POINT(47.39387075500006, 8.511538606053824), true, '19:00:00', 'Open your eyes', 5, 1, ARRAY['https://www.goenhard.ch/wp-content/uploads/P1130972Adventsfenster_Goenhard_Aarau_2020.jpg'], ARRAY[]::bytea[], ARRAY['Nice view!', 'Great atmosphere!']),
+    (4, 'Blumengasse 5, 4051 Basel', POINT(47.5596, 7.5886), false, '20:00:00', 'Look to the left!', 2, 2, ARRAY['https://www.goenhard.ch/wp-content/uploads/P1130972Adventsfenster_Goenhard_Aarau_2020.jpg'], ARRAY[]::bytea[], ARRAY['Amazing location!', 'No apero this time.']),
+    (5, 'Bahnhofquai 15, 8001 Zürich', POINT(47.3769, 8.5417), true, '19:30:00', 'Seriously, you cant see it?', 3, 3, ARRAY['https://www.goenhard.ch/wp-content/uploads/P1130972Adventsfenster_Goenhard_Aarau_2020.jpg'], ARRAY[]::bytea[], ARRAY['Fantastic experience!', 'Loved the apero.']);
