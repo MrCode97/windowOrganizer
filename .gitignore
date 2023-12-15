@@ -66,3 +66,4 @@ __snapshots__/
 # Ignore package-lock files in the backend directory
 backend/node_modules/
 backend/package-lock.json
+backend/node_modules/*
