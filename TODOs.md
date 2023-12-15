@@ -25,7 +25,7 @@
 |                                | - Frontend and backend implementation                   | Patrick      | - [ ] |
 |                                | - Database integration                                 | Patrick      | - [ ] |
 | Different icons for Window 1..24 | - Frontend implementation                            |   Simon      | - [ ] |
-| Show Numbers on the main Map    | - Frontend implementation                               | Patrick      | - [ ] |
+| Show Numbers on the main Map    | - Frontend implementation                               | Simon        | - [ ] |
 | Picture-Upload Function         | - Frontend and backend implementation                   |         | - [ ] |
 |                                | - Database integration                                 |         | - [ ] |
 | PictureShow: Gallery browsing   | - Frontend and backend implementation                   |         | - [ ] |
