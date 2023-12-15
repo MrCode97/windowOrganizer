@@ -7,6 +7,7 @@ function WindowTile({ window_nr, calendar_id }) {
   // variables to get from SQL request based on window number and calendar id
   const [isFree, setIsFree] = useState(false);
   const [imagePath, setImagePath] = useState("https://clipground.com/images/christmas-door-clipart-1.jpg");
+  const [windowCoordinates, setWindowCoordinates] = useState([{x: 51.505, y: -0.09}]);
   
   // Make an API request to fetch window infos based on window_nr and calendar_id
   const fetchWindowThumbnail = useCallback(async () => {
@@ -30,9 +31,6 @@ function WindowTile({ window_nr, calendar_id }) {
 
   // State variable to track if SlidingWindow is open or closed
   const [isSlidingWindowOpen, setSlidingWindowOpen] = React.useState(false);
-
-  // Still need to fetch from backend
-  const windows_coordinates = [[51.505, -0.09]];
 
   // Event handler for clicking on the CardMedia
   const handleCardMediaClick = () => {
@@ -113,7 +111,6 @@ function WindowTile({ window_nr, calendar_id }) {
           window_nr={window_nr}
           calendar_id={calendar_id}
           onClose={() => setSlidingWindowOpen(false)}
-          windows_coordinates={windows_coordinates}
         />
       )}
   </div>);
