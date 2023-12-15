@@ -23,19 +23,20 @@ CREATE TABLE IF NOT EXISTS adventCalendars (
 -- Create AdventWindow table
 CREATE TABLE IF NOT EXISTS adventWindow (
     id SERIAL PRIMARY KEY,
-    owner INT NOT NULL,
+    owner INT,
     address_name VARCHAR(255),
     address POINT,
     apero BOOLEAN,
     time TIME,
     location_hint VARCHAR(255),
-    window_nr INT,
+    window_nr INT NOT NULL,
     calendar_id INT NOT NULL, -- Corrected reference to adventCalendar
     image_paths VARCHAR(255)[],
     pictures BYTEA[], -- BYTEA for storing image data (in PostgreSQL)
     comments VARCHAR(255)[],
     FOREIGN KEY (owner) REFERENCES users(id),
-    FOREIGN KEY (calendar_id) REFERENCES adventCalendar(id)
+    FOREIGN KEY (calendar_id) REFERENCES adventCalendar(id),
+    CONSTRAINT unique_window_calendar_key UNIQUE (window_nr, calendar_id)
 );
 
 --Example data

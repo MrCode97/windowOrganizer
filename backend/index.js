@@ -186,6 +186,24 @@ app.get('/api/windowThumbnail', async (req, res) => {
   }
 });
 
+app.post('/api/calendars/addComment', async (req, res) => {
+  const { window_nr, calendar_id } = req.query;
+  const { comment } = req.body;
+  try {
+    // Insert the comment into the database
+    // Checks if comment array exists, if not inserts comment as array else concatenates existing array with new comment array
+    const result = await pool.query(
+      'INSERT INTO adventWindow (window_nr, calendar_id, comments) VALUES ($1, $2, ARRAY[$3]) ON CONFLICT (window_nr, calendar_id) DO UPDATE SET comments = adventWindow.comments || ARRAY[$3]',
+      [window_nr, calendar_id, comment]
+    );
+
+    res.json({ success: true, message: 'Comment added successfully' });
+  } catch (error) {
+    console.error('Error adding comment:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
+
 app.listen(7007, () => {
   console.log('Server listening on port 7007');
 });
