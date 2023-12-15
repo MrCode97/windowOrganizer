@@ -21,10 +21,10 @@
 |                                | - Cookie handling                                      | Robin        | - [ ] |
 |                                | - Permission checks                                    | Robin        | - [ ] |
 |                                | - Database integration (frontend & backend)            | Robin        | - [ ] |
-| Register a window               | - Integration within the Calendar or Popup               |         | - [ ] |
+| Register a window               | - Integration within the Calendar or Popup            |         | - [ ] |
 |                                | - Frontend and backend implementation                   |         | - [ ] |
 |                                | - Database integration                                 |         | - [ ] |
-| Different icons for Window 1..24 | - Frontend implementation                               |         | - [ ] |
+| Different icons for Window 1..24 | - Frontend implementation                            |   Simon      | - [ ] |
 | Show Numbers on the main Map    | - Frontend implementation                               |         | - [ ] |
 | Picture-Upload Function         | - Frontend and backend implementation                   |         | - [ ] |
 |                                | - Database integration                                 |         | - [ ] |
