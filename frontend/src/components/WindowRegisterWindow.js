@@ -21,7 +21,7 @@ function WindowRegisterWindow({window_nr, calendar_id, onClose}) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ calendar_id, window_nr, username, addressName, coords, time, locationHint }),
+        body: JSON.stringify({ calendar_id, window_nr, username, addressName, coords, time, locationHint, hasApero }),
       });
 
       if (response.ok) {
