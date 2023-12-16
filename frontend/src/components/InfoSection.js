@@ -1,4 +1,4 @@
-// CommentSection.js
+// InfoSection.js
 import React, { useCallback, useState, useEffect  } from 'react';
 import Typography from '@mui/material/Typography';
 import List from '@mui/material/List';
@@ -8,20 +8,36 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import DrawMap from './DrawMap'; // Make sure to replace with the correct path
 
-const CommentSection = ({
+const InfoSection = ({
   calendar_id,
   window_nr,
-  windows_coordinates,
   onClose
 }) => {
-    let start_time = "18.00";
-    let end_time = "20.00";
-    let address = "Stockerstrasse 23, 8050 Zürich";
+  
+  const [location_hint, setHint] = useState("undefined");
+  const [hasApero, setApero] = useState(false);
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState('');
+  const [startTime, setStartTime] = useState("18.00");
+  const [addressName, setAddressName] = useState("Stockerstrasse 23, 8050 Zürich");
+  const [coordinates, setCoordinates] = useState([]);
 
-    const [newComment, setNewComment] = useState('');
-    const [comments, setComments] = useState([]);
-    const [location_hint, setHint] = useState("");
-    const [hasApero, setApero] = useState(false);
+  const fetchData = async () => {
+    const response = await fetch(`http://localhost:7007/api/getWindowData?calendar_id=${calendar_id}&window_nr=${window_nr}`);
+    const { windowData } = await response.json();
+    const {owner, address_name, address, apero, time, location_hint, image_paths, pictures, comments} = windowData;
+    setComments(comments);
+    setHint(location_hint);
+    setApero(apero);
+    setStartTime(time);
+    setAddressName(address_name);
+    setCoordinates([address]);
+  };
+
+  useEffect(() => {
+      fetchData();
+    }, []);
+
 
 
     const handleCommentChange = (event) => {
@@ -88,12 +104,12 @@ const CommentSection = ({
   return (
     <>
       <Typography variant="h4">Window #{window_nr}</Typography>
-      <Typography variant="body1">{address}</Typography>
+      <Typography variant="body1">{addressName}</Typography>
       <Typography variant="body1" style={{ color: 'blue' }}>
-        {start_time + ' - ' + end_time}
+        {startTime}
       </Typography>
 
-      <DrawMap center={windows_coordinates[0]} coordinatesList={windows_coordinates} iconPath={icon_path} drawNumbers={false} />
+      <DrawMap center={coordinates[0]} coordinatesList={coordinates} iconPath={icon_path} drawNumbers={false} />
 
       <Typography variant="body1">Apéro: {hasApero ? 'Ja' : 'Nein'}</Typography>
       <Typography variant="body1">Location Hint: {location_hint}</Typography>
@@ -126,4 +142,4 @@ const CommentSection = ({
   );
 };
 
-export default CommentSection;
+export default InfoSection;
