@@ -17,7 +17,7 @@ function WindowTile({ window_nr, calendar_id }) {
   // Make an API request to fetch window infos based on window_nr and calendar_id
   const fetchWindowThumbnail = useCallback(async () => {
     try {
-      console.log("Calendar id is: " + calendar_id, " Window nr is: " + window_nr);
+      //console.log("Calendar id is: " + calendar_id, " Window nr is: " + window_nr);
       const response = await fetch(`http://localhost:7007/api/windowThumbnail?calendar_id=${calendar_id}&window_nr=${window_nr}`);
       const data = await response.json();
       setIsFree(data.isFree);

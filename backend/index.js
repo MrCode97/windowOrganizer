@@ -328,6 +328,30 @@ app.post('/api/registerWindowHosting', async (req, res) => {
   }
 });
 
+// New route to getWindowData
+app.get('/api/getWindowData', async (req, res) => {
+  const { calendar_id, window_nr } = req.query;
+  try {
+    // Fetch window info based on calendar_id and window_nr
+    const result = await pool.query(
+      'SELECT * FROM adventWindow WHERE window_nr = $2 AND calendar_id = $1',
+      [calendar_id, window_nr]
+    );
+    if (result.rows.length > 0) {
+      // The query returned some rows
+      const windowData = result.rows[0];
+      res.json({ success: true, windowData: windowData});
+    } else {
+      // The query did not return any rows
+      res.json({ success: true, windowData: {} });
+    }
+  } catch (error) {
+    console.error('Error fetching window infos:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
+
+
 app.listen(7007, () => {
   console.log('Server listening on port 7007');
 });

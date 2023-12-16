@@ -13,71 +13,35 @@ import CommentSection from './CommentSection';
 function SlidingWindow({window_nr, calendar_id, onClose}) {
 
     // window number, location hint text, address, apero flag, start_time, end_time fetched from backend
-    let start_time = "18.00";
-    let end_time = "20.00";
-    let address = "Stockerstrasse 23, 8050 Zürich";
-    let windows_coordinates = [{x: 51.505, y: -0.09}];
+    //let start_time = "18.00";
+    //let end_time = "20.00"; // can we drop this?
+    //let address = "Stockerstrasse 23, 8050 Zürich";
+    //let windows_coordinates = [{x: 51.505, y: -0.09}];
 
     const [newComment, setNewComment] = useState('');
     const [comments, setComments] = useState([]);
     const [location_hint, setHint] = useState("");
     const [hasApero, setApero] = useState(false);
+    const [startTime, setStartTime] = useState("18.00");
+    const [endTime, setEndTime] = useState("20.00");
+    const [addressName, setAddressName] = useState("Stockerstrasse 23, 8050 Zürich");
+    const [coordinates, setCoordinates] = useState([]);
 
-
-    const handleCommentChange = (event) => {
-        setNewComment(event.target.value);
+    const fetchData = async () => {
+      const response = await fetch(`http://localhost:7007/api/getWindowData?calendar_id=${calendar_id}&window_nr=${window_nr}`);
+      const { windowData } = await response.json();
+      const {owner, address_name, address, apero, time, image_paths, pictures, comments} = windowData;
+      setComments(comments);
+      setHint(location_hint);
+      setApero(apero);
+      setStartTime(time);
+      setAddressName(address_name);
+      setCoordinates([address]);
     };
-
-    const fetchCommentsFromBackend = useCallback(async () => {
-        
-        // Need to ensure that calendar_ids and window_nrs are actually in our DB 
-        // to do so we need to create for every new calendar 24 advent Windows
-        // for now we use static variables instead of calendar_id and window_nr
-        // pabeer: we could also check whether an SQL returns empty in the backend and link to a window registration page in that case 
-
-
-        try {
-          // Make an API request to fetch comments based on window_nr and calendar_id
-          console.log("Calendar id is: " + calendar_id, " Window nr is: " + window_nr);
-          const response = await fetch(`http://localhost:7007/api/calendar/comments?calendar_id=${calendar_id}&window_nr=${window_nr}`);
-          const data = await response.json();
-          setComments(data.comments);
-          console.log("here we are");
-          setHint(data.location_hint);
-          console.log("Location hint is: " + location_hint);
-          setApero(data.hasApero);
-
-        } catch (error) {
-          console.error('Error fetching comments:', error);
-        }
-      }, [window_nr, calendar_id, setComments, setApero, location_hint]);
 
     useEffect(() => {
-        // Fetch comments from the backend when the component mounts
-        fetchCommentsFromBackend();
-      }, [fetchCommentsFromBackend, /* other dependencies if needed */]);
-      
-
-    const handleAddComment = async () => {
-        try {
-        // Make an API request to add a comment
-        await fetch('/api/addComment', {
-            method: 'POST',
-            headers: {
-            'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ window_nr, comment: newComment }),
-        });
-
-        // Refetch comments from the backend to update the UI with the new comment
-        fetchCommentsFromBackend();
-
-        // Clear the input field after adding the comment
-        setNewComment('');
-        } catch (error) {
-        console.error('Error adding comment:', error);
-        }
-    };
+        fetchData();
+      }, []);
 
     // how to get dynamic icon with number inside?
     const icon_path = "https://www.pngall.com/wp-content/uploads/5/Christmas-Star-PNG-Picture-180x180.png"
@@ -97,7 +61,7 @@ function SlidingWindow({window_nr, calendar_id, onClose}) {
             <DialogContent sx={{ width: '400px', height: '700px' }}>
 
             {activeTab === 0 && <CommentSection window_nr={window_nr}
-            windows_coordinates={windows_coordinates}
+            windows_coordinates={coordinates}
             onClose={onClose}
             calendar_id={calendar_id}
             />}

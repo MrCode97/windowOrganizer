@@ -44,7 +44,7 @@ function App() {
   const [searchTerm, setSearchTerm] = useState('');
   const [showRegistration, setShowRegistration] = useState(false);
 
-  console.log('App', user, token);
+  //console.log('App', user, token);
   useEffect(() => {
     // Fetch calendar data when the component mounts
     const fetchCalendars = async () => {

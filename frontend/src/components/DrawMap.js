@@ -7,8 +7,8 @@ import React, { useCallback, useState, useEffect  } from 'react';
 const DrawMap = ({ coordinatesList, iconPath, drawNumbers }) => {
   const [coordinates, setCoordinates] = useState([]);
   const [centerCoordinates, setCenterCoordinates] = useState([0, 0]);
-  console.log("DrawMap coordinates:", coordinates);
-  console.log("DrawMap centerCoordinates:", centerCoordinates)
+  //console.log("DrawMap coordinates:", coordinates);
+  //console.log("DrawMap centerCoordinates:", centerCoordinates)
   useEffect(() => {
     setCoordinates(coordinatesList);
     let sumLatitude = 0;

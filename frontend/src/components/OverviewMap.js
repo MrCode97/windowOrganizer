@@ -10,12 +10,12 @@ function OverviewMap({ calendar_id }) {
   // Make an API request to fetch calendar infos based on calendar_id
   const fetchCalendarMapInfo = useCallback(async () => {
     try {
-      console.log("Calendar id is: " + calendar_id);
+      //console.log("Calendar id is: " + calendar_id);
       const response = await fetch(`http://localhost:7007/api/calendarMapInfo?calendar_id=${calendar_id}`);
       const data = await response.json();
-      console.log("Received info:", data.calendarMapInfos);
+      //console.log("Received info:", data.calendarMapInfos);
       setCalendarMapInfos(data.calendarMapInfos);
-      console.log("Inside fetch:", calendarMapInfos);
+      //console.log("Inside fetch:", calendarMapInfos);
     } catch (error) {
       console.error('Error fetching calendar info:', error);
     }
@@ -24,7 +24,7 @@ function OverviewMap({ calendar_id }) {
   // Fetch calendar map info from the backend when the component mounts
   useEffect(() => {
     fetchCalendarMapInfo();
-    console.log("Inside useEffect:", calendarMapInfos);
+    //console.log("Inside useEffect:", calendarMapInfos);
   }, [fetchCalendarMapInfo /* other dependencies if needed */]);
 
   // other variables
@@ -38,8 +38,8 @@ function OverviewMap({ calendar_id }) {
   const window_coordinates_list = calendarMapInfos.map((window) => {
     return window.address;
   });
-  console.log("Outside:", calendarMapInfos);
-  console.log("Outside:", window_coordinates_list);
+  //console.log("Outside:", calendarMapInfos);
+  //console.log("Outside:", window_coordinates_list);
   
   return (
     <DrawMap coordinatesList={window_coordinates_list} iconPath={icon_path} drawNumbers={true} />
