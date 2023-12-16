@@ -2,7 +2,7 @@ import React, { useCallback, useState, useEffect  } from 'react';
 import { Dialog, DialogContent, Tabs, Tab } from '@mui/material';
 import "leaflet/dist/leaflet.css";
 import Gallery from './Gallery'
-import CommentSection from './CommentSection';
+import CommentSection from './InfoSection';
 // Todo: - address from Backend in a senseful way
 // - test if adding comments works already
 // - fetch time from backend aswell
