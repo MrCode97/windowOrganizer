@@ -1,6 +1,7 @@
 // WindowRegisterWindow.js
 import React, { useCallback, useState, useEffect  } from 'react';
 import { Dialog, DialogContent, Typography, TextField, Button } from '@mui/material';
+import { translate } from './GeocodeAddress';
 
 function WindowRegisterWindow({window_nr, calendar_id, onClose}) {
   const [username, setUsername] = useState('');
@@ -10,6 +11,8 @@ function WindowRegisterWindow({window_nr, calendar_id, onClose}) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    const coords = await translate(addressName);
+    console.log(coords);
     try {
       // Replace the following with your actual API endpoint
       const response = await fetch('http://localhost:7007/api/registerWindowHosting', {
@@ -17,7 +20,7 @@ function WindowRegisterWindow({window_nr, calendar_id, onClose}) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ calendar_id, window_nr, username, addressName, time, locationHint }),
+        body: JSON.stringify({ calendar_id, window_nr, username, addressName, coords, time, locationHint }),
       });
 
       if (response.ok) {
