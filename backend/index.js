@@ -272,7 +272,7 @@ app.post('/api/calendars/addComment', async (req, res) => {
 
 // New route to register window hosting
 app.post('/api/registerWindowHosting', async (req, res) => {
-  const { calendar_id, window_nr, username, addressName, coords, time, locationHint  } = req.body;
+  const { calendar_id, window_nr, username, addressName, coords, time, locationHint, hasApero  } = req.body;
 
   // Check if the user exists
   try {
@@ -314,10 +314,11 @@ app.post('/api/registerWindowHosting', async (req, res) => {
     console.log("Calendar id:", calendar_id);
     console.log("Window nr:", window_nr);
     console.log(coords);
+    //const hasApero = false;
     // register window hosting
     await pool.query(
-      'INSERT INTO adventWindow (id, owner, address_name, address, time, location_hint, window_nr, calendar_id) VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7)',
-      [userId.rows[0].id, addressName, `(${coords[0]},${coords[1]})`, time, locationHint, window_nr, calendar_id]
+      'INSERT INTO adventWindow (id, owner, address_name, address, apero, time, location_hint, window_nr, calendar_id, image_paths, pictures, comments) VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)',
+      [userId.rows[0].id, addressName, `(${coords[0]},${coords[1]})`, hasApero, time, locationHint, window_nr, calendar_id, [], [], []]
     );
     console.log(`Window hosting for calendar ${calendar_id}, window ${window_nr} registered successfully!`);
     res.status(200).json({ message: 'Window hosting registered successfully!' });

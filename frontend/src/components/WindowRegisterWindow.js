@@ -1,6 +1,6 @@
 // WindowRegisterWindow.js
 import React, { useCallback, useState, useEffect  } from 'react';
-import { Dialog, DialogContent, Typography, TextField, Button } from '@mui/material';
+import { Dialog, DialogContent, Typography, TextField, Button, FormControlLabel, Checkbox } from '@mui/material';
 import { translate } from './GeocodeAddress';
 
 function WindowRegisterWindow({window_nr, calendar_id, onClose}) {
@@ -8,6 +8,7 @@ function WindowRegisterWindow({window_nr, calendar_id, onClose}) {
   const [addressName, setAddressName] = useState('');
   const [time, setTime] = useState('');
   const [locationHint, setLocationHint] = useState('');
+  const [hasApero, setHasApero] = useState(false);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -64,6 +65,16 @@ function WindowRegisterWindow({window_nr, calendar_id, onClose}) {
                 fullWidth
                 value={locationHint}
                 onChange={(e) => setLocationHint(e.target.value)}
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={hasApero}
+                    onChange={(e) => setHasApero(e.target.checked)}
+                    name="hasApero"
+                  />
+                }
+                label="Has Apero"
               />
               <Button type="submit" variant="contained" color="primary">
                 Host a Window

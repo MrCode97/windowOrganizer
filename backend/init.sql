@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS adventWindow (
     location_hint VARCHAR(255),
     window_nr INT NOT NULL,
     calendar_id INT NOT NULL, -- Corrected reference to adventCalendar
-    image_paths VARCHAR(255)[],
+    image_paths VARCHAR(255)[], -- @Patrick: what image_paths do we want to store here?
     pictures BYTEA[], -- BYTEA for storing image data (in PostgreSQL)
     comments VARCHAR(255)[],
     FOREIGN KEY (owner) REFERENCES users(id),
