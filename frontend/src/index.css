@@ -23,3 +23,17 @@ code {
 .sidebar {
   background-color: rgb(173, 216, 230);
 }
+
+.buttonContainerSlidingWindow {
+  display: flex;
+  justify-content:space-between;
+  padding: 10px;
+}
+
+.windowTileContainer {
+  background-color: rgb(173, 216, 230);
+}
+
+.registrationHeader {
+  padding: 10px;
+}

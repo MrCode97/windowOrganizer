@@ -37,11 +37,11 @@ const UploadImage = ({ calendarId, windowNr, onClose }) => {
     <div>
       <input type="file" onChange={handleFileChange} />
       <p>Share your memories with us! Upload your photos and images.</p>
-      <span>
-        <Button variant="contained" color="primary" onClick={handleSubmit}>
+      <span className='buttonContainerSlidingWindow'>
+        <Button variant="contained" sx={{backgroundColor: 'green'}} onClick={handleSubmit}>
           Submit Image
         </Button>
-        <Button variant="contained" color="primary" onClick={onClose}>
+        <Button variant="contained" sx={{backgroundColor: 'green'}} onClick={onClose}>
           Close
         </Button>
       </span>

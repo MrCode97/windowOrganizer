@@ -33,7 +33,7 @@ function UserRegistrationForm() {
 
   return (
     <form onSubmit={handleSubmit}>
-      <Typography variant="h4">User Registration</Typography>
+      <Typography className='registrationHeader' variant="h4">User Registration</Typography>
       <TextField
         label="Username"
         fullWidth
@@ -47,7 +47,7 @@ function UserRegistrationForm() {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <Button type="submit" variant="contained" color="primary">
+      <Button type="submit" variant="contained" sx={{backgroundColor: 'green', marginTop: '5px'}}>
         Register
       </Button>
     </form>

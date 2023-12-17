@@ -23,13 +23,13 @@ function SlidingWindow({window_nr, calendar_id, onClose}) {
     };
 
     return(
-        <Dialog open={true} onClose={onClose} sx={{ zIndex: 9999, position: 'absolute' }}>
-            <Tabs value={activeTab} onChange={handleChangeTab}>
+        <Dialog open={true} onClose={onClose} sx={{ zIndex: 9999, position: 'absolute'}}>
+            <Tabs value={activeTab} onChange={handleChangeTab} sx={{backgroundColor: 'rgb(173, 216, 230)'}}>
             <Tab label="Window information" />
             <Tab label="Gallery" />
             <Tab label="Image Upload" />
             </Tabs>
-            <DialogContent sx={{ width: '400px', height: '700px' }}>
+            <DialogContent sx={{ width: '400px', height: '700px', backgroundColor: 'rgb(173, 216, 230)' }}>
 
             {activeTab === 0 && <CommentSection 
               window_nr={window_nr}

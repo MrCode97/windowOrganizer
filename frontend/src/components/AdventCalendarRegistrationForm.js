@@ -31,7 +31,7 @@ function AdventCalendarRegistrationForm() {
 
   return (
     <form onSubmit={handleSubmit}>
-      <Typography variant="h4">Advent Calendar Registration</Typography>
+      <Typography className='registrationHeader' variant="h4">Advent Calendar Registration</Typography>
       <TextField
         label="Your username"
         fullWidth
@@ -44,7 +44,7 @@ function AdventCalendarRegistrationForm() {
         value={adventCalendarId}
         onChange={(e) => setAdventCalendarId(e.target.value)}
       />
-      <Button type="submit" variant="contained" color="primary">
+      <Button type="submit" variant="contained" sx={{backgroundColor: 'green', marginTop: '5px'}}>
         Register
       </Button>
     </form>
