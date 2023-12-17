@@ -1,11 +1,11 @@
 // OverviewMap.js
 import React, { useCallback, useState, useEffect  } from 'react';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
+import L from 'leaflet';
 import "leaflet/dist/leaflet.css";
-import DrawMap from './DrawMap';
 
 function OverviewMap({ calendar_id }) {
   const [calendarMapInfos, setCalendarMapInfos] = useState([]);
-  const [calendarMapCoordinates, setCalendarMapCoordinates] = useState([]);
 
   // Make an API request to fetch calendar infos based on calendar_id
   const fetchCalendarMapInfo = useCallback(async () => {
@@ -23,19 +23,44 @@ function OverviewMap({ calendar_id }) {
     fetchCalendarMapInfo();
   }, []);
 
-  // Extract coordinates to list from calendar map info
-  useEffect(() => {
-    setCalendarMapCoordinates(calendarMapInfos.map((window) => {
-      return window.address;
-    }))
-  }, [calendarMapInfos /* other dependencies if needed */]);
+  // Calculate average of all window coordinates to set center of map
+  const calculateCenter = () => {
+    let sumLatitude = 0;
+    let sumLongitude = 0;
+    const nr_markers = calendarMapInfos.length;
+    if (nr_markers > 0 ) {
+      for (const window of calendarMapInfos) {
+        sumLatitude += window.address.x;
+        sumLongitude += window.address.y;
+      }
+      return [sumLatitude / nr_markers, sumLongitude / nr_markers];
+    }
+    return [];
+  }
 
-  // Other variables
-  const icon_path = "https://www.pngall.com/wp-content/uploads/5/Christmas-Star-PNG-Picture-180x180.png"
-  
-  if (calendarMapCoordinates.length > 0) {
+  if (calendarMapInfos.length > 0) {
     return (
-      <DrawMap coordinatesList={calendarMapCoordinates} iconPath={icon_path} drawNumbers={true} />
+      <MapContainer
+        center={calculateCenter()}
+        zoom={13}
+        scrollWheelZoom={false}
+        style={{ height: "300px", width: "80%", margin: 20 }}
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        {calendarMapInfos.length == 0 ? <></> : calendarMapInfos.map((window, index) => (
+          <Marker key={index} position={[window.address.x, window.address.y]} icon={new L.icon({
+            iconUrl: require('../assets/staricons/' + window.window_nr + '.png'),
+            iconSize: [32, 32],})}
+          >
+            <Popup>
+              {<div>{window.window_nr}. Dezember, {window.time}<br />{window.address_name}</div>}
+            </Popup>
+          </Marker>
+        ))}
+      </MapContainer>
     )
   } else {
     return (
