@@ -1,8 +1,9 @@
 import React, { useCallback, useState, useEffect  } from 'react';
 import { Dialog, DialogContent, Tabs, Tab } from '@mui/material';
 import "leaflet/dist/leaflet.css";
-import Gallery from './Gallery'
-import CommentSection from './CommentSection';
+import { UploadImage } from './Upload'; 
+import { Gallery } from './Gallery';
+import CommentSection from './InfoSection';
 // Todo: - address from Backend in a senseful way
 // - test if adding comments works already
 // - fetch time from backend aswell
@@ -11,73 +12,6 @@ import CommentSection from './CommentSection';
 
 
 function SlidingWindow({window_nr, calendar_id, onClose}) {
-
-    // window number, location hint text, address, apero flag, start_time, end_time fetched from backend
-    let start_time = "18.00";
-    let end_time = "20.00";
-    let address = "Stockerstrasse 23, 8050 Zürich";
-    let windows_coordinates = [{x: 51.505, y: -0.09}];
-
-    const [newComment, setNewComment] = useState('');
-    const [comments, setComments] = useState([]);
-    const [location_hint, setHint] = useState("");
-    const [hasApero, setApero] = useState(false);
-
-
-    const handleCommentChange = (event) => {
-        setNewComment(event.target.value);
-    };
-
-    const fetchCommentsFromBackend = useCallback(async () => {
-        
-        // Need to ensure that calendar_ids and window_nrs are actually in our DB 
-        // to do so we need to create for every new calendar 24 advent Windows
-        // for now we use static variables instead of calendar_id and window_nr
-        // pabeer: we could also check whether an SQL returns empty in the backend and link to a window registration page in that case 
-
-
-        try {
-          // Make an API request to fetch comments based on window_nr and calendar_id
-          console.log("Calendar id is: " + calendar_id, " Window nr is: " + window_nr);
-          const response = await fetch(`http://localhost:7007/api/calendar/comments?calendar_id=${calendar_id}&window_nr=${window_nr}`);
-          const data = await response.json();
-          setComments(data.comments);
-          console.log("here we are");
-          setHint(data.location_hint);
-          console.log("Location hint is: " + location_hint);
-          setApero(data.hasApero);
-
-        } catch (error) {
-          console.error('Error fetching comments:', error);
-        }
-      }, [window_nr, calendar_id, setComments, setApero, location_hint]);
-
-    useEffect(() => {
-        // Fetch comments from the backend when the component mounts
-        fetchCommentsFromBackend();
-      }, [fetchCommentsFromBackend, /* other dependencies if needed */]);
-      
-
-    const handleAddComment = async () => {
-        try {
-        // Make an API request to add a comment
-        await fetch('/api/addComment', {
-            method: 'POST',
-            headers: {
-            'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ window_nr, comment: newComment }),
-        });
-
-        // Refetch comments from the backend to update the UI with the new comment
-        fetchCommentsFromBackend();
-
-        // Clear the input field after adding the comment
-        setNewComment('');
-        } catch (error) {
-        console.error('Error adding comment:', error);
-        }
-    };
 
     // how to get dynamic icon with number inside?
     const icon_path = "https://www.pngall.com/wp-content/uploads/5/Christmas-Star-PNG-Picture-180x180.png"
@@ -92,16 +26,26 @@ function SlidingWindow({window_nr, calendar_id, onClose}) {
         <Dialog open={true} onClose={onClose} sx={{ zIndex: 9999, position: 'absolute' }}>
             <Tabs value={activeTab} onChange={handleChangeTab}>
             <Tab label="Window information" />
-            <Tab label="Image gallery" />
+            <Tab label="Gallery" />
+            <Tab label="Image Upload" />
             </Tabs>
             <DialogContent sx={{ width: '400px', height: '700px' }}>
 
-            {activeTab === 0 && <CommentSection window_nr={window_nr}
-            windows_coordinates={windows_coordinates}
-            onClose={onClose}
-            calendar_id={calendar_id}
+            {activeTab === 0 && <CommentSection 
+              window_nr={window_nr}
+              onClose={onClose}
+              calendar_id={calendar_id}
             />}
-            {activeTab === 1 && <Gallery onClose={onClose}/>}
+            {activeTab === 1 && <Gallery 
+              calendarId={calendar_id}
+              windowNr={window_nr}
+              onClose={onClose}
+            />}
+            {activeTab === 2 && <UploadImage 
+              calendarId={calendar_id}
+              windowNr={window_nr}
+              onClose={onClose}
+            />}
             </DialogContent>
         </Dialog>
       );

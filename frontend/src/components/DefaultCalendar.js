@@ -22,7 +22,7 @@ function DefaultCalendar({ name, details }) {
       <OverviewMap calendar_id={calendar_id} />
       <Grid container spacing={2} justifyContent="center">
         {window_nrs.map((window_nr) =>
-          <Grid item>
+          <Grid item key={window_nr}>
             <WindowTile window_nr={window_nr} calendar_id={calendar_id} />
           </Grid>
         )}

@@ -2,17 +2,22 @@
 import React, { useCallback, useState, useEffect  } from 'react';
 import { Card, CardMedia, CardActionArea, Typography, Paper} from '@mui/material';
 import SlidingWindow from './SlidingWindow';
+import WindowRegisterWindow from './WindowRegisterWindow';
 
 function WindowTile({ window_nr, calendar_id }) {
   // variables to get from SQL request based on window number and calendar id
   const [isFree, setIsFree] = useState(false);
   const [imagePath, setImagePath] = useState("https://clipground.com/images/christmas-door-clipart-1.jpg");
   const [windowCoordinates, setWindowCoordinates] = useState([{x: 51.505, y: -0.09}]);
+
+  // State variable to track if SlidingWindow is open or closed
+  const [isSlidingWindowOpen, setSlidingWindowOpen] = React.useState(false);
+  const [isWindowRegisterWindowOpen, setWindowRegisterWindowOpen] = React.useState(false);
   
   // Make an API request to fetch window infos based on window_nr and calendar_id
   const fetchWindowThumbnail = useCallback(async () => {
     try {
-      console.log("Calendar id is: " + calendar_id, " Window nr is: " + window_nr);
+      //console.log("Calendar id is: " + calendar_id, " Window nr is: " + window_nr);
       const response = await fetch(`http://localhost:7007/api/windowThumbnail?calendar_id=${calendar_id}&window_nr=${window_nr}`);
       const data = await response.json();
       setIsFree(data.isFree);
@@ -29,13 +34,14 @@ function WindowTile({ window_nr, calendar_id }) {
     fetchWindowThumbnail();
   }, [fetchWindowThumbnail, /* other dependencies if needed */]);
 
-  // State variable to track if SlidingWindow is open or closed
-  const [isSlidingWindowOpen, setSlidingWindowOpen] = React.useState(false);
-
   // Event handler for clicking on the CardMedia
   const handleCardMediaClick = () => {
     // Open or close the SlidingWindow when the CardMedia is clicked
-    setSlidingWindowOpen(!isSlidingWindowOpen);
+    if (isFree) {
+      setWindowRegisterWindowOpen(!isWindowRegisterWindowOpen);
+    } else {
+      setSlidingWindowOpen(!isSlidingWindowOpen);
+    }
   };
 
   // other variables
@@ -45,67 +51,68 @@ function WindowTile({ window_nr, calendar_id }) {
   const today_margin = is_today ? '0px' : '5px';
   const cardSize = 150;
 
-  return (<div className="window-tile">
-    <Card sx={{
-      width: cardSize,
-      height: cardSize,
-      border: today_border,
-      borderColor: 'gold',
-      margin: today_margin,
-    }}>
-      <CardActionArea sx={{
-        width: '100%',
-        height: '100%',
-      }} 
-      onClick={handleCardMediaClick}
-      >
-        <CardMedia
-          component="img"
-          image={imagePath}
-          alt="advent window"
-          sx={{ width: '100%', height: '100%', objectFit: 'cover'}}
-        />
-        <Paper
-          variant="outlined"
-          sx={{
-            position: 'absolute',
-            bottom: 5,
-            left: 5,
-            paddingLeft: 1,
-            paddingRight: 1,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            visibility: is_free_visiblity
-          }}
+  return (
+    <div className="window-tile">
+      <Card sx={{
+        width: cardSize,
+        height: cardSize,
+        border: today_border,
+        borderColor: 'gold',
+        margin: today_margin,
+      }}>
+        <CardActionArea sx={{
+          width: '100%',
+          height: '100%',
+        }} 
+        onClick={handleCardMediaClick}
         >
-          <Typography
-            variant="body2"
-            color="text.secondary"
+          <CardMedia
+            component="img"
+            image={imagePath}
+            alt="advent window"
+            sx={{ width: '100%', height: '100%', objectFit: 'cover'}}
+          />
+          <Paper
+            variant="outlined"
+            sx={{
+              position: 'absolute',
+              bottom: 5,
+              left: 5,
+              paddingLeft: 1,
+              paddingRight: 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              visibility: is_free_visiblity
+            }}
           >
-            Noch frei
-          </Typography>
-        </Paper>
-        <Paper
-          variant="outlined"
-          sx={{
-            position: 'absolute',
-            bottom: 5,
-            right: 5,
-            width: '32%',
-            height: '32%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}
-        >
-          <Typography variant="h4">{window_nr}</Typography>
-        </Paper>
-      </CardActionArea>
-    </Card>  
+            <Typography
+              variant="body2"
+              color="text.secondary"
+            >
+              Noch frei
+            </Typography>
+          </Paper>
+          <Paper
+            variant="outlined"
+            sx={{
+              position: 'absolute',
+              bottom: 5,
+              right: 5,
+              width: '32%',
+              height: '32%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            <Typography variant="h4">{window_nr}</Typography>
+          </Paper>
+        </CardActionArea>
+      </Card>  
 
-    {/* Conditional rendering of SlidingWindow (short-circuit) */}
-    {isSlidingWindowOpen && (
+      {/* Conditional rendering of SlidingWindow or WindowRegisterWindow (short-circuit) */}
+      {isSlidingWindowOpen && (
         <SlidingWindow
           // Pass any necessary props to SlidingWindow component
           window_nr={window_nr}
@@ -113,7 +120,16 @@ function WindowTile({ window_nr, calendar_id }) {
           onClose={() => setSlidingWindowOpen(false)}
         />
       )}
-  </div>);
+      {isWindowRegisterWindowOpen && (
+        <WindowRegisterWindow
+          // Pass any necessary props to WindowRegisterWindow component
+          window_nr={window_nr}
+          calendar_id={calendar_id}
+          onClose={() => setWindowRegisterWindowOpen(false)}
+        />
+      )}
+    </div>
+  );
 
 
 }

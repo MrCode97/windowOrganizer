@@ -1,6 +1,6 @@
 // GeocodeAddress.js
 
-async function translate(address) {
+export async function translate(address) {
   // Encode the address string to be used in the URL
   const encoded_address = encodeURIComponent(address);
 
@@ -25,19 +25,12 @@ async function translate(address) {
 
       // Return the latitude and longitude
       console.log("[Latitude, Longitude]:", [lat, lon]);
+      return [lat, lon];
     } else {
       console.log("No results found for the given address.");
     }
   } catch (error) {
     console.error("Error:", error.message);
   }
+  return [];
 }
-
-function GeocodeAddress(address) {
-  translate(address);
-  return (
-    <></>
-  );
-}
-
-export default GeocodeAddress;

@@ -4,10 +4,13 @@ const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const jwt_secret = "jwt_secret_sign_key"; // TODO read from ENV
+const multer = require('multer');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+const upload = multer();
 
 const pool = new Pool({
   user: 'fwe',
@@ -269,6 +272,143 @@ app.post('/api/calendars/addComment', async (req, res) => {
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });
+
+// New route to register window hosting
+app.post('/api/registerWindowHosting', async (req, res) => {
+  const { calendar_id, window_nr, username, addressName, coords, time, locationHint, hasApero  } = req.body;
+
+  // Check if the user exists
+  try {
+    const userExists = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
+
+    if (userExists.rows.length === 0) {
+      console.log(`User: ${username} does not exist`);
+      return res.status(400).json({ error: 'User does not exist.' });
+    }
+  } catch (error) {
+      console.error('Error checking user existence', error);
+      return res.status(500).json({ error: 'Internal Server Error' });
+  }
+
+  // Check if the window has already been registered in the meantime
+  try {
+    const existingWindow = await pool.query(
+      'SELECT * FROM adventWindow WHERE window_nr = $2 AND calendar_id = $1',
+      [calendar_id, window_nr]
+    );
+
+    if (existingWindow.rows.length > 0) {
+      console.log(`Advent calendar: ${calendar_id} already registered`);
+       return res.status(400).json({ error: 'Advent calendar already registered.' });
+    }
+  } catch (error) {
+      console.error('Error checking existing calendar', error);
+      return res.status(500).json({ error: 'Internal Server Error' });
+  }
+
+  // Register the window hosting
+  try {
+    // get user id from username
+    const userId = await pool.query(
+      'SELECT id FROM users WHERE username = $1',
+      [username]
+    );
+    console.log("Owner id:", userId.rows[0].id);
+    console.log("Calendar id:", calendar_id);
+    console.log("Window nr:", window_nr);
+    console.log(coords);
+    //const hasApero = false;
+    // register window hosting
+    await pool.query(
+      'INSERT INTO adventWindow (id, owner, address_name, address, apero, time, location_hint, window_nr, calendar_id, image_paths, pictures, comments) VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)',
+      [userId.rows[0].id, addressName, `(${coords[0]},${coords[1]})`, hasApero, time, locationHint, window_nr, calendar_id, [], [], []]
+    );
+    console.log(`Window hosting for calendar ${calendar_id}, window ${window_nr} registered successfully!`);
+    res.status(200).json({ message: 'Window hosting registered successfully!' });
+  } catch (error) {
+    console.error('Error registering window hosting', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// New route to getWindowData
+app.get('/api/getWindowData', async (req, res) => {
+  const { calendar_id, window_nr } = req.query;
+  try {
+    // Fetch window info based on calendar_id and window_nr
+    const result = await pool.query(
+      'SELECT * FROM adventWindow WHERE window_nr = $2 AND calendar_id = $1',
+      [calendar_id, window_nr]
+    );
+    if (result.rows.length > 0) {
+      // The query returned some rows
+      const windowData = result.rows[0];
+      res.json({ success: true, windowData: windowData});
+    } else {
+      // The query did not return any rows
+      res.json({ success: true, windowData: {} });
+    }
+  } catch (error) {
+    console.error('Error fetching window infos:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
+
+// TODO: maybe do some preprocessing on the image data before storing it in the database or set a limit
+app.post('/api/upload-image/:calendar_id/:window_nr', upload.single('image'), async (req, res) => {
+  try {
+    const { calendar_id, window_nr } = req.params;
+    const { buffer } = req.file; // Image data
+
+    const updateQuery = `
+      UPDATE adventWindow
+      SET pictures = array_append(pictures, $2)
+      WHERE calendar_id = $1 AND window_nr = $3
+    `;
+
+    await new Promise((resolve, reject) => {
+      pool.query(updateQuery, [calendar_id, buffer, window_nr], (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result.rowCount);
+        }
+      });
+    });
+
+    res.status(200).json({ success: true, message: 'Image submitted successfully.' });
+  } catch (error) {
+    console.error('Error uploading image:', error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+});
+
+// TODO: think about only returning a number of pictures per request
+app.get('/api/get-all-pictures/:calendar_id/:window_nr', async (req, res) => {
+  try {
+    const { calendar_id, window_nr } = req.params;
+
+    // Retrieve all pictures from the database for the specified calendar and window
+    const selectQuery = `
+      SELECT pictures
+      FROM adventWindow
+      WHERE calendar_id = $1 AND window_nr = $2
+    `;
+
+    const result = await pool.query(selectQuery, [calendar_id, window_nr]);
+
+    if (result.rows.length > 0) {
+      const pictures = result.rows[0].pictures || [];
+      res.status(200).json({ success: true, pictures });
+    } else {
+      res.status(404).json({ success: false, message: 'No pictures found for the specified calendar and window.' });
+    }
+  } catch (error) {
+    console.error('Error fetching pictures:', error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+});
+
 
 app.listen(7007, () => {
   console.log('Server listening on port 7007');
