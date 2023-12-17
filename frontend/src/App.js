@@ -25,7 +25,6 @@ const Root = styled('div')({
 
 const StyledAppBar = styled(AppBar)({
   position: 'fixed',
-  width: `calc(100% - ${drawerWidth}px)`,
   height: '64px',
 });
 
@@ -33,7 +32,7 @@ const MainBox = styled(Box)({
   flexGrow: 1,
   p: 3,
   marginTop: '64px',
-  marginLeft: drawerWidth,
+  marginLeft: 0,
   mt: '64px',
 });
 
@@ -64,19 +63,19 @@ function App() {
     <Router>
       <Root>
         <StyledAppBar>
-          <Toolbar>
+          <Toolbar className='toolbar'>
             <Typography variant="h6" noWrap>
               Welcome to the Advent Calendar
             </Typography>
-            {user && (
-                <Typography variant="h6" noWrap style={{ marginLeft: 'auto' }}>
-                  Welcome {user}
-                </Typography>
-              )}
               {user && (
-                <Button color="inherit" onClick={logout}>
-                  Logout
-                </Button>
+                  <Typography variant="h6" noWrap style={{ marginLeft: 'auto' }}>
+                    Hello {user}
+                  </Typography>
+                )}
+                {user && (
+                  <Button color="inherit" onClick={logout}>
+                    Logout
+                  </Button>
               )}
           </Toolbar>
         </StyledAppBar>
@@ -87,10 +86,12 @@ function App() {
             '& .MuiDrawer-paper': {
               width: drawerWidth,
               top: '64px',
+              backgroundColor: 'rgb(173, 216, 230)'
             },
           }}
           variant="permanent"
           anchor="left"
+          className='sidebar'
         >
           <List>
             <ListItem button onClick={() => setShowRegistration(true)}>
@@ -119,8 +120,8 @@ function App() {
             ))}
           </List>
         </Drawer>
-        <MainBox component="main">
-          <Container>
+        <MainBox component="main" className='mainBox'>
+          <Container className='mainContainer' >
             {showRegistration ? (
               <Registration setCalendars={setCalendars} />
             ) : (

@@ -6,7 +6,7 @@ import SlidingWindow from './SlidingWindow';
 function WindowTile({ window_nr, calendar_id }) {
   // variables to get from SQL request based on window number and calendar id
   const [isFree, setIsFree] = useState(false);
-  const [imagePath, setImagePath] = useState("https://clipground.com/images/christmas-door-clipart-1.jpg");
+  const [imagePath, setImagePath] = useState('/Window.png');
   const [windowCoordinates, setWindowCoordinates] = useState([{x: 51.505, y: -0.09}]);
   
   // Make an API request to fetch window infos based on window_nr and calendar_id

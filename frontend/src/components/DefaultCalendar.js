@@ -18,7 +18,7 @@ function DefaultCalendar({ name, details }) {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-      <Typography variant="h1" align="center">{name}</Typography>
+      <Typography variant="h2" align="center">{name}</Typography>
       <OverviewMap calendar_id={calendar_id} />
       <Grid container spacing={2} justifyContent="center">
         {window_nrs.map((window_nr) =>
