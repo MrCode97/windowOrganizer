@@ -4,10 +4,13 @@ const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const jwt_secret = "jwt_secret_sign_key"; // TODO read from ENV
+const multer = require('multer');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+const upload = multer();
 
 const pool = new Pool({
   user: 'fwe',
@@ -348,6 +351,61 @@ app.get('/api/getWindowData', async (req, res) => {
   } catch (error) {
     console.error('Error fetching window infos:', error);
     res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
+
+// TODO: maybe do some preprocessing on the image data before storing it in the database or set a limit
+app.post('/api/upload-image/:calendar_id/:window_nr', upload.single('image'), async (req, res) => {
+  try {
+    const { calendar_id, window_nr } = req.params;
+    const { buffer } = req.file; // Image data
+
+    const updateQuery = `
+      UPDATE adventWindow
+      SET pictures = array_append(pictures, $2)
+      WHERE calendar_id = $1 AND window_nr = $3
+    `;
+
+    await new Promise((resolve, reject) => {
+      pool.query(updateQuery, [calendar_id, buffer, window_nr], (err, result) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(result.rowCount);
+        }
+      });
+    });
+
+    res.status(200).json({ success: true, message: 'Image submitted successfully.' });
+  } catch (error) {
+    console.error('Error uploading image:', error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+});
+
+// TODO: think about only returning a number of pictures per request
+app.get('/api/get-all-pictures/:calendar_id/:window_nr', async (req, res) => {
+  try {
+    const { calendar_id, window_nr } = req.params;
+
+    // Retrieve all pictures from the database for the specified calendar and window
+    const selectQuery = `
+      SELECT pictures
+      FROM adventWindow
+      WHERE calendar_id = $1 AND window_nr = $2
+    `;
+
+    const result = await pool.query(selectQuery, [calendar_id, window_nr]);
+
+    if (result.rows.length > 0) {
+      const pictures = result.rows[0].pictures || [];
+      res.status(200).json({ success: true, pictures });
+    } else {
+      res.status(404).json({ success: false, message: 'No pictures found for the specified calendar and window.' });
+    }
+  } catch (error) {
+    console.error('Error fetching pictures:', error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 });
 
