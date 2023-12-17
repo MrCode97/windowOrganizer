@@ -203,25 +203,32 @@ app.get('/api/calendar/comments', async (req, res) => {
   }
 });
 
-app.get('/api/windowThumbnail', async (req, res) => {
-  const { calendar_id, window_nr } = req.query;
+app.get('/api/get-first-picture/:calendar_id/:window_nr', async (req, res) => {
   try {
-    // Fetch window info based on calendar_id and window_nr
-    const result = await pool.query(
-      'SELECT * FROM adventWindow WHERE window_nr = $2 AND calendar_id = $1',
-      [calendar_id, window_nr]
-    );
+    const { calendar_id, window_nr } = req.params;
+
+    // Retrieve all pictures from the database for the specified calendar and window
+    const selectQuery = `
+      SELECT *
+      FROM adventWindow
+      WHERE calendar_id = $1 AND window_nr = $2
+    `;
+
+    const result = await pool.query(selectQuery, [calendar_id, window_nr]);
+
     if (result.rows.length > 0) {
-      // The query returned some rows
-      const imagePaths = result.rows[0].image_paths.length > 0 ? result.rows[0].image_paths : [""];
-      res.json({ success: true, isFree: false, imagePath: imagePaths[0]});
+      if (result.rows[0].pictures.length > 0) {
+        const picture = result.rows[0].pictures[0];
+        res.status(200).json({ success: true, isFree: false, picture: [picture] });
+      } else {
+        res.status(200).json({ success: true, isFree: false, picture: [] });
+      };
     } else {
-      // The query did not return any rows
-      res.json({ success: true, isFree: true, imagePath: "" });
+      res.status(200).json({ success: true, isFree: true, picture: [] });
     }
   } catch (error) {
-    console.error('Error fetching window infos:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
+    console.error('Error fetching picture:', error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 });
 

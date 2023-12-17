@@ -7,32 +7,48 @@ import WindowRegisterWindow from './WindowRegisterWindow';
 function WindowTile({ window_nr, calendar_id }) {
   // variables to get from SQL request based on window number and calendar id
   const [isFree, setIsFree] = useState(false);
-  const [imagePath, setImagePath] = useState('/Window.png');
-  const [windowCoordinates, setWindowCoordinates] = useState([{x: 51.505, y: -0.09}]);
+  const [hasImage, setHasImage] = useState(false);
+  const [image, setImage] = useState('/Window.png');
 
   // State variable to track if SlidingWindow is open or closed
   const [isSlidingWindowOpen, setSlidingWindowOpen] = React.useState(false);
   const [isWindowRegisterWindowOpen, setWindowRegisterWindowOpen] = React.useState(false);
   
-  // Make an API request to fetch window infos based on window_nr and calendar_id
-  const fetchWindowThumbnail = useCallback(async () => {
-    try {
-      //console.log("Calendar id is: " + calendar_id, " Window nr is: " + window_nr);
-      const response = await fetch(`http://localhost:7007/api/windowThumbnail?calendar_id=${calendar_id}&window_nr=${window_nr}`);
-      const data = await response.json();
-      setIsFree(data.isFree);
-      if (!(data.imagePath === "")) {
-        setImagePath(data.imagePath);
-      }
-    } catch (error) {
-      console.error('Error fetching window:', error);
-    }
-  }, [calendar_id, window_nr]);
-
-  // Fetch window from the backend when the component mounts
   useEffect(() => {
-    fetchWindowThumbnail();
-  }, [fetchWindowThumbnail, /* other dependencies if needed */]);
+    console.log('Fetching thumbnail image for window', window_nr);
+    const fetchImage = async () => {
+      try {
+        const response = await fetch(`http://localhost:7007/api/get-first-picture/${calendar_id}/${window_nr}`);
+        const data = await response.json();
+
+        if (data.success) {
+          if (data.picture.length > 0) {
+            const arrayBuffer = Uint8Array.from(data.picture[0].data).buffer;
+            const blob = new Blob([arrayBuffer], { type: 'image/png' });
+            const reader = new FileReader();
+            const base64Image = new Promise((resolve) => {
+              reader.onloadend = () => {
+                resolve(reader.result);
+              };
+              reader.readAsDataURL(blob);
+            });
+            Promise.all([base64Image]).then(image => {
+              setImage(image[0]);
+            });
+            // setHasImage(true);
+          } else if (data.isFree) {
+          setIsFree(true);
+          };
+        } else {
+          console.error('Failed to fetch image:', data.message);
+        }
+      } catch (error) {
+        console.error('Error fetching image:', error);
+      }
+    };
+
+    fetchImage();
+  }, [calendar_id, window_nr]);
 
   // Event handler for clicking on the CardMedia
   const handleCardMediaClick = () => {
@@ -68,7 +84,7 @@ function WindowTile({ window_nr, calendar_id }) {
         >
           <CardMedia
             component="img"
-            image={imagePath}
+            image={image}
             alt="advent window"
             sx={{ width: '100%', height: '100%', objectFit: 'cover'}}
           />
