@@ -12,11 +12,11 @@ function DefaultCalendar({ id, name }) {
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
       <Typography variant="h2" align="center">{name}</Typography>
-      <OverviewMap calendar_id={id} />
+      <OverviewMap key={id} calendar_id={id} />
       <Grid container spacing={2} justifyContent="center">
         {window_nrs.map((window_nr) =>
           <Grid item key={window_nr}>
-            <WindowTile window_nr={window_nr} calendar_id={id} />
+            <WindowTile key={id+'_'+window_nr} window_nr={window_nr} calendar_id={id} />
           </Grid>
         )}
       </Grid>
