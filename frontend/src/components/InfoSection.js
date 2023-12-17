@@ -1,4 +1,4 @@
-// CommentSection.js
+// InfoSection.js
 import React, { useCallback, useState, useEffect  } from 'react';
 import Typography from '@mui/material/Typography';
 import List from '@mui/material/List';
@@ -8,20 +8,36 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import DrawMap from './DrawMap'; // Make sure to replace with the correct path
 
-const CommentSection = ({
+const InfoSection = ({
   calendar_id,
   window_nr,
-  windows_coordinates,
   onClose
 }) => {
-    let start_time = "18.00";
-    let end_time = "20.00";
-    let address = "Stockerstrasse 23, 8050 Zürich";
+  
+  const [location_hint, setHint] = useState("undefined");
+  const [hasApero, setApero] = useState(false);
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState('');
+  const [startTime, setStartTime] = useState("18.00");
+  const [addressName, setAddressName] = useState("Stockerstrasse 23, 8050 Zürich");
+  const [coordinates, setCoordinates] = useState([]);
 
-    const [newComment, setNewComment] = useState('');
-    const [comments, setComments] = useState([]);
-    const [location_hint, setHint] = useState("");
-    const [hasApero, setApero] = useState(false);
+  const fetchData = async () => {
+    const response = await fetch(`http://localhost:7007/api/getWindowData?calendar_id=${calendar_id}&window_nr=${window_nr}`);
+    const { windowData } = await response.json();
+    const {owner, address_name, address, apero, time, location_hint, image_paths, pictures, comments} = windowData;
+    setComments(comments);
+    setHint(location_hint);
+    setApero(apero);
+    setStartTime(time);
+    setAddressName(address_name);
+    setCoordinates([address]);
+  };
+
+  useEffect(() => {
+      fetchData();
+    }, []);
+
 
 
     const handleCommentChange = (event) => {
@@ -38,13 +54,13 @@ const CommentSection = ({
 
         try {
           // Make an API request to fetch comments based on window_nr and calendar_id
-          console.log("Calendar id is: " + calendar_id, " Window nr is: " + window_nr);
+          //console.log("Calendar id is: " + calendar_id, " Window nr is: " + window_nr);
           const response = await fetch(`http://localhost:7007/api/calendar/comments?calendar_id=${calendar_id}&window_nr=${window_nr}`);
           const data = await response.json();
           setComments(data.comments);
-          console.log("here we are");
+          //console.log("here we are");
           setHint(data.location_hint);
-          console.log("Location hint is: " + location_hint);
+          //console.log("Location hint is: " + location_hint);
           setApero(data.hasApero);
 
         } catch (error) {
@@ -79,21 +95,15 @@ const CommentSection = ({
         }
     };
 
-    // how to get dynamic icon with number inside?
-    const icon_path = "https://www.pngall.com/wp-content/uploads/5/Christmas-Star-PNG-Picture-180x180.png"
-
-
-
-
   return (
     <>
       <Typography variant="h4">Window #{window_nr}</Typography>
-      <Typography variant="body1">{address}</Typography>
+      <Typography variant="body1">{addressName}</Typography>
       <Typography variant="body1" style={{ color: 'blue' }}>
-        {start_time + ' - ' + end_time}
+        {startTime}
       </Typography>
 
-      <DrawMap center={windows_coordinates[0]} coordinatesList={windows_coordinates} iconPath={icon_path} drawNumbers={false} />
+      <DrawMap coordinates={coordinates} />
 
       <Typography variant="body1">Apéro: {hasApero ? 'Ja' : 'Nein'}</Typography>
       <Typography variant="body1">Location Hint: {location_hint}</Typography>
@@ -126,4 +136,4 @@ const CommentSection = ({
   );
 };
 
-export default CommentSection;
+export default InfoSection;

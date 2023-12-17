@@ -16,6 +16,7 @@ import Registration from './components/Registration';
 import Calendar from './components/Calendar';
 import DefaultCalendar from './components/DefaultCalendar';
 import { useAuth } from './AuthProvider';
+import WelcomePage from './components/WelcomePage';
 
 const drawerWidth = 240;
 
@@ -43,7 +44,7 @@ function App() {
   const [searchTerm, setSearchTerm] = useState('');
   const [showRegistration, setShowRegistration] = useState(false);
 
-  console.log('App', user, token);
+  //console.log('App', user, token);
   useEffect(() => {
     // Fetch calendar data when the component mounts
     const fetchCalendars = async () => {
@@ -58,6 +59,12 @@ function App() {
 
     fetchCalendars();
   }, []);
+
+  // For debugging only:
+  useEffect(() => {
+    console.log(calendars);
+    console.log('selectedCalendar', selectedCalendar);
+  }, [calendars, selectedCalendar]);
 
   return (
     <Router>
@@ -123,16 +130,17 @@ function App() {
         <MainBox component="main" className='mainBox'>
           <Container className='mainContainer' >
             {showRegistration ? (
-              <Registration setCalendars={setCalendars} />
+              <Registration />
             ) : (
-              <DefaultCalendar 
-                name={selectedCalendar ? selectedCalendar.name : 'Default Calendar'}
-                details={selectedCalendar ? selectedCalendar.details : 'This is the default calendar page.'}
-              />
+              (calendars.length !== 0 && selectedCalendar) ? (
+                <DefaultCalendar 
+                  name={selectedCalendar.name}
+                  details={selectedCalendar.details}
+                />
+              ) : (
+                <WelcomePage />
+              )
             )}
-            <Routes>
-              <Route path="/calendar/:id" element={<Calendar />} />
-            </Routes>
           </Container>
         </MainBox>
       </Root>
