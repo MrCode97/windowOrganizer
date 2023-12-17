@@ -7,7 +7,6 @@ import WindowRegisterWindow from './WindowRegisterWindow';
 function WindowTile({ window_nr, calendar_id }) {
   // variables to get from SQL request based on window number and calendar id
   const [isFree, setIsFree] = useState(false);
-  const [hasImage, setHasImage] = useState(false);
   const [image, setImage] = useState('/Window.png');
 
   // State variable to track if SlidingWindow is open or closed
