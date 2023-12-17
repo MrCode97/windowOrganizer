@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Typography, TextField, Button } from '@mui/material';
 
-function UserRegistrationForm() {
+function UserRegistrationForm({ reRender }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
@@ -20,6 +20,7 @@ function UserRegistrationForm() {
       if (response.ok) {
         console.log('User registered successfully!');
         // You can add additional logic here, such as redirecting the user or displaying a success message
+        reRender(true);
       } else {
         console.error('Failed to register user');
         console.log('response: ', response);

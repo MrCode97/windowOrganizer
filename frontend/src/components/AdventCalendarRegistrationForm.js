@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Typography, TextField, Button } from '@mui/material';
 
-function AdventCalendarRegistrationForm() {
+function AdventCalendarRegistrationForm( { reRender } ) {
   const [adventCalendarId, setAdventCalendarId] = useState('');
   const [username, setUsername] = useState('');
 
@@ -21,6 +21,7 @@ function AdventCalendarRegistrationForm() {
 
       if (response.ok) {
         console.log('Advent calendar registered successfully!');
+        reRender(true);
       } else {
         console.error('Failed to register advent calendar');
       }

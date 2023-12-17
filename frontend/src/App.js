@@ -50,6 +50,7 @@ function App() {
   const [showLogin, setShowLogin] = useState(false);
   const [showRegistration, setShowRegistration] = useState(false);
   const [showRegistrationCalendar, setShowRegistrationCalendar] = useState(false);
+  const [reRender, setReRender] = useState(false);
 
   //console.log('App', user, token);
   useEffect(() => {
@@ -65,12 +66,14 @@ function App() {
     };
 
     fetchCalendars();
-  }, []);
+    setReRender(false);
+  }, [reRender]);
 
   // For debugging only:
   useEffect(() => {
     console.log(calendars);
     console.log('selectedCalendar', selectedCalendar);
+    console.log("Render", reRender)
   }, [calendars, selectedCalendar]);
 
   return (
@@ -165,11 +168,11 @@ function App() {
         <MainBox component="main">
           <Container>
             {showLogin ? (
-              <Login />
+              <Login reRender={setReRender}/>
             ) : showRegistrationCalendar ? (
-              <AdventCalendarRegistrationForm />
+              <AdventCalendarRegistrationForm reRender={setReRender}/>
             ) : showRegistration ? (
-              <UserRegistrationForm />
+              <UserRegistrationForm reRender={setReRender}/>
             ) : 
             (
               (calendars.length !== 0 && selectedCalendar) ? (

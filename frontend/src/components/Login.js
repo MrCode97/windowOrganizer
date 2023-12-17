@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Typography, TextField, Button } from '@mui/material';
 import { useAuth } from '../AuthProvider';
 
-function Login() {
+function Login( { reRender } ) {
     const { login } = useAuth();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -25,6 +25,7 @@ function Login() {
             const { token } = await response.json();
 
             login({ username }, token);
+            reRender(true);
         } else {
             console.error('Login failed');
             // Handle failed login, e.g., display an error message to the user
