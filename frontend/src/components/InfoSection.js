@@ -95,12 +95,6 @@ const InfoSection = ({
         }
     };
 
-    // how to get dynamic icon with number inside?
-    const icon_path = "https://www.pngall.com/wp-content/uploads/5/Christmas-Star-PNG-Picture-180x180.png"
-
-
-
-
   return (
     <>
       <Typography variant="h4">Window #{window_nr}</Typography>
@@ -109,7 +103,7 @@ const InfoSection = ({
         {startTime}
       </Typography>
 
-      <DrawMap center={coordinates[0]} coordinatesList={coordinates} iconPath={icon_path} drawNumbers={false} />
+      <DrawMap coordinates={coordinates} />
 
       <Typography variant="body1">Apéro: {hasApero ? 'Ja' : 'Nein'}</Typography>
       <Typography variant="body1">Location Hint: {location_hint}</Typography>
