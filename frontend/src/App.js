@@ -133,9 +133,9 @@ function App() {
               <Registration />
             ) : (
               (calendars.length !== 0 && selectedCalendar) ? (
-                <DefaultCalendar 
+                <DefaultCalendar
+                  id={selectedCalendar.id}
                   name={selectedCalendar.name}
-                  details={selectedCalendar.details}
                 />
               ) : (
                 <WelcomePage />
