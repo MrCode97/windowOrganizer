@@ -10,7 +10,7 @@
 
 | Task                                                      | Description                                             | Responsible   | Done  |
 |-----------------------------------------------------------|---------------------------------------------------------|---------------|-------|
-| Nice theming, layout, banner, icons, stylized components   | - Rounded edges, proper spacing between titles, fields, buttons, etc. |         | - [ ] |
+| Nice theming, layout, banner, icons, stylized components   | - Rounded edges, proper spacing between titles, fields, buttons, etc. | Leon     | - [ ] |
 
 ## Functionality:
 
