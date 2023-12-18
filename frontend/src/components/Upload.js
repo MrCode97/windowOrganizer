@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import Button from '@mui/material/Button';
+import { Button, Snackbar} from '@mui/material';
 
 const UploadImage = ({ calendarId, windowNr, onClose }) => {
   const [selectedFile, setSelectedFile] = useState(null);
+  const [message, setMessage] = useState('');
+  const [messageOpen, setMessageOpen] = useState(false);
 
+  // API request
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     setSelectedFile(file);
@@ -24,14 +27,29 @@ const UploadImage = ({ calendarId, windowNr, onClose }) => {
 
         if (data.success) {
           console.log('Image submitted successfully');
+          setMessage('Image uploaded successfully!');
+          setMessageOpen(true);
         } else {
           console.error('Image submission failed:', data.message);
+          setMessage('Image upload failed!');
+          setMessageOpen(true);
         }
       } catch (error) {
         console.error('Error submitting image:', error);
+        setMessage('Image upload failed!');
+        setMessageOpen(true);
       }
     }
   };
+
+  // Message display
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setMessageOpen(false);
+  };
+  
 
   return (
     <div>
@@ -45,6 +63,7 @@ const UploadImage = ({ calendarId, windowNr, onClose }) => {
           Close
         </Button>
       </span>
+      <Snackbar open={messageOpen} autoHideDuration={3000} onClose={handleClose} message={message} />
     </div>
   );
 };
