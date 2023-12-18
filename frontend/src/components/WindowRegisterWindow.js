@@ -52,7 +52,7 @@ function WindowRegisterWindow({window_nr, calendar_id, onClose}) {
   };
 
   return(
-      <Dialog open={true} onClose={onClose} sx={{ zIndex: 9999, position: 'absolute' }}>
+      <Dialog open={true} onClose={onClose} sx={{ zIndex: 9999, position: 'sticky'}}>
           <DialogContent sx={{ width: '400px', height: '700px', backgroundColor: 'rgb(173, 216, 230)'}}>
             <form onSubmit={handleSubmit}>
               <Typography variant="h4">Window Hosting Registration</Typography>
