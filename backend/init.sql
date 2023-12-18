@@ -53,14 +53,14 @@ INSERT INTO adventCalendar (name)
 VALUES
     ('Adventskalender Schlieren 8952'),
     ('Adventskalender Basel 4057'),
-    ('some other registered calendar');
+    ('Adventskalender Zürich 8053');
 
 -- Insert data into adventCalendars
 INSERT INTO adventCalendars (owner, name)
 VALUES
     (1, 'Adventskalender Schlieren 8952'),
     (2, 'Adventskalender Basel 4057'),
-    (3, 'some other registered calendar');
+    (3, 'Adventskalender Zürich 8053');
 
 
 INSERT INTO adventWindow (owner, address_name, address, apero, time, location_hint, window_nr, calendar_id, image_paths, pictures, comments)

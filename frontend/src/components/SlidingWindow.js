@@ -23,7 +23,7 @@ function SlidingWindow({window_nr, calendar_id, onClose}) {
     };
 
     return(
-        <Dialog open={true} onClose={onClose} sx={{ zIndex: 9999, position: 'absolute'}}>
+        <Dialog open={true} onClose={onClose} sx={{ zIndex: 9999, position: 'sticky'}}>
             <Tabs value={activeTab} onChange={handleChangeTab} sx={{backgroundColor: 'rgb(173, 216, 230)'}}>
             <Tab label="Window information" />
             <Tab label="Gallery" />

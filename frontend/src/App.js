@@ -41,6 +41,14 @@ const MainBox = styled(Box)({
   mt: '64px',
 });
 
+const Footer = () => {
+  return (
+    <footer>
+      Fundamentals of Web Engineering 2023
+    </footer>
+  )
+}
+
 function App() {
   const { user, token, logout } = useAuth();
   const [calendars, setCalendars] = useState([]);
@@ -186,6 +194,8 @@ function App() {
               )
             )}
           </Container>
+          <br/>
+          <Footer/>
         </MainBox>
       </Root>
     </Router>

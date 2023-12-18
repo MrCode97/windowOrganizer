@@ -1,6 +1,6 @@
 // WindowRegisterWindow.js
 import React, { useCallback, useState, useEffect  } from 'react';
-import { Dialog, DialogContent, Typography, TextField, Button, FormControlLabel, Checkbox } from '@mui/material';
+import { Dialog, DialogContent, Typography, TextField, Button, FormControlLabel, Checkbox, Snackbar } from '@mui/material';
 import { translate } from './GeocodeAddress';
 
 function WindowRegisterWindow({window_nr, calendar_id, onClose}) {
@@ -9,13 +9,15 @@ function WindowRegisterWindow({window_nr, calendar_id, onClose}) {
   const [time, setTime] = useState('');
   const [locationHint, setLocationHint] = useState('');
   const [hasApero, setHasApero] = useState(false);
+  const [message, setMessage] = useState('');
+  const [messageOpen, setMessageOpen] = useState(false);
 
+  // API request
   const handleSubmit = async (event) => {
     event.preventDefault();
     const coords = await translate(addressName);
     console.log(coords);
     try {
-      // Replace the following with your actual API endpoint
       const response = await fetch('http://localhost:7007/api/registerWindowHosting', {
         method: 'POST',
         headers: {
@@ -26,19 +28,31 @@ function WindowRegisterWindow({window_nr, calendar_id, onClose}) {
 
       if (response.ok) {
         console.log('Window hosting registered successfully!');
+        setMessage('Window hosting registered successfully!');
+        setMessageOpen(true);
       } else {
         console.error('Failed to register window hosting');
         console.log('response: ', response);
+        setMessage('Failed to register window hosting');
+        setMessageOpen(true);
       }
     } catch (error) {
       console.error('Error during window hosting registration', error);
+      setMessage('Failed to register window hosting');
+      setMessageOpen(true);
     }
   };
 
-
+  // Message display
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setMessageOpen(false);
+  };
 
   return(
-      <Dialog open={true} onClose={onClose} sx={{ zIndex: 9999, position: 'absolute' }}>
+      <Dialog open={true} onClose={onClose} sx={{ zIndex: 9999, position: 'sticky'}}>
           <DialogContent sx={{ width: '400px', height: '700px', backgroundColor: 'rgb(173, 216, 230)'}}>
             <form onSubmit={handleSubmit}>
               <Typography variant="h4">Window Hosting Registration</Typography>
@@ -83,6 +97,7 @@ function WindowRegisterWindow({window_nr, calendar_id, onClose}) {
               </span>
             </form>
           </DialogContent>
+          <Snackbar open={messageOpen} autoHideDuration={3000} onClose={handleClose} message={message} />
       </Dialog>
     );
 }
