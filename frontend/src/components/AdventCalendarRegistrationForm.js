@@ -44,7 +44,7 @@ function AdventCalendarRegistrationForm() {
         value={adventCalendarId}
         onChange={(e) => setAdventCalendarId(e.target.value)}
       />
-      <Button type="submit" variant="contained" sx={{backgroundColor: 'green', marginTop: '5px'}}>
+      <Button type="submit" variant="contained" sx={{backgroundColor: 'green', marginTop: '10px'}}>
         Register
       </Button>
     </form>
