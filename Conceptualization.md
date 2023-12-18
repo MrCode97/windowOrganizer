@@ -7,3 +7,11 @@ To get started on our project, three of made a sketch of they imagined the webpa
 ## Sketch 1:
 
 <img src="/sketch1.png">
+
+## Sketch 2: 
+
+<img src="/sketch2.png">
+
+## Sketch 3: 
+
+<img src="/sketch3.png">
