@@ -95,28 +95,22 @@ const InfoSection = ({
         }
     };
 
-    // how to get dynamic icon with number inside?
-    const icon_path = "https://www.pngall.com/wp-content/uploads/5/Christmas-Star-PNG-Picture-180x180.png"
-
-
-
-
   return (
     <>
       <Typography variant="h4">Window #{window_nr}</Typography>
       <Typography variant="body1">{addressName}</Typography>
-      <Typography variant="body1" style={{ color: 'blue' }}>
+      <Typography variant="body1">
         {startTime}
       </Typography>
 
-      <DrawMap center={coordinates[0]} coordinatesList={coordinates} iconPath={icon_path} drawNumbers={false} />
+      <DrawMap coordinates={coordinates} sx={{borderTopLeftRadius: '4px'}} />
 
       <Typography variant="body1">Apéro: {hasApero ? 'Ja' : 'Nein'}</Typography>
       <Typography variant="body1">Location Hint: {location_hint}</Typography>
 
       {/* Comment section */}
       {comments !== undefined && comments.length !== 0 && (
-        <List sx={{ marginTop: 2, padding: 2, border: '1px solid #ccc', borderRadius: 4 }}>
+        <List sx={{ marginTop: 2, padding: 2, border: '1px solid black', borderRadius: '5px', backgroundColor: 'white' }}>
           {comments.map((pers_comment, index) => (
             <ListItem key={index} alignItems="flex-start">
               <span>
@@ -128,14 +122,15 @@ const InfoSection = ({
       )}
 
       {/* Form for adding a new comment */}
-      <TextField label="Add your comment" variant="outlined" fullWidth value={newComment} onChange={handleCommentChange} />
+      <TextField sx={{ marginTop: '5px', border: '1px solid black', backgroundColor: 'white', borderRadius: '5px'}} label="Add your comment" variant="outlined" fullWidth value={newComment} onChange={handleCommentChange} />
 
-      <span><Button variant="contained" color="primary" onClick={handleAddComment}>
-        Add Comment
-      </Button>
-      <Button variant="contained" color="primary" onClick={onClose}>
-                Close
-      </Button>
+      <span className='buttonContainerSlidingWindow'>
+        <Button variant="contained" style={{backgroundColor: 'green'}} onClick={handleAddComment}>
+          Add Comment
+        </Button>
+        <Button variant="contained" style={{backgroundColor: 'green'}} onClick={onClose}>
+          Close
+        </Button>
       </span>
       <br />
     </>

@@ -10,7 +10,7 @@
 
 | Task                                                      | Description                                             | Responsible   | Done  |
 |-----------------------------------------------------------|---------------------------------------------------------|---------------|-------|
-| Nice theming, layout, banner, icons, stylized components   | - Rounded edges, proper spacing between titles, fields, buttons, etc. |         | - [ ] |
+| Nice theming, layout, banner, icons, stylized components   | - Rounded edges, proper spacing between titles, fields, buttons, etc. | Leon     | - [ ] |
 
 ## Functionality:
 
@@ -26,8 +26,8 @@
 |                                | - Database integration                                 | Patrick      | - [ ] |
 | Different icons for Window 1..24 | - Frontend implementation                            |   Simon      | - [ ] |
 | Show Numbers on the main Map    | - Frontend implementation                               | Simon        | - [ ] |
-| Picture-Upload Function         | - Frontend and backend implementation                   |         | - [ ] |
-|                                | - Database integration                                 |         | - [ ] |
+| Picture-Upload Function         | - Frontend and backend implementation                   | Robin        | - [ ] |
+|                                | - Database integration                                 | Robin        | - [ ] |
 | PictureShow: Gallery browsing   | - Frontend and backend implementation                   |  Leon   | - [ ] |
 |                                | - Database integration                                 |Leon     | - [ ] |
 | Comment-Function                | - Backend implementation primarily                     | Simon | - [ ] |
@@ -43,13 +43,13 @@
 |--------------------------------|---------------------------------------------------------|---------------|-------|
 | Find out about Presentation     | - Refer to Moodle                                      |         | - [ ] |
 |                                | - Consult with David / TAs if unsure                    |         | - [ ] |
-| WriteUp                        | -                                                     |         | - [ ] |
-| Slides?                         | -                                                     |         | - [ ] |
+| WriteUp                        | -                                                     |        | - [ ] |
+| Slides?                         | - not necessary?                                                    |         | - [ ] |
 
 ## Admin:
 - [ ] Ask Permission / invite David & TA to the GitHub-Repo
-  - Responsible: Robin
-  - Done: - [ ]
+  - Responsible: Simon
+  - Done: - [x]
 
 ## Deployment:
 

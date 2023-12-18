@@ -1,21 +1,18 @@
 // OverviewMap.js
 import React, { useCallback, useState, useEffect  } from 'react';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
+import L from 'leaflet';
 import "leaflet/dist/leaflet.css";
-import DrawMap from './DrawMap';
 
 function OverviewMap({ calendar_id }) {
-  // variables to get from SQL request based on calendar id
   const [calendarMapInfos, setCalendarMapInfos] = useState([]);
 
   // Make an API request to fetch calendar infos based on calendar_id
   const fetchCalendarMapInfo = useCallback(async () => {
     try {
-      //console.log("Calendar id is: " + calendar_id);
       const response = await fetch(`http://localhost:7007/api/calendarMapInfo?calendar_id=${calendar_id}`);
       const data = await response.json();
-      //console.log("Received info:", data.calendarMapInfos);
       setCalendarMapInfos(data.calendarMapInfos);
-      //console.log("Inside fetch:", calendarMapInfos);
     } catch (error) {
       console.error('Error fetching calendar info:', error);
     }
@@ -24,26 +21,52 @@ function OverviewMap({ calendar_id }) {
   // Fetch calendar map info from the backend when the component mounts
   useEffect(() => {
     fetchCalendarMapInfo();
-    //console.log("Inside useEffect:", calendarMapInfos);
-  }, [fetchCalendarMapInfo /* other dependencies if needed */]);
+  }, []);
 
-  // other variables
-  // how to get dynamic icon with number inside?
-  // Ich würde säge mer nehmed uf pngall en adventskalender bild und schnided die 24 törli use, speichered sie einzeln im backend
-  // und fetched sie dynamically
-  const icon_path = "https://www.pngall.com/wp-content/uploads/5/Christmas-Star-PNG-Picture-180x180.png"
+  // Calculate average of all window coordinates to set center of map
+  const calculateCenter = () => {
+    let sumLatitude = 0;
+    let sumLongitude = 0;
+    const nr_markers = calendarMapInfos.length;
+    if (nr_markers > 0 ) {
+      for (const window of calendarMapInfos) {
+        sumLatitude += window.address.x;
+        sumLongitude += window.address.y;
+      }
+      return [sumLatitude / nr_markers, sumLongitude / nr_markers];
+    }
+    return [];
+  }
 
-  // Extract coordinates from calendar infos
-  // const window_coordinates_list = [{x: 51.505, y: -0.09},{x: 51.506, y: -0.0901},{x: 51.510, y: -0.0904},{x: 51.498, y: -0.0907}]
-  const window_coordinates_list = calendarMapInfos.map((window) => {
-    return window.address;
-  });
-  //console.log("Outside:", calendarMapInfos);
-  //console.log("Outside:", window_coordinates_list);
-  
-  return (
-    <DrawMap coordinatesList={window_coordinates_list} iconPath={icon_path} drawNumbers={true} />
-  )
+  if (calendarMapInfos.length > 0) {
+    return (
+      <MapContainer
+        center={calculateCenter()}
+        zoom={13}
+        scrollWheelZoom={false}
+        style={{ height: "300px", width: "80%", margin: 20 }}
+      >
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        />
+        {calendarMapInfos.length == 0 ? <></> : calendarMapInfos.map((window, index) => (
+          <Marker key={index} position={[window.address.x, window.address.y]} icon={new L.icon({
+            iconUrl: require('../assets/staricons/' + window.window_nr + '.png'),
+            iconSize: [32, 32],})}
+          >
+            <Popup>
+              {<div>{window.window_nr}. Dezember, {window.time}<br />{window.address_name}</div>}
+            </Popup>
+          </Marker>
+        ))}
+      </MapContainer>
+    )
+  } else {
+    return (
+      <></>
+    )
+  }
 }
 
 export default OverviewMap;

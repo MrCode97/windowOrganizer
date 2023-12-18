@@ -39,7 +39,7 @@ function WindowRegisterWindow({window_nr, calendar_id, onClose}) {
 
   return(
       <Dialog open={true} onClose={onClose} sx={{ zIndex: 9999, position: 'absolute' }}>
-          <DialogContent sx={{ width: '400px', height: '700px' }}>
+          <DialogContent sx={{ width: '400px', height: '700px', backgroundColor: 'rgb(173, 216, 230)'}}>
             <form onSubmit={handleSubmit}>
               <Typography variant="h4">Window Hosting Registration</Typography>
               <TextField
@@ -66,19 +66,21 @@ function WindowRegisterWindow({window_nr, calendar_id, onClose}) {
                 value={locationHint}
                 onChange={(e) => setLocationHint(e.target.value)}
               />
-              <FormControlLabel
-                control={
-                  <Checkbox
-                    checked={hasApero}
-                    onChange={(e) => setHasApero(e.target.checked)}
-                    name="hasApero"
-                  />
-                }
-                label="Has Apero"
-              />
-              <Button type="submit" variant="contained" color="primary">
-                Host a Window
-              </Button>
+              <span className='buttonContainerSlidingWindow'>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={hasApero}
+                      onChange={(e) => setHasApero(e.target.checked)}
+                      name="hasApero"
+                    />
+                  }
+                  label="Has Apero"
+                />
+                <Button type="submit" variant="contained" sx={{backgroundColor: 'green'}}>
+                  Host a Window
+                </Button>
+              </span>
             </form>
           </DialogContent>
       </Dialog>

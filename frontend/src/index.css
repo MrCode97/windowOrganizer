@@ -11,3 +11,29 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.mainBox {
+  background-color: white;
+}
+
+.toolbar {
+  background-color: green;
+}
+
+.sidebar {
+  background-color: rgb(173, 216, 230);
+}
+
+.buttonContainerSlidingWindow {
+  display: flex;
+  justify-content:space-between;
+  padding: 10px;
+}
+
+.windowTileContainer {
+  background-color: rgb(173, 216, 230);
+}
+
+.registrationHeader {
+  padding: 10px;
+}

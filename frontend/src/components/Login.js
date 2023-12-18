@@ -38,7 +38,7 @@ function Login( { reRender } ) {
 
     return (
         <form onSubmit={handleLogin}>
-        <Typography variant="h4">Login</Typography>
+        <Typography className='registrationHeader' variant="h4">Login</Typography>
         <TextField
             label="Username"
             fullWidth
@@ -52,7 +52,7 @@ function Login( { reRender } ) {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
         />
-        <Button type="submit" variant="contained" color="primary">
+        <Button type="submit" variant="contained" sx={{backgroundColor: 'green', marginTop: '5px'}}>
             Login
         </Button>
         </form>
