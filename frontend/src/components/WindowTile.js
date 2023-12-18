@@ -14,7 +14,7 @@ function WindowTile({ window_nr, calendar_id }) {
   const [isWindowRegisterWindowOpen, setWindowRegisterWindowOpen] = React.useState(false);
   
   useEffect(() => {
-    console.log('Fetching thumbnail image for window', window_nr);
+    //console.log('Fetching thumbnail image for window', window_nr);
     const fetchImage = async () => {
       try {
         const response = await fetch(`http://localhost:7007/api/get-first-picture/${calendar_id}/${window_nr}`);
@@ -47,7 +47,7 @@ function WindowTile({ window_nr, calendar_id }) {
     };
 
     fetchImage();
-  }, [calendar_id, window_nr]);
+  }, [calendar_id, window_nr, isFree]);
 
   // Event handler for clicking on the CardMedia
   const handleCardMediaClick = () => {
@@ -141,6 +141,7 @@ function WindowTile({ window_nr, calendar_id }) {
           window_nr={window_nr}
           calendar_id={calendar_id}
           onClose={() => setWindowRegisterWindowOpen(false)}
+          setIsFree={setIsFree}
         />
       )}
     </div>
