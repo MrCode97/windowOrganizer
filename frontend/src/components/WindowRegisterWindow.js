@@ -30,6 +30,7 @@ function WindowRegisterWindow({window_nr, calendar_id, onClose}) {
         console.log('Window hosting registered successfully!');
         setMessage('Window hosting registered successfully!');
         setMessageOpen(true);
+        onClose();
       } else {
         console.error('Failed to register window hosting');
         console.log('response: ', response);
