@@ -17,12 +17,14 @@ function WindowRegisterWindow({window_nr, calendar_id, onClose, setIsFree, reRen
     event.preventDefault();
     const coords = await translate(addressName);
     console.log(coords);
+    console.log("token: ", localStorage.getItem('token'));
     try {
       const response = await fetch('http://localhost:7007/api/registerWindowHosting', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-        },
+          'Authorization': 'Bearer ' + localStorage.getItem('token'),
+        },        
         body: JSON.stringify({ calendar_id, window_nr, username, addressName, coords, time, locationHint, hasApero }),
       });
 

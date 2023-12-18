@@ -284,6 +284,24 @@ app.post('/api/calendars/addComment', async (req, res) => {
 app.post('/api/registerWindowHosting', async (req, res) => {
   const { calendar_id, window_nr, username, addressName, coords, time, locationHint, hasApero  } = req.body;
 
+  // Extract the token from the request headers
+  const token = req.headers.authorization;
+  // Check if the token is provided
+  if (!token) {
+    return res.status(401).json({ error: 'Unauthorized. Token missing.' });
+  }
+
+  // Check if the token is valid
+  try {
+    const decodedToken = jwt.verify(token.split(' ')[1], jwt_secret);
+    if (!decodedToken) {
+      return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
+    }
+  } catch (error) {
+    console.error('Error verifying token', error);
+    return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
+  }
+
   // Check if the user exists
   try {
     const userExists = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
