@@ -1,10 +1,9 @@
 // WindowRegisterWindow.js
-import React, { useCallback, useState, useEffect  } from 'react';
+import React, { useState, useEffect  } from 'react';
 import { Dialog, DialogContent, Typography, TextField, Button, FormControlLabel, Checkbox, Snackbar } from '@mui/material';
 import { translate } from './GeocodeAddress';
 
 function WindowRegisterWindow({window_nr, calendar_id, onClose, setIsFree, reRender}) {
-  const [username, setUsername] = useState('');
   const [addressName, setAddressName] = useState('');
   const [time, setTime] = useState('');
   const [locationHint, setLocationHint] = useState('');
@@ -76,7 +75,7 @@ function WindowRegisterWindow({window_nr, calendar_id, onClose, setIsFree, reRen
   return (
     <div>
       {isLoggedIn ? (
-        <Dialog open={true} onClose={onClose} sx={{ zIndex: 9999, position: 'sticky' }}>
+        <Dialog open={true} onClose={onClose} sx={{ zIndex: 9999, top: '4%', position: 'fixed', overflowY: 'auto'}}>
           <DialogContent sx={{ width: '400px', height: '700px', backgroundColor: 'rgb(173, 216, 230)' }}>
             <form onSubmit={handleSubmit}>
               <Typography variant="h4">Window Hosting Registration</Typography>

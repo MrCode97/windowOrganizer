@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect  } from 'react';
+import React from 'react';
 import { Dialog, DialogContent, Tabs, Tab } from '@mui/material';
 import "leaflet/dist/leaflet.css";
 import { UploadImage } from './Upload'; 
@@ -12,10 +12,6 @@ import CommentSection from './InfoSection';
 
 
 function SlidingWindow({window_nr, calendar_id, onClose}) {
-
-    // how to get dynamic icon with number inside?
-    const icon_path = "https://www.pngall.com/wp-content/uploads/5/Christmas-Star-PNG-Picture-180x180.png"
-
     const [activeTab, setActiveTab] = React.useState(0);
 
     const handleChangeTab = (event, newValue) => {
@@ -23,7 +19,7 @@ function SlidingWindow({window_nr, calendar_id, onClose}) {
     };
 
     return(
-        <Dialog open={true} onClose={onClose} sx={{ zIndex: 9999, position: 'sticky'}}>
+        <Dialog open={true} onClose={onClose} sx={{ zIndex: 9999, position: 'fixed', top: '4%'}}>
             <Tabs value={activeTab} onChange={handleChangeTab} sx={{backgroundColor: 'rgb(173, 216, 230)'}}>
             <Tab label="Window information" />
             <Tab label="Gallery" />
