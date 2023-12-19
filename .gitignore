@@ -6,7 +6,7 @@ node_modules/
 /dist/
 
 # Ignore environment variables file
-.env
+#.env
 
 # Ignore npm-debug.log and yarn-error.log files
 npm-debug.log
