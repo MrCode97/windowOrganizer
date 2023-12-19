@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button, Snackbar} from '@mui/material';
 
 const UploadImage = ({ calendarId, windowNr, onClose, setImageUpload }) => {

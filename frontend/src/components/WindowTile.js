@@ -1,5 +1,5 @@
 // WindowTile.js
-import React, { useCallback, useState, useEffect  } from 'react';
+import React, { useState, useEffect  } from 'react';
 import { Card, CardMedia, CardActionArea, Typography, Paper} from '@mui/material';
 import SlidingWindow from './SlidingWindow';
 import WindowRegisterWindow from './WindowRegisterWindow';
@@ -14,7 +14,6 @@ function WindowTile({ window_nr, calendar_id, imageUpload, setImageUpload, reRen
   const [isWindowRegisterWindowOpen, setWindowRegisterWindowOpen] = React.useState(false);
   
   useEffect(() => {
-    //console.log('Fetching thumbnail image for window', window_nr);
     const fetchImage = async () => {
       try {
         const response = await fetch(`http://localhost:7007/api/get-first-picture/${calendar_id}/${window_nr}`);
