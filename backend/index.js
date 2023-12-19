@@ -6,6 +6,13 @@ const jwt = require('jsonwebtoken');
 const jwt_secret = "jwt_secret_sign_key"; // TODO read from ENV
 const multer = require('multer');
 
+// read config/secrets from .env
+const dbUser = process.env.DB_USER;
+const dbHost = process.env.DB_HOST;
+const dbName = process.env.DB;
+const dbPassword = process.env.DB_PASSWORD;
+const dbPort = process.env.DB_PORT;
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -13,11 +20,11 @@ app.use(express.json());
 const upload = multer();
 
 const pool = new Pool({
-  user: 'fwe',
-  host: 'localhost', // change if deployed
-  database: 'adventcalendar',
-  password: 'VerySecureAdventsklaenderPW',
-  port: 5432,
+  user: dbUser,
+  host: dbHost, // change if deployed
+  database: dbName,
+  password: dbPassword,
+  port: dbPort,
 });
 
 // New route to register users

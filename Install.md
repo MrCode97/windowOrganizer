@@ -14,6 +14,7 @@ Backend:
 ```bash
 cd adventCalender/backend
 npm install     # install dependencies
+export $(cat .env | xargs) # export env variables
 node index.js   # run
 ```
 
