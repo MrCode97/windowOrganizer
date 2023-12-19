@@ -282,7 +282,7 @@ app.post('/api/calendars/addComment', async (req, res) => {
 
 // New route to register window hosting
 app.post('/api/registerWindowHosting', async (req, res) => {
-  const { calendar_id, window_nr, username, addressName, coords, time, locationHint, hasApero  } = req.body;
+  const { calendar_id, window_nr, addressName, coords, time, locationHint, hasApero  } = req.body;
 
   // Extract the token from the request headers
   const token = req.headers.authorization;
@@ -297,6 +297,7 @@ app.post('/api/registerWindowHosting', async (req, res) => {
     if (!decodedToken) {
       return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
     }
+    username = decodedToken.username;
   } catch (error) {
     console.error('Error verifying token', error);
     return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
