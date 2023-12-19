@@ -18,7 +18,8 @@ export $(cat .env | xargs) # export env variables
 node index.js   # run
 ```
 ```bash
-Get-Content .env | ForEach-Object { [System.Environment]::SetEnvironmentVariable($_.Split('=')[0], $_.Split('=')[1], [System.EnvironmentVariableTarget]::Process) } # instead of export when using Windows
+# instead of export when using Windows
+Get-Content .env | ForEach-Object { [System.Environment]::SetEnvironmentVariable($_.Split('=')[0], $_.Split('=')[1], [System.EnvironmentVariableTarget]::Process) }
 ```
 
 
