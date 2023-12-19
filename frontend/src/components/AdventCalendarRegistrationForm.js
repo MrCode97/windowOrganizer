@@ -11,7 +11,7 @@ function LoginHint() {
   );
 }
 
-function AdventCalendarRegistrationForm( { reRender } ) {
+function AdventCalendarRegistrationForm( { reRender, token } ) {
   const [adventCalendarId, setAdventCalendarId] = useState('');
   const [username, setUsername] = useState('');
   const [message, setMessage] = useState('');
@@ -21,7 +21,6 @@ function AdventCalendarRegistrationForm( { reRender } ) {
     useEffect(() => {
       // Check if the user is authenticated when the component mounts
       const checkAuthentication = () => {
-        const token = localStorage.getItem('token');
         if (token) {
           // User is logged in
           setIsLoggedIn(true);

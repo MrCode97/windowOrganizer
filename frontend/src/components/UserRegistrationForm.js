@@ -1,11 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Typography, TextField, Button, Snackbar } from '@mui/material';
 
-function UserRegistrationForm({ reRender }) {
+function UserRegistrationForm({ reRender, token }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [messageOpen, setMessageOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    // Check if the user is authenticated when the component mounts
+    const checkAuthentication = () => {
+      if (token) {
+        // User is logged in
+        setIsLoggedIn(true);
+      } else {
+        // User is not logged in
+        setIsLoggedIn(false);
+      }
+    };
+
+    checkAuthentication();
+  }, []);
 
   // API request
   const handleSubmit = async (event) => {
@@ -46,26 +62,31 @@ function UserRegistrationForm({ reRender }) {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <Typography className='registrationHeader' variant="h4">User Registration</Typography>
-      <TextField
-        label="Username"
-        fullWidth
-        value={username}
-        onChange={(e) => setUsername(e.target.value)}
-      />
-      <TextField
-        label="Password"
-        type="password"
-        fullWidth
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <Button type="submit" variant="contained" sx={{backgroundColor: 'green', marginTop: '10px'}}>
-        Register
-      </Button>
-      <Snackbar open={messageOpen} autoHideDuration={3000} onClose={handleClose} message={message} />
-    </form>
+    <div> {!isLoggedIn ? (
+      <form onSubmit={handleSubmit}>
+        <Typography className='registrationHeader' variant="h4">User Registration</Typography>
+        <TextField
+          label="Username"
+          fullWidth
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+        <TextField
+          label="Password"
+          type="password"
+          fullWidth
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <Button type="submit" variant="contained" sx={{backgroundColor: 'green', marginTop: '10px'}}>
+          Register
+        </Button>
+        <Snackbar open={messageOpen} autoHideDuration={3000} onClose={handleClose} message={message} />
+      </form>
+    ) : (
+      <Typography variant="h4">You are already logged in!</Typography>
+    )}
+    </div>
   );
 }
 

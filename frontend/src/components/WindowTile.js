@@ -4,7 +4,7 @@ import { Card, CardMedia, CardActionArea, Typography, Paper} from '@mui/material
 import SlidingWindow from './SlidingWindow';
 import WindowRegisterWindow from './WindowRegisterWindow';
 
-function WindowTile({ window_nr, calendar_id, imageUpload, setImageUpload, reRender }) {
+function WindowTile({ window_nr, calendar_id, imageUpload, setImageUpload, reRender, token }) {
   // variables to get from SQL request based on window number and calendar id
   const [isFree, setIsFree] = useState(false);
   const [image, setImage] = useState('/Window.png');
@@ -145,6 +145,7 @@ function WindowTile({ window_nr, calendar_id, imageUpload, setImageUpload, reRen
           onClose={() => setWindowRegisterWindowOpen(false)}
           setIsFree={setIsFree}
           reRender={reRender}
+          token={token}
         />
       )}
     </div>

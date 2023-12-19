@@ -3,7 +3,7 @@ import React, { useState, useEffect  } from 'react';
 import { Dialog, DialogContent, Typography, TextField, Button, FormControlLabel, Checkbox, Snackbar } from '@mui/material';
 import { translate } from './GeocodeAddress';
 
-function WindowRegisterWindow({window_nr, calendar_id, onClose, setIsFree, reRender}) {
+function WindowRegisterWindow({window_nr, calendar_id, onClose, setIsFree, reRender, token}) {
   const [addressName, setAddressName] = useState('');
   const [time, setTime] = useState('');
   const [locationHint, setLocationHint] = useState('');
@@ -32,14 +32,12 @@ function WindowRegisterWindow({window_nr, calendar_id, onClose, setIsFree, reRen
   const handleSubmit = async (event) => {
     event.preventDefault();
     const coords = await translate(addressName);
-    console.log(coords);
-    console.log("token: ", localStorage.getItem('token'));
     try {
       const response = await fetch('http://localhost:7007/api/registerWindowHosting', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + localStorage.getItem('token'),
+          'Authorization': 'Bearer ' + token,
         },        
         body: JSON.stringify({ calendar_id, window_nr, addressName, coords, time, locationHint, hasApero }),
       });

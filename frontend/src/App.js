@@ -177,17 +177,18 @@ function App() {
         <MainBox component="main" className='mainBox'>
           <Container className='mainContainer' >
             {showLogin ? (
-              <Login reRender={setReRender}/>
+              <Login reRender={setReRender} token={token}/>
             ) : showRegistrationCalendar ? (
-              <AdventCalendarRegistrationForm reRender={setReRender}/>
+              <AdventCalendarRegistrationForm reRender={setReRender} token={token}/>
             ) : showRegistration ? (
-              <UserRegistrationForm reRender={setReRender}/>
+              <UserRegistrationForm reRender={setReRender} token={token}/>
             ) : 
             (
               (calendars.length !== 0 && selectedCalendar) ? (
                 <DefaultCalendar
                   id={selectedCalendar.id}
                   name={selectedCalendar.name}
+                  token = {token}
                 />
               ) : (
                 <WelcomePage />
