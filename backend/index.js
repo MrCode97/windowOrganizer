@@ -3,8 +3,17 @@ const { Pool } = require('pg');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const jwt_secret = "jwt_secret_sign_key"; // TODO read from ENV
 const multer = require('multer');
+
+// read config/secrets from .env
+require('dotenv').config();
+const jwt_secret = process.env.JWT_SECRET;
+const dbUser = process.env.DB_USER;
+const dbHost = process.env.DB_HOST;
+const dbName = process.env.DB;
+const dbPassword = process.env.DB_PASSWORD;
+const dbPort = process.env.DB_PORT;
+
 
 const app = express();
 app.use(cors());
@@ -13,11 +22,11 @@ app.use(express.json());
 const upload = multer();
 
 const pool = new Pool({
-  user: 'fwe',
-  host: 'localhost', // change if deployed
-  database: 'adventcalendar',
-  password: 'VerySecureAdventsklaenderPW',
-  port: 5432,
+  user: dbUser,
+  host: dbHost, // change if deployed
+  database: dbName,
+  password: dbPassword,
+  port: dbPort,
 });
 
 // New route to register users
@@ -125,7 +134,7 @@ app.post('/api/registerAdventCalendar', async (req, res) => {
     console.error('Error verifying token', error);
     return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
   }
-  
+
   // Basic validation
   if (!adventCalendarId || !username) {
     console.log('Invalid request. Missing required parameters.');
