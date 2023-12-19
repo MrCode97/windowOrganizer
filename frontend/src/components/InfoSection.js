@@ -54,13 +54,10 @@ const InfoSection = ({
 
         try {
           // Make an API request to fetch comments based on window_nr and calendar_id
-          //console.log("Calendar id is: " + calendar_id, " Window nr is: " + window_nr);
           const response = await fetch(`http://localhost:7007/api/calendar/comments?calendar_id=${calendar_id}&window_nr=${window_nr}`);
           const data = await response.json();
           setComments(data.comments);
-          //console.log("here we are");
           setHint(data.location_hint);
-          //console.log("Location hint is: " + location_hint);
           setApero(data.hasApero);
 
         } catch (error) {

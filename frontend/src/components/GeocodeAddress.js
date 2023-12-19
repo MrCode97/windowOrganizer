@@ -24,10 +24,7 @@ export async function translate(address) {
       const { lat, lon } = data[0];
 
       // Return the latitude and longitude
-      console.log("[Latitude, Longitude]:", [lat, lon]);
       return [lat, lon];
-    } else {
-      console.log("No results found for the given address.");
     }
   } catch (error) {
     console.error("Error:", error.message);

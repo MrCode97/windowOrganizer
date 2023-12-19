@@ -59,7 +59,6 @@ function App() {
   const [showRegistrationCalendar, setShowRegistrationCalendar] = useState(false);
   const [reRender, setReRender] = useState(false);
 
-  //console.log('App', user, token);
   useEffect(() => {
     // Fetch calendar data when the component mounts
     const fetchCalendars = async () => {
@@ -76,12 +75,6 @@ function App() {
     setReRender(false);
   }, [reRender]);
 
-  // For debugging only:
-  useEffect(() => {
-    console.log(calendars);
-    console.log('selectedCalendar', selectedCalendar);
-    console.log("Render", reRender)
-  }, [calendars, selectedCalendar]);
 
   return (
     <Router>
@@ -97,7 +90,7 @@ function App() {
                   </Typography>
                 )}
                 {user && (
-                  <Button color="inherit" onClick={logout}>
+                  <Button sx={{paddingLeft: '20px'}} color="inherit" onClick={logout}>
                     Logout
                   </Button>
               )}
