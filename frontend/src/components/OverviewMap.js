@@ -21,7 +21,7 @@ function OverviewMap({ calendar_id, reRender }) {
   // Fetch calendar map info from the backend when the component mounts
   useEffect(() => {
     fetchCalendarMapInfo();
-  }, [reRender]);
+  }, [fetchCalendarMapInfo, reRender]);
 
   // Calculate average of all window coordinates to set center of map
   const calculateCenter = () => {
@@ -50,7 +50,7 @@ function OverviewMap({ calendar_id, reRender }) {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        {calendarMapInfos.length == 0 ? <></> : calendarMapInfos.map((window, index) => (
+        {calendarMapInfos.length === 0 ? <></> : calendarMapInfos.map((window, index) => (
           <Marker key={index} position={[window.address.x, window.address.y]} icon={new L.icon({
             iconUrl: require('../assets/staricons/' + window.window_nr + '.png'),
             iconSize: [32, 32],})}

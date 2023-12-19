@@ -22,21 +22,21 @@ const InfoSection = ({
   const [addressName, setAddressName] = useState("Stockerstrasse 23, 8050 Zürich");
   const [coordinates, setCoordinates] = useState([]);
 
-  const fetchData = async () => {
-    const response = await fetch(`http://localhost:7007/api/getWindowData?calendar_id=${calendar_id}&window_nr=${window_nr}`);
-    const { windowData } = await response.json();
-    const {owner, address_name, address, apero, time, location_hint, image_paths, pictures, comments} = windowData;
-    setComments(comments);
-    setHint(location_hint);
-    setApero(apero);
-    setStartTime(time);
-    setAddressName(address_name);
-    setCoordinates([address]);
-  };
-
   useEffect(() => {
-      fetchData();
-    }, []);
+    const fetchData = async () => {
+      const response = await fetch(`http://localhost:7007/api/getWindowData?calendar_id=${calendar_id}&window_nr=${window_nr}`);
+      const { windowData } = await response.json();
+      const { address_name, address, apero, time, location_hint, comments } = windowData;
+      setComments(comments);
+      setHint(location_hint);
+      setApero(apero);
+      setStartTime(time);
+      setAddressName(address_name);
+      setCoordinates([address]);
+    };
+
+    fetchData();
+  }, [calendar_id, window_nr]);
 
 
 
@@ -63,7 +63,7 @@ const InfoSection = ({
         } catch (error) {
           console.error('Error fetching comments:', error);
         }
-      }, [window_nr, calendar_id, setComments, setApero, location_hint]);
+      }, [window_nr, calendar_id, setComments, setApero]);
 
     useEffect(() => {
         // Fetch comments from the backend when the component mounts

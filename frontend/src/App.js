@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
 import { styled } from '@mui/system';
 import Button from '@mui/material/Button';
 import AppBar from '@mui/material/AppBar';
@@ -12,8 +12,6 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import TextField from '@mui/material/TextField';
-import Registration from './components/Registration';
-import Calendar from './components/Calendar';
 import DefaultCalendar from './components/DefaultCalendar';
 import { useAuth } from './AuthProvider';
 import WelcomePage from './components/WelcomePage';
@@ -120,13 +118,13 @@ function App() {
             </ListItem>
           </List>  
           <List>
-            <ListItem button onClick={() => {setShowLogin(true); setShowRegistration(false); setShowRegistrationCalendar(false); setSelectedCalendar(null)} }>
+            <ListItem button onClick={() => {setShowLogin(true); setShowRegistration(false); setShowRegistrationCalendar(false); setSelectedCalendar(null);} }>
               <ListItemText primary="Login" />
             </ListItem>
-            <ListItem button onClick={() => {setShowRegistration(true); setShowLogin(false); setShowRegistrationCalendar(false); setSelectedCalendar(null)} }>
+            <ListItem button onClick={() => {setShowRegistration(true); setShowLogin(false); setShowRegistrationCalendar(false); setSelectedCalendar(null);} }>
               <ListItemText primary="Register a User" />
             </ListItem>
-            <ListItem button onClick={() => {setShowRegistrationCalendar(true); setShowLogin(false); setShowRegistration(false); setSelectedCalendar(null)} }>
+            <ListItem button onClick={() => {setShowRegistrationCalendar(true); setShowLogin(false); setShowRegistration(false); setSelectedCalendar(null);} }>
               <ListItemText primary="Register a Calender" />
             </ListItem>
           </List>

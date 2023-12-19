@@ -13,7 +13,6 @@ function LoginHint() {
 
 function AdventCalendarRegistrationForm( { reRender, token } ) {
   const [adventCalendarId, setAdventCalendarId] = useState('');
-  const [username, setUsername] = useState('');
   const [message, setMessage] = useState('');
   const [messageOpen, setMessageOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -31,7 +30,7 @@ function AdventCalendarRegistrationForm( { reRender, token } ) {
       };
   
       checkAuthentication();
-    }, []);  
+    }, [token]);  
 
   // API request
   const handleSubmit = async (event) => {

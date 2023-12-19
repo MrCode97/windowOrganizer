@@ -21,7 +21,7 @@ function UserRegistrationForm({ reRender, token }) {
     };
 
     checkAuthentication();
-  }, []);
+  }, [token]);
 
   // API request
   const handleSubmit = async (event) => {

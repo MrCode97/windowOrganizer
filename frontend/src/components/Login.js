@@ -21,7 +21,7 @@ function Login( { reRender, token } ) {
         };
     
         checkAuthentication();
-      }, []);
+      }, [token]);
 
     const handleLogin = async (event) => {
         event.preventDefault();

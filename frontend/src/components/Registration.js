@@ -1,4 +1,5 @@
 // Registration.js
+// THIS FILE IS NO MORE NEEDED!
 import React from 'react';
 import { Typography, Tabs, Tab } from '@mui/material';
 import UserRegistrationForm from './UserRegistrationForm';
