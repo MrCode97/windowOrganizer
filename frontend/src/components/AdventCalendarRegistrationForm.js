@@ -45,7 +45,7 @@ function AdventCalendarRegistrationForm( { reRender, token } ) {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + localStorage.getItem('token'),
         },
-        body: JSON.stringify({ adventCalendarId, username }),
+        body: JSON.stringify({ adventCalendarId }),
       });
 
       if (response.ok) {
@@ -77,12 +77,6 @@ function AdventCalendarRegistrationForm( { reRender, token } ) {
     <div> {isLoggedIn ? (
       <form onSubmit={handleSubmit}>
         <Typography className='registrationHeader' variant="h4">Advent Calendar Registration</Typography>
-        <TextField
-          label="Your username"
-          fullWidth
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
         <TextField
           label="Advent Calendar Name"
           fullWidth

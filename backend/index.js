@@ -105,8 +105,27 @@ app.post('/api/login', async (req, res) => {
 
 // New route to register advent calendars
 app.post('/api/registerAdventCalendar', async (req, res) => {
-  const { adventCalendarId, username } = req.body;
+  const { adventCalendarId } = req.body;
 
+  // Extract the token from the request headers
+  const token = req.headers.authorization;
+  // Check if the token is provided
+  if (!token) {
+    return res.status(401).json({ error: 'Unauthorized. Token missing.' });
+  }
+
+  // Check if the token is valid
+  try {
+    const decodedToken = jwt.verify(token.split(' ')[1], jwt_secret);
+    if (!decodedToken) {
+      return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
+    }
+    username = decodedToken.username;
+  } catch (error) {
+    console.error('Error verifying token', error);
+    return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
+  }
+  
   // Basic validation
   if (!adventCalendarId || !username) {
     console.log('Invalid request. Missing required parameters.');
