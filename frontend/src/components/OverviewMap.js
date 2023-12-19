@@ -4,7 +4,7 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import L from 'leaflet';
 import "leaflet/dist/leaflet.css";
 
-function OverviewMap({ calendar_id }) {
+function OverviewMap({ calendar_id, reRender }) {
   const [calendarMapInfos, setCalendarMapInfos] = useState([]);
 
   // Make an API request to fetch calendar infos based on calendar_id
@@ -21,7 +21,7 @@ function OverviewMap({ calendar_id }) {
   // Fetch calendar map info from the backend when the component mounts
   useEffect(() => {
     fetchCalendarMapInfo();
-  }, []);
+  }, [reRender]);
 
   // Calculate average of all window coordinates to set center of map
   const calculateCenter = () => {

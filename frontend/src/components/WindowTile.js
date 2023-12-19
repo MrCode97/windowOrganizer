@@ -4,7 +4,7 @@ import { Card, CardMedia, CardActionArea, Typography, Paper} from '@mui/material
 import SlidingWindow from './SlidingWindow';
 import WindowRegisterWindow from './WindowRegisterWindow';
 
-function WindowTile({ window_nr, calendar_id }) {
+function WindowTile({ window_nr, calendar_id, imageUpload, setImageUpload, reRender, token }) {
   // variables to get from SQL request based on window number and calendar id
   const [isFree, setIsFree] = useState(false);
   const [image, setImage] = useState('/Window.png');
@@ -14,7 +14,7 @@ function WindowTile({ window_nr, calendar_id }) {
   const [isWindowRegisterWindowOpen, setWindowRegisterWindowOpen] = React.useState(false);
   
   useEffect(() => {
-    console.log('Fetching thumbnail image for window', window_nr);
+    //console.log('Fetching thumbnail image for window', window_nr);
     const fetchImage = async () => {
       try {
         const response = await fetch(`http://localhost:7007/api/get-first-picture/${calendar_id}/${window_nr}`);
@@ -47,7 +47,8 @@ function WindowTile({ window_nr, calendar_id }) {
     };
 
     fetchImage();
-  }, [calendar_id, window_nr]);
+    reRender(false);
+  }, [calendar_id, window_nr, isFree, imageUpload]);
 
   // Event handler for clicking on the CardMedia
   const handleCardMediaClick = () => {
@@ -133,6 +134,7 @@ function WindowTile({ window_nr, calendar_id }) {
           window_nr={window_nr}
           calendar_id={calendar_id}
           onClose={() => setSlidingWindowOpen(false)}
+          setImageUpload={setImageUpload}
         />
       )}
       {isWindowRegisterWindowOpen && (
@@ -141,6 +143,9 @@ function WindowTile({ window_nr, calendar_id }) {
           window_nr={window_nr}
           calendar_id={calendar_id}
           onClose={() => setWindowRegisterWindowOpen(false)}
+          setIsFree={setIsFree}
+          reRender={reRender}
+          token={token}
         />
       )}
     </div>

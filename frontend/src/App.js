@@ -17,6 +17,10 @@ import Calendar from './components/Calendar';
 import DefaultCalendar from './components/DefaultCalendar';
 import { useAuth } from './AuthProvider';
 import WelcomePage from './components/WelcomePage';
+import Login from './components/Login';
+import UserRegistrationForm from './components/UserRegistrationForm';
+import AdventCalendarRegistrationForm from './components/AdventCalendarRegistrationForm';
+
 
 const drawerWidth = 240;
 
@@ -50,7 +54,10 @@ function App() {
   const [calendars, setCalendars] = useState([]);
   const [selectedCalendar, setSelectedCalendar] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [showLogin, setShowLogin] = useState(false);
   const [showRegistration, setShowRegistration] = useState(false);
+  const [showRegistrationCalendar, setShowRegistrationCalendar] = useState(false);
+  const [reRender, setReRender] = useState(false);
 
   //console.log('App', user, token);
   useEffect(() => {
@@ -66,12 +73,14 @@ function App() {
     };
 
     fetchCalendars();
-  }, []);
+    setReRender(false);
+  }, [reRender]);
 
   // For debugging only:
   useEffect(() => {
     console.log(calendars);
     console.log('selectedCalendar', selectedCalendar);
+    console.log("Render", reRender)
   }, [calendars, selectedCalendar]);
 
   return (
@@ -109,10 +118,38 @@ function App() {
           className='sidebar'
         >
           <List>
-            <ListItem button onClick={() => setShowRegistration(true)}>
-              <ListItemText primary="Register" />
+            <ListItem>
+              <ListItemText>
+                <Typography variant="p" style={{ fontWeight: 'bold' }}>
+                  Administration
+                </Typography>
+              </ListItemText>
+            </ListItem>
+          </List>  
+          <List>
+            <ListItem button onClick={() => {setShowLogin(true); setShowRegistration(false); setShowRegistrationCalendar(false); setSelectedCalendar(null)} }>
+              <ListItemText primary="Login" />
+            </ListItem>
+            <ListItem button onClick={() => {setShowRegistration(true); setShowLogin(false); setShowRegistrationCalendar(false); setSelectedCalendar(null)} }>
+              <ListItemText primary="Register a User" />
+            </ListItem>
+            <ListItem button onClick={() => {setShowRegistrationCalendar(true); setShowLogin(false); setShowRegistration(false); setSelectedCalendar(null)} }>
+              <ListItemText primary="Register a Calender" />
             </ListItem>
           </List>
+          <List>
+            <ListItem>
+            </ListItem>
+          </List>   
+          <List>
+            <ListItem>
+              <ListItemText>
+                <Typography variant="p" style={{ fontWeight: 'bold' }}>
+                  Calendars
+                </Typography>
+              </ListItemText>
+            </ListItem>
+          </List>   
           <TextField
             label="Search"
             variant="outlined"
@@ -127,6 +164,8 @@ function App() {
                   setSelectedCalendar(null);
                   setSelectedCalendar(calendar);
                   setShowRegistration(false);
+                  setShowRegistrationCalendar(false);
+                  setShowLogin(false);
                 }} 
                 key={calendar.name}
               >
@@ -137,13 +176,19 @@ function App() {
         </Drawer>
         <MainBox component="main" className='mainBox'>
           <Container className='mainContainer' >
-            {showRegistration ? (
-              <Registration />
-            ) : (
+            {showLogin ? (
+              <Login reRender={setReRender} token={token}/>
+            ) : showRegistrationCalendar ? (
+              <AdventCalendarRegistrationForm reRender={setReRender} token={token}/>
+            ) : showRegistration ? (
+              <UserRegistrationForm reRender={setReRender} token={token}/>
+            ) : 
+            (
               (calendars.length !== 0 && selectedCalendar) ? (
                 <DefaultCalendar
                   id={selectedCalendar.id}
                   name={selectedCalendar.name}
+                  token = {token}
                 />
               ) : (
                 <WelcomePage />

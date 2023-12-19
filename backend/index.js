@@ -6,6 +6,13 @@ const jwt = require('jsonwebtoken');
 const jwt_secret = "jwt_secret_sign_key"; // TODO read from ENV
 const multer = require('multer');
 
+// read config/secrets from .env
+const dbUser = process.env.DB_USER;
+const dbHost = process.env.DB_HOST;
+const dbName = process.env.DB;
+const dbPassword = process.env.DB_PASSWORD;
+const dbPort = process.env.DB_PORT;
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -13,11 +20,11 @@ app.use(express.json());
 const upload = multer();
 
 const pool = new Pool({
-  user: 'fwe',
-  host: 'localhost', // change if deployed
-  database: 'adventcalendar',
-  password: 'VerySecureAdventsklaenderPW',
-  port: 5432,
+  user: dbUser,
+  host: dbHost, // change if deployed
+  database: dbName,
+  password: dbPassword,
+  port: dbPort,
 });
 
 // New route to register users
@@ -105,8 +112,27 @@ app.post('/api/login', async (req, res) => {
 
 // New route to register advent calendars
 app.post('/api/registerAdventCalendar', async (req, res) => {
-  const { adventCalendarId, username } = req.body;
+  const { adventCalendarId } = req.body;
 
+  // Extract the token from the request headers
+  const token = req.headers.authorization;
+  // Check if the token is provided
+  if (!token) {
+    return res.status(401).json({ error: 'Unauthorized. Token missing.' });
+  }
+
+  // Check if the token is valid
+  try {
+    const decodedToken = jwt.verify(token.split(' ')[1], jwt_secret);
+    if (!decodedToken) {
+      return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
+    }
+    username = decodedToken.username;
+  } catch (error) {
+    console.error('Error verifying token', error);
+    return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
+  }
+  
   // Basic validation
   if (!adventCalendarId || !username) {
     console.log('Invalid request. Missing required parameters.');
@@ -282,7 +308,26 @@ app.post('/api/calendars/addComment', async (req, res) => {
 
 // New route to register window hosting
 app.post('/api/registerWindowHosting', async (req, res) => {
-  const { calendar_id, window_nr, username, addressName, coords, time, locationHint, hasApero  } = req.body;
+  const { calendar_id, window_nr, addressName, coords, time, locationHint, hasApero  } = req.body;
+
+  // Extract the token from the request headers
+  const token = req.headers.authorization;
+  // Check if the token is provided
+  if (!token) {
+    return res.status(401).json({ error: 'Unauthorized. Token missing.' });
+  }
+
+  // Check if the token is valid
+  try {
+    const decodedToken = jwt.verify(token.split(' ')[1], jwt_secret);
+    if (!decodedToken) {
+      return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
+    }
+    username = decodedToken.username;
+  } catch (error) {
+    console.error('Error verifying token', error);
+    return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
+  }
 
   // Check if the user exists
   try {

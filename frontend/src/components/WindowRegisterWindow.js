@@ -1,35 +1,54 @@
 // WindowRegisterWindow.js
-import React, { useCallback, useState, useEffect  } from 'react';
+import React, { useState, useEffect  } from 'react';
 import { Dialog, DialogContent, Typography, TextField, Button, FormControlLabel, Checkbox, Snackbar } from '@mui/material';
 import { translate } from './GeocodeAddress';
 
-function WindowRegisterWindow({window_nr, calendar_id, onClose}) {
-  const [username, setUsername] = useState('');
+function WindowRegisterWindow({window_nr, calendar_id, onClose, setIsFree, reRender, token}) {
   const [addressName, setAddressName] = useState('');
   const [time, setTime] = useState('');
   const [locationHint, setLocationHint] = useState('');
   const [hasApero, setHasApero] = useState(false);
   const [message, setMessage] = useState('');
   const [messageOpen, setMessageOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    // Check if the user is authenticated when the component mounts
+    const checkAuthentication = () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        // User is logged in
+        setIsLoggedIn(true);
+      } else {
+        // User is not logged in
+        setIsLoggedIn(false);
+      }
+    };
+
+    checkAuthentication();
+  }, []);
 
   // API request
   const handleSubmit = async (event) => {
     event.preventDefault();
     const coords = await translate(addressName);
-    console.log(coords);
     try {
       const response = await fetch('http://localhost:7007/api/registerWindowHosting', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ calendar_id, window_nr, username, addressName, coords, time, locationHint, hasApero }),
+          'Authorization': 'Bearer ' + token,
+        },        
+        body: JSON.stringify({ calendar_id, window_nr, addressName, coords, time, locationHint, hasApero }),
       });
 
       if (response.ok) {
         console.log('Window hosting registered successfully!');
         setMessage('Window hosting registered successfully!');
         setMessageOpen(true);
+        onClose();
+        setIsFree(false);
+        reRender(true);
       } else {
         console.error('Failed to register window hosting');
         console.log('response: ', response);
@@ -51,17 +70,13 @@ function WindowRegisterWindow({window_nr, calendar_id, onClose}) {
     setMessageOpen(false);
   };
 
-  return(
-      <Dialog open={true} onClose={onClose} sx={{ zIndex: 9999, position: 'absolute' }}>
-          <DialogContent sx={{ width: '400px', height: '700px', backgroundColor: 'rgb(173, 216, 230)'}}>
+  return (
+    <div>
+      {isLoggedIn ? (
+        <Dialog open={true} onClose={onClose} sx={{ zIndex: 9999, top: '4%', position: 'fixed', overflowY: 'auto'}}>
+          <DialogContent sx={{ width: '400px', height: '700px', backgroundColor: 'rgb(173, 216, 230)' }}>
             <form onSubmit={handleSubmit}>
               <Typography variant="h4">Window Hosting Registration</Typography>
-              <TextField
-                label="Username"
-                fullWidth
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-              />
               <TextField
                 label="Address"
                 fullWidth
@@ -91,15 +106,28 @@ function WindowRegisterWindow({window_nr, calendar_id, onClose}) {
                   }
                   label="Has Apero"
                 />
-                <Button type="submit" variant="contained" sx={{backgroundColor: 'green'}}>
+                <Button type="submit" variant="contained" sx={{ backgroundColor: 'green' }}>
                   Host a Window
                 </Button>
               </span>
             </form>
           </DialogContent>
           <Snackbar open={messageOpen} autoHideDuration={3000} onClose={handleClose} message={message} />
-      </Dialog>
-    );
+        </Dialog>
+      ) : (
+        // Display a message or redirect to the login page
+        <div>
+          <Dialog open={true} onClose={onClose} sx={{ zIndex: 9999, position: 'sticky' }}>
+          <DialogContent sx={{ width: '400px', height: '700px', backgroundColor: 'rgb(173, 216, 230)' }}>
+            <Typography variant="h4">Window Registration</Typography>
+            <Typography variant="p">Please login first, to register a window hosting.</Typography>
+          </DialogContent>
+          <Snackbar open={messageOpen} autoHideDuration={3000} onClose={handleClose} message={message} />
+        </Dialog>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default WindowRegisterWindow;
