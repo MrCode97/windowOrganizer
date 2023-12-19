@@ -89,7 +89,7 @@ function App() {
         <StyledAppBar>
           <Toolbar className='toolbar'>
             <Typography variant="h6" noWrap>
-              Welcome to the Advent Calendar
+              {(selectedCalendar) ? selectedCalendar.name : 'Welcome to the Advent Calendar'}
             </Typography>
               {user && (
                   <Typography variant="h6" noWrap style={{ marginLeft: 'auto' }}>

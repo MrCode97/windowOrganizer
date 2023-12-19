@@ -55,7 +55,7 @@ function Login( { reRender, token } ) {
     return (
         <div> {!isLoggedIn ? (
             <form onSubmit={handleLogin}>
-            <Typography className='registrationHeader' variant="h4">Login</Typography>
+            <Typography className='pageTitle' variant="h4">Login</Typography>
             <TextField
                 label="Username"
                 fullWidth

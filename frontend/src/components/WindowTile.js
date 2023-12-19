@@ -106,7 +106,7 @@ function WindowTile({ window_nr, calendar_id, imageUpload, setImageUpload, reRen
               variant="body2"
               color="text.secondary"
             >
-              Noch frei
+              Still Free
             </Typography>
           </Paper>
           <Paper

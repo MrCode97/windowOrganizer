@@ -4,7 +4,7 @@ import L from 'leaflet';
 const DrawMap = ({ coordinates }) => {
   if (coordinates.length > 0) {
     return (
-      <MapContainer center={[coordinates[0].x, coordinates[0].y]} zoom={13} scrollWheelZoom={false} style={{ height: "300px", width: "80%", margin: 20 }}>
+      <MapContainer center={[coordinates[0].x, coordinates[0].y]} zoom={13} scrollWheelZoom={false} style={{ height: "300px", width: "80%"}}>
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"

@@ -17,7 +17,7 @@ function DefaultCalendar({ id, name, token }) {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-      <Typography variant="h2" align="center">{name}</Typography>
+      <Typography className='pageTitle' sx={{paddingBottom: '0'}} variant="h2" align="center">{name}</Typography>
       <OverviewMap key={id} calendar_id={id} reRender={newWindow}/>
       <Grid container spacing={2} justifyContent="center">
         {window_nrs.map((window_nr) =>

@@ -64,7 +64,7 @@ function UserRegistrationForm({ reRender, token }) {
   return (
     <div> {!isLoggedIn ? (
       <form onSubmit={handleSubmit}>
-        <Typography className='registrationHeader' variant="h4">User Registration</Typography>
+        <Typography className='pageTitle' variant="h4">User Registration</Typography>
         <TextField
           label="Username"
           fullWidth

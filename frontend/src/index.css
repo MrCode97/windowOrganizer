@@ -38,13 +38,18 @@ code {
   background-color: rgb(173, 216, 230);
 }
 
-.registrationHeader {
-  padding: 10px;
-}
 
 footer {
   display: flex;
   justify-content: center;
   padding: 10px;
   background-color: lightgrey;
+}
+
+.welcomeParagraph {
+  padding: 10px;
+}
+
+.pageTitle {
+  padding: 10px;
 }

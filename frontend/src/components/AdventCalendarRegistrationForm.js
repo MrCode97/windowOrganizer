@@ -5,8 +5,8 @@ import { Typography, TextField, Button, Snackbar} from '@mui/material';
 function LoginHint() {
   return (
     <div>
-      <Typography variant="h4">Advent Calendar Registration</Typography>
-      <Typography variant="p">Please log in first to register an advent calendar.</Typography>
+      <Typography className='pageTitle' variant="h4">Advent Calendar Registration</Typography>
+      <Typography sx={{padding: '10px'}} variant="p">Please log in first to register an advent calendar.</Typography>
     </div>
   );
 }
@@ -76,7 +76,7 @@ function AdventCalendarRegistrationForm( { reRender, token } ) {
   return (
     <div> {isLoggedIn ? (
       <form onSubmit={handleSubmit}>
-        <Typography className='registrationHeader' variant="h4">Advent Calendar Registration</Typography>
+        <Typography className='pageTitle' variant="h4">Advent Calendar Registration</Typography>
         <TextField
           label="Advent Calendar Name"
           fullWidth
