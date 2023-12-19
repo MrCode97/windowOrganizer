@@ -3,7 +3,7 @@ import { Dialog, DialogContent, Tabs, Tab } from '@mui/material';
 import "leaflet/dist/leaflet.css";
 import { UploadImage } from './Upload'; 
 import { Gallery } from './Gallery';
-import CommentSection from './InfoSection';
+import InfoSection from './InfoSection';
 // Todo: - address from Backend in a senseful way
 // - test if adding comments works already
 // - fetch time from backend aswell
@@ -27,7 +27,7 @@ function SlidingWindow({window_nr, calendar_id, onClose, setImageUpload}) {
             </Tabs>
             <DialogContent sx={{ width: '400px', height: '700px', backgroundColor: 'rgb(173, 216, 230)' }}>
 
-            {activeTab === 0 && <CommentSection 
+            {activeTab === 0 && <InfoSection 
               window_nr={window_nr}
               onClose={onClose}
               calendar_id={calendar_id}
