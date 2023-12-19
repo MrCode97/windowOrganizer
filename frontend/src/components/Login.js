@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Typography, TextField, Button } from '@mui/material';
+import { Typography, TextField, Button, Box } from '@mui/material';
 import { useAuth } from '../AuthProvider';
 
 function Login( { reRender, token } ) {
@@ -74,7 +74,9 @@ function Login( { reRender, token } ) {
             </Button>
             </form>
         ) : (
-            <Typography variant="h4">You are already logged in!</Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                <Typography className='welcomeParagraph' align='center'>You are already logged in!</Typography>
+            </Box>
         )}
         </div>
     );

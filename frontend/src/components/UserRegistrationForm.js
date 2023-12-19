@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Typography, TextField, Button, Snackbar } from '@mui/material';
+import { Typography, TextField, Button, Snackbar, Box } from '@mui/material';
 
 function UserRegistrationForm({ reRender, token }) {
   const [username, setUsername] = useState('');
@@ -84,7 +84,9 @@ function UserRegistrationForm({ reRender, token }) {
         <Snackbar open={messageOpen} autoHideDuration={3000} onClose={handleClose} message={message} />
       </form>
     ) : (
-      <Typography variant="h4">You are already logged in!</Typography>
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+          <Typography className='welcomeParagraph' align='center'>You are already logged in!</Typography>
+        </Box>
     )}
     </div>
   );
