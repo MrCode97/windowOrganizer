@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Snackbar} from '@mui/material';
 
-const UploadImage = ({ calendarId, windowNr, onClose }) => {
+const UploadImage = ({ calendarId, windowNr, onClose, setImageUpload }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [message, setMessage] = useState('');
   const [messageOpen, setMessageOpen] = useState(false);
@@ -27,6 +27,7 @@ const UploadImage = ({ calendarId, windowNr, onClose }) => {
 
         if (data.success) {
           console.log('Image submitted successfully');
+          setImageUpload(true);
           setMessage('Image uploaded successfully!');
           setMessageOpen(true);
         } else {

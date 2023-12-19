@@ -11,7 +11,7 @@ import CommentSection from './InfoSection';
 // implement image load/ upload
 
 
-function SlidingWindow({window_nr, calendar_id, onClose}) {
+function SlidingWindow({window_nr, calendar_id, onClose, setImageUpload}) {
     const [activeTab, setActiveTab] = React.useState(0);
 
     const handleChangeTab = (event, newValue) => {
@@ -41,6 +41,7 @@ function SlidingWindow({window_nr, calendar_id, onClose}) {
               calendarId={calendar_id}
               windowNr={window_nr}
               onClose={onClose}
+              setImageUpload={setImageUpload}
             />}
             </DialogContent>
         </Dialog>
