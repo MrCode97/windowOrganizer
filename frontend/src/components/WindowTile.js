@@ -1,5 +1,5 @@
 // WindowTile.js
-import React, { useCallback, useState, useEffect  } from 'react';
+import React, { useState, useEffect  } from 'react';
 import { Card, CardMedia, CardActionArea, Typography, Paper} from '@mui/material';
 import SlidingWindow from './SlidingWindow';
 import WindowRegisterWindow from './WindowRegisterWindow';
