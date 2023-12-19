@@ -84,7 +84,7 @@ function WindowRegisterWindow({window_nr, calendar_id, onClose, setIsFree, reRen
                 onChange={(e) => setAddressName(e.target.value)}
               />
               <TextField
-                label="Time"
+                label="Time in dd:dd format"
                 fullWidth
                 value={time}
                 onChange={(e) => setTime(e.target.value)}
