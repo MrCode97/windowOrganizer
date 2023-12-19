@@ -47,6 +47,7 @@ function WindowTile({ window_nr, calendar_id, imageUpload, setImageUpload, reRen
     };
 
     fetchImage();
+    reRender(false);
   }, [calendar_id, window_nr, isFree, imageUpload]);
 
   // Event handler for clicking on the CardMedia
