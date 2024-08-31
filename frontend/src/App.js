@@ -175,16 +175,26 @@ function App() {
         <MainBox component="main" className='mainBox'>
           <Container className='mainContainer' >
             {!user && showLogin && (
-              <Login reRender={setReRender} token={token}/>
+              <Login reRender={setReRender}/>
             )}
-            {!user && !showLogin && showRegistrationCalendar && (
-              <AdventCalendarRegistrationForm reRender={setReRender} token={token}/>
+            {!user && showRegistrationCalendar && ( // Happens only if on page while clicking: logout
+              <AdventCalendarRegistrationForm reRender={setReRender}/>
             )}
-            {!user && !showLogin && !showRegistrationCalendar && showRegistration && (
-              <UserRegistrationForm reRender={setReRender} token={token}/>
+            {!user && showRegistration && (
+              <UserRegistrationForm reRender={setReRender}/>
             )}
-            {!user && !showLogin && !showRegistrationCalendar && !showRegistration && (
-              <WelcomePage />
+            {!user && !showRegistration && (
+              <>
+                {calendars.length !== 0 && selectedCalendar ? (
+                  <DefaultCalendar
+                    id={selectedCalendar.id}
+                    name={selectedCalendar.name}
+                    token={token}
+                  />
+                ) : (
+                  <WelcomePage />
+                )}
+              </>
             )}
             {user && (
               <>
