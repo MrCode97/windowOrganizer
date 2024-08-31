@@ -118,15 +118,21 @@ function App() {
             </ListItem>
           </List>  
           <List>
-            <ListItem button onClick={() => {setShowLogin(true); setShowRegistration(false); setShowRegistrationCalendar(false); setSelectedCalendar(null);} }>
-              <ListItemText primary="Login" />
-            </ListItem>
-            <ListItem button onClick={() => {setShowRegistration(true); setShowLogin(false); setShowRegistrationCalendar(false); setSelectedCalendar(null);} }>
-              <ListItemText primary="Register a User" />
-            </ListItem>
-            <ListItem button onClick={() => {setShowRegistrationCalendar(true); setShowLogin(false); setShowRegistration(false); setSelectedCalendar(null);} }>
-              <ListItemText primary="Register a Calender" />
-            </ListItem>
+            {!user && (
+              <ListItem button onClick={() => {setShowLogin(true); setShowRegistration(false); setShowRegistrationCalendar(false); setSelectedCalendar(null);} }>
+                <ListItemText primary="Login" />
+              </ListItem>
+            )}
+            {!user && (
+              <ListItem button onClick={() => {setShowRegistration(true); setShowLogin(false); setShowRegistrationCalendar(false); setSelectedCalendar(null);} }>
+                <ListItemText primary="Register a User" />
+              </ListItem>
+            )}
+            {user && (
+              <ListItem button onClick={() => {setShowRegistrationCalendar(true); setShowLogin(false); setShowRegistration(false); setSelectedCalendar(null);} }>
+                <ListItemText primary="Register a Calender" />
+              </ListItem>
+            )}
           </List>
           <List>
             <ListItem>
