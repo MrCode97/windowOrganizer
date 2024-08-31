@@ -174,23 +174,44 @@ function App() {
         </Drawer>
         <MainBox component="main" className='mainBox'>
           <Container className='mainContainer' >
-            {showLogin ? (
+            {!user && showLogin && (
               <Login reRender={setReRender} token={token}/>
-            ) : showRegistrationCalendar ? (
+            )}
+            {!user && !showLogin && showRegistrationCalendar && (
               <AdventCalendarRegistrationForm reRender={setReRender} token={token}/>
-            ) : showRegistration ? (
+            )}
+            {!user && !showLogin && !showRegistrationCalendar && showRegistration && (
               <UserRegistrationForm reRender={setReRender} token={token}/>
-            ) : 
-            (
-              (calendars.length !== 0 && selectedCalendar) ? (
-                <DefaultCalendar
-                  id={selectedCalendar.id}
-                  name={selectedCalendar.name}
-                  token = {token}
-                />
-              ) : (
-                <WelcomePage />
-              )
+            )}
+            {!user && !showLogin && !showRegistrationCalendar && !showRegistration && (
+              <WelcomePage />
+            )}
+            {user && (
+              <>
+                {showRegistrationCalendar && (
+                  <AdventCalendarRegistrationForm reRender={setReRender} token={token}/>
+                )}
+                {!showRegistrationCalendar && (
+                  <>
+                    {showRegistration && (
+                      <UserRegistrationForm reRender={setReRender} token={token}/>
+                    )}
+                    {!showRegistration && (
+                      <>
+                        {calendars.length !== 0 && selectedCalendar ? (
+                          <DefaultCalendar
+                            id={selectedCalendar.id}
+                            name={selectedCalendar.name}
+                            token={token}
+                          />
+                        ) : (
+                          <WelcomePage />
+                        )}
+                      </>
+                    )}
+                  </>
+                )}
+              </>
             )}
           </Container>
           <br/>
