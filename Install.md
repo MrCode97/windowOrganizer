@@ -6,6 +6,7 @@ git clone https://github.com/MrCode97/adventCalender.git
 Frontend:
 ```bash
 cd adventCalender/frontend
+export $(cat .env | xargs) # export env variables
 npm install     # install dependencies
 npm start       # run
 ```

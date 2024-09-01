@@ -18,7 +18,7 @@ const UploadImage = ({ calendarId, windowNr, onClose, setImageUpload }) => {
       formData.append('image', selectedFile);
 
       try {
-        const response = await fetch(`http://localhost:7007/api/upload-image/${calendarId}/${windowNr}`, {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/upload-image/${calendarId}/${windowNr}`, {
           method: 'POST',
           body: formData,
         });

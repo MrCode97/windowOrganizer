@@ -38,7 +38,7 @@ function AdventCalendarRegistrationForm( { reRender, token } ) {
 
     try {
       // Replace the following with your actual API endpoint
-      const response = await fetch('http://localhost:7007/api/registerAdventCalendar', {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/registerAdventCalendar`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

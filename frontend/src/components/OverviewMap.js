@@ -10,7 +10,7 @@ function OverviewMap({ calendar_id, reRender }) {
   // Make an API request to fetch calendar infos based on calendar_id
   const fetchCalendarMapInfo = useCallback(async () => {
     try {
-      const response = await fetch(`http://localhost:7007/api/calendarMapInfo?calendar_id=${calendar_id}`);
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/calendarMapInfo?calendar_id=${calendar_id}`);
       const data = await response.json();
       setCalendarMapInfos(data.calendarMapInfos);
     } catch (error) {
