@@ -41,7 +41,7 @@ function UserRegistrationForm({ reRender, token }) {
         setMessage('Registered successfully!')
         setUsername('');
         setPassword('');
-        reRender(true);
+        reRender(!reRender);
       } else {
         console.error('Failed to register user');
         console.log('response: ', response);

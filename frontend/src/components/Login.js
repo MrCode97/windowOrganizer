@@ -43,7 +43,7 @@ function Login( { reRender, token } ) {
             const { token } = await response.json();
             login({ username }, token);
 
-            reRender(true);
+            reRender(!reRender);
         } else {
             console.error('Login failed');
             // Handle failed login, e.g., display an error message to the user

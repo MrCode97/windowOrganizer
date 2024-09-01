@@ -49,7 +49,7 @@ function AdventCalendarRegistrationForm( { reRender, token } ) {
 
       if (response.ok) {
         console.log('Advent calendar registered successfully!');
-        reRender(true);
+        reRender(!reRender);
         setMessage('Advent calendar registered successfully!');
         setMessageOpen(true);
       } else {
