@@ -140,25 +140,28 @@ function App() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
           <List>
-            {calendars.filter(calendar => calendar.name.includes(searchTerm)).map((calendar) => (
-              <ListItem
-                button
-                onClick={() => {
-                  setSelectedCalendar(null);
-                  setSelectedCalendar(calendar);
-                  setShowRegistration(false);
-                  setShowRegistrationCalendar(false);
-                  setShowLogin(false);
-                }}
-                key={calendar.name}
-              >
-                <ListItemText primary={calendar.name} />
-              </ListItem>
-            ))}
+            {calendars
+              .filter(calendar =>
+                calendar.name.toLowerCase().includes(searchTerm.toLowerCase()) // Convert both to lowercase
+              )
+              .map((calendar) => (
+                <ListItem
+                  button
+                  onClick={() => {
+                    setSelectedCalendar(null);
+                    setSelectedCalendar(calendar);
+                    setShowRegistration(false);
+                    setShowRegistrationCalendar(false);
+                    setShowLogin(false);
+                  }}
+                  key={calendar.name}
+                >
+                  <ListItemText primary={calendar.name} />
+                </ListItem>
+              ))}
             <ListItem>
             </ListItem>
           </List>
-
           <List>
             <ListItem>
               <ListItemText>
