@@ -83,16 +83,16 @@ function App() {
             <Typography variant="h6" noWrap>
               {(selectedCalendar) ? selectedCalendar.name : 'Welcome to the Advent Calendar'}
             </Typography>
-              {user && (
-                  <Typography variant="h6" noWrap style={{ marginLeft: 'auto' }}>
-                    Hello {user}
-                  </Typography>
-                )}
-                {user && (
-                  <Button sx={{paddingLeft: '20px'}} color="inherit" onClick={logout}>
-                    Logout
-                  </Button>
-              )}
+            {user && (
+              <Typography variant="h6" noWrap style={{ marginLeft: 'auto' }}>
+                Hello {user}
+              </Typography>
+            )}
+            {user && (
+              <Button sx={{ paddingLeft: '20px' }} color="inherit" onClick={logout}>
+                Logout
+              </Button>
+            )}
           </Toolbar>
         </StyledAppBar>
         <Drawer
@@ -117,15 +117,13 @@ function App() {
                 </Typography>
               </ListItemText>
             </ListItem>
-          </List>  
-          <List>
-            <ListItemButton onClick={() => {setShowLogin(false); setShowRegistration(false); setShowRegistrationCalendar(false); setSelectedCalendar(null);} }>
+            <ListItemButton onClick={() => { setShowLogin(false); setShowRegistration(false); setShowRegistrationCalendar(false); setSelectedCalendar(null); }}>
               <ListItemText primary="Welcome" />
             </ListItemButton>
             <ListItem>
             </ListItem>
           </List>
-   
+
           <List>
             <ListItem>
               <ListItemText>
@@ -134,7 +132,7 @@ function App() {
                 </Typography>
               </ListItemText>
             </ListItem>
-          </List>   
+          </List>
           <TextField
             label="Search"
             variant="outlined"
@@ -143,15 +141,15 @@ function App() {
           />
           <List>
             {calendars.filter(calendar => calendar.name.includes(searchTerm)).map((calendar) => (
-              <ListItem 
-                button 
+              <ListItem
+                button
                 onClick={() => {
                   setSelectedCalendar(null);
                   setSelectedCalendar(calendar);
                   setShowRegistration(false);
                   setShowRegistrationCalendar(false);
                   setShowLogin(false);
-                }} 
+                }}
                 key={calendar.name}
               >
                 <ListItemText primary={calendar.name} />
@@ -169,20 +167,18 @@ function App() {
                 </Typography>
               </ListItemText>
             </ListItem>
-          </List>  
-          <List>
             {!user && (
-              <ListItemButton onClick={() => {setShowLogin(true); setShowRegistration(false); setShowRegistrationCalendar(false); setSelectedCalendar(null);} }>
+              <ListItemButton onClick={() => { setShowLogin(true); setShowRegistration(false); setShowRegistrationCalendar(false); setSelectedCalendar(null); }}>
                 <ListItemText primary="Login" />
               </ListItemButton>
             )}
             {!user && (
-              <ListItemButton button onClick={() => {setShowRegistration(true); setShowLogin(false); setShowRegistrationCalendar(false); setSelectedCalendar(null);} }>
+              <ListItemButton button onClick={() => { setShowRegistration(true); setShowLogin(false); setShowRegistrationCalendar(false); setSelectedCalendar(null); }}>
                 <ListItemText primary="Register a User" />
               </ListItemButton>
             )}
             {user && (
-              <ListItemButton button onClick={() => {setShowRegistrationCalendar(true); setShowLogin(false); setShowRegistration(false); setSelectedCalendar(null);} }>
+              <ListItemButton button onClick={() => { setShowRegistrationCalendar(true); setShowLogin(false); setShowRegistration(false); setSelectedCalendar(null); }}>
                 <ListItemText primary="Register a Calender" />
               </ListItemButton>
             )}
@@ -192,13 +188,13 @@ function App() {
         <MainBox component="main" className='mainBox'>
           <Container className='mainContainer' >
             {!user && showLogin && (
-              <Login reRender={setReRender}/>
+              <Login reRender={setReRender} />
             )}
             {!user && showRegistrationCalendar && ( // Happens only if on page while clicking: logout
-              <AdventCalendarRegistrationForm reRender={setReRender}/>
+              <AdventCalendarRegistrationForm reRender={setReRender} />
             )}
             {!user && showRegistration && (
-              <UserRegistrationForm reRender={setReRender}/>
+              <UserRegistrationForm reRender={setReRender} />
             )}
             {!user && !showLogin && !showRegistration && (
               <>
@@ -216,12 +212,12 @@ function App() {
             {user && (
               <>
                 {showRegistrationCalendar && (
-                  <AdventCalendarRegistrationForm reRender={setReRender} token={token}/>
+                  <AdventCalendarRegistrationForm reRender={setReRender} token={token} />
                 )}
                 {!showRegistrationCalendar && (
                   <>
                     {showRegistration && (
-                      <UserRegistrationForm reRender={setReRender} token={token}/>
+                      <UserRegistrationForm reRender={setReRender} token={token} />
                     )}
                     {!showRegistration && (
                       <>
@@ -241,8 +237,8 @@ function App() {
               </>
             )}
           </Container>
-          <br/>
-          <Footer/>
+          <br />
+          <Footer />
         </MainBox>
       </Root>
     </Router>
