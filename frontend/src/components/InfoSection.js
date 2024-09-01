@@ -1,7 +1,6 @@
 // InfoSection.js
 import React, { useState, useEffect  } from 'react';
 import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
 import DrawMap from './DrawMap'; // Make sure to replace with the correct path
 import CommentSection from './CommentSection';
 
@@ -42,7 +41,9 @@ const InfoSection = ({
       <Typography variant="body1">{addressName}, starting: {startTime}</Typography>
       {location_hint && <Typography variant="body1">{location_hint}</Typography>}
 
-      <DrawMap coordinates={coordinates}/>
+      <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <DrawMap coordinates={coordinates}/>
+      </div>
 
       <CommentSection calendar_id={calendar_id} window_nr={window_nr} />
       <br />
