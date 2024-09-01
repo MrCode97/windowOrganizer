@@ -55,9 +55,6 @@ function UserRegistrationForm({ reRender, token }) {
 
   // Message display
   const handleClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
     setMessageOpen(false);
   };
 
