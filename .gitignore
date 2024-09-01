@@ -34,6 +34,10 @@ coverage/
 .env.test.local
 .env.production.local
 
+# Ignore TODOs
+frontend/TODO.md
+backend/TODO.md
+
 # Ignore npm's and yarn's cache
 .npm/
 .yarn/
