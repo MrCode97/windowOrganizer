@@ -119,11 +119,9 @@ function App() {
             </ListItem>
           </List>  
           <List>
-            {!user && (
-              <ListItemButton onClick={() => {setShowLogin(false); setShowRegistration(false); setShowRegistrationCalendar(false); setSelectedCalendar(null);} }>
-                <ListItemText primary="Welcome" />
-              </ListItemButton>
-            )}
+            <ListItemButton onClick={() => {setShowLogin(false); setShowRegistration(false); setShowRegistrationCalendar(false); setSelectedCalendar(null);} }>
+              <ListItemText primary="Welcome" />
+            </ListItemButton>
             <ListItem>
             </ListItem>
           </List>
