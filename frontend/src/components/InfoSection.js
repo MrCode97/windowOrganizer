@@ -14,12 +14,12 @@ const InfoSection = ({
   onClose
 }) => {
   
-  const [location_hint, setHint] = useState("undefined");
+  const [location_hint, setHint] = useState('');
   const [hasApero, setApero] = useState(false);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
-  const [startTime, setStartTime] = useState("18.00");
-  const [addressName, setAddressName] = useState("Stockerstrasse 23, 8050 Zürich");
+  const [startTime, setStartTime] = useState('');
+  const [addressName, setAddressName] = useState('');
   const [coordinates, setCoordinates] = useState([]);
 
   useEffect(() => {
