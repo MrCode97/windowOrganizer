@@ -39,12 +39,16 @@ function UserRegistrationForm({ reRender, token }) {
         console.log('User registered successfully!');
         setMessageOpen(true);
         setMessage('Registered successfully!')
+        setUsername('');
+        setPassword('');
         reRender(true);
       } else {
         console.error('Failed to register user');
         console.log('response: ', response);
         setMessageOpen(true);
         setMessage('Username already exists!')
+        setUsername('');
+        setPassword('');
       }
     } catch (error) {
       console.error('Error during user registration', error);
