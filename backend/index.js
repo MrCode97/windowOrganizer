@@ -27,54 +27,7 @@ const pool = new Pool({
   port: dbPort,
 });
 
-// New route to register users
-app.post('/api/registerUser', async (req, res) => {
-    const { username, password } = req.body;
-    // Basic validation
-    if (!username || !password) {
-      return res.status(400).json({ error: 'Invalid request. Missing required parameters.' });
-    }
-  
-    // Check if the username is already taken
-    try {
-      const existingUser = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
-  
-      if (existingUser.rows.length > 0) {
-        console.log(`Username: ${username} already taken`);
-        return res.status(400).json({ error: 'Username already taken.' });
-      }
-      console.log(`User: ${username} registerd successfully!`);
-    } catch (error) {
-        console.error('Error checking existing user', error);
-        return res.status(500).json({ error: 'Internal Server Error' });
-    }
-  
-    // Hash the password before storing it in the database
-    const hashedPassword = await bcrypt.hash(password, 10);
-  
-    // Register the user
-    try {
-        await pool.query('INSERT INTO users (username, password) VALUES ($1, $2)', [username, hashedPassword]);
-        console.log(`User: ${username}:${hashedPassword} registerd successfully!`);
-        res.status(200).json({ message: 'User registered successfully!' });
-    } catch (error) {
-        console.error('Error registering user', error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
-  });
-
-
-// Existing route to retrieve users
-app.get('/api/users', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT * FROM users');
-    res.json(result.rows);
-  } catch (error) {
-    console.error('Error executing query', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
-
+// Admin
 app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
 
@@ -110,7 +63,41 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// New route to register advent calendars
+app.post('/api/registerUser', async (req, res) => {
+    const { username, password } = req.body;
+    // Basic validation
+    if (!username || !password) {
+      return res.status(400).json({ error: 'Invalid request. Missing required parameters.' });
+    }
+  
+    // Check if the username is already taken
+    try {
+      const existingUser = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
+  
+      if (existingUser.rows.length > 0) {
+        console.log(`Username: ${username} already taken`);
+        return res.status(400).json({ error: 'Username already taken.' });
+      }
+      console.log(`User: ${username} registerd successfully!`);
+    } catch (error) {
+        console.error('Error checking existing user', error);
+        return res.status(500).json({ error: 'Internal Server Error' });
+    }
+  
+    // Hash the password before storing it in the database
+    const hashedPassword = await bcrypt.hash(password, 10);
+  
+    // Register the user
+    try {
+        await pool.query('INSERT INTO users (username, password) VALUES ($1, $2)', [username, hashedPassword]);
+        console.log(`User: ${username}:${hashedPassword} registerd successfully!`);
+        res.status(200).json({ message: 'User registered successfully!' });
+    } catch (error) {
+        console.error('Error registering user', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
 app.post('/api/registerAdventCalendar', async (req, res) => {
   const { adventCalendarId } = req.body;
 
@@ -180,133 +167,6 @@ app.post('/api/registerAdventCalendar', async (req, res) => {
   }
 });
 
-
-
-app.get('/api/calendars', async (req, res) => {
-    try {
-      const result = await pool.query('SELECT * FROM adventCalendars');
-      res.json(result.rows);
-    } catch (error) {
-      console.error('Error retrieving calendars', error);
-      res.status(500).json({ error: 'Internal Server Error' });
-    }
-  });
-
-// Logic to add a new comment
-app.post("/api/calendars", async (req, res) => {
-  const { windowId, comment} = req.body;
-  try {
-    // Insert the comment into the database
-    // Checks if comment array exists, if not inserts comment as array else concatenates existing array with new comment array
-    const result = await pool.query(
-      'INSERT INTO adventWindow (id, comments) VALUES ($1, ARRAY[$2]) ON CONFLICT (id) DO UPDATE SET comments = adventWindow.comments || ARRAY[$2]',
-      [windowId, comment]
-    );
-
-    res.json({ success: true, message: 'Comment added successfully' });
-  } catch (error) {
-    console.error('Error adding comment:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
-  }
-});
-
-app.get('/api/calendar/comments', async (req, res) => {
-  const { calendar_id, window_nr } = req.query;
-  try {
-    // Fetch comments based on calendar_id and window_nr
-    const result = await pool.query(
-      'SELECT * FROM adventWindow WHERE window_nr = $2 AND calendar_id = $1',
-      [calendar_id, window_nr]
-    );
-    const comments = result.rows.length > 0 ? result.rows[0].comments : [];
-    const hasApero = result.rows[0].apero;
-    const location_hint = result.rows[0].location_hint.length > 0 ? result.rows[0].location_hint : "";
-
-    res.json({ success: true, comments: comments, hasApero: hasApero, location_hint: location_hint});
-  } catch (error) {
-    console.error('Error fetching comments:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
-  }
-});
-
-app.get('/api/get-first-picture/:calendar_id/:window_nr', async (req, res) => {
-  try {
-    const { calendar_id, window_nr } = req.params;
-
-    // Retrieve all pictures from the database for the specified calendar and window
-    const selectQuery = `
-      SELECT *
-      FROM adventWindow
-      WHERE calendar_id = $1 AND window_nr = $2
-    `;
-
-    const result = await pool.query(selectQuery, [calendar_id, window_nr]);
-
-    if (result.rows.length > 0) {
-      if (result.rows[0].pictures.length > 0) {
-        const picture = result.rows[0].pictures[0];
-        res.status(200).json({ success: true, isFree: false, picture: [picture] });
-      } else {
-        res.status(200).json({ success: true, isFree: false, picture: [] });
-      };
-    } else {
-      res.status(200).json({ success: true, isFree: true, picture: [] });
-    }
-  } catch (error) {
-    console.error('Error fetching picture:', error);
-    res.status(500).json({ success: false, message: 'Internal Server Error' });
-  }
-});
-
-app.get('/api/calendarMapInfo', async (req, res) => {
-  const { calendar_id } = req.query;
-  try {
-    // Fetch coordwindow info based on calendar_id
-    const result = await pool.query(
-      'SELECT * FROM adventWindow WHERE calendar_id = $1',
-      [calendar_id]
-    );
-    if (result.rows.length > 0) {
-      // The query returned some rows
-      const calendarMapInfos = [];
-      for (const row of result.rows) {
-        calendarMapInfos.push({
-          window_nr: row.window_nr,
-          address_name: row.address_name,
-          address: row.address,
-          time: row.time
-        });
-      }
-      res.json({ success: true, calendarMapInfos: calendarMapInfos});
-    } else {
-      // The query did not return any rows
-      res.json({ success: true, calendarMapInfos: []});
-    }
-  } catch (error) {
-    console.error('Error fetching calendar map infos:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
-  }
-});
-
-app.post('/api/calendars/addComment', async (req, res) => {
-  const { window_nr, calendar_id } = req.query;
-  const { comment } = req.body;
-  try {
-    // Insert the comment into the database
-    // Checks if comment array exists, if not inserts comment as array else concatenates existing array with new comment array
-    const result = await pool.query(
-      'INSERT INTO adventWindow (window_nr, calendar_id, comments) VALUES ($1, $2, ARRAY[$3]) ON CONFLICT (window_nr, calendar_id) DO UPDATE SET comments = adventWindow.comments || ARRAY[$3]',
-      [window_nr, calendar_id, comment]
-    );
-
-    res.json({ success: true, message: 'Comment added successfully' });
-  } catch (error) {
-    console.error('Error adding comment:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
-  }
-});
-
-// New route to register window hosting
 app.post('/api/registerWindowHosting', async (req, res) => {
   const { calendar_id, window_nr, addressName, coords, time, locationHint, hasApero  } = req.body;
 
@@ -383,8 +243,19 @@ app.post('/api/registerWindowHosting', async (req, res) => {
   }
 });
 
-// New route to getWindowData
-app.get('/api/getWindowData', async (req, res) => {
+
+// Get Calender Data
+app.get('/api/calendars', async (req, res) => {
+    try {
+      const result = await pool.query('SELECT * FROM adventCalendars');
+      res.json(result.rows);
+    } catch (error) {
+      console.error('Error retrieving calendars', error);
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
+
+app.get('/api/calendar', async (req, res) => {
   const { calendar_id, window_nr } = req.query;
   try {
     // Fetch window info based on calendar_id and window_nr
@@ -402,6 +273,128 @@ app.get('/api/getWindowData', async (req, res) => {
     }
   } catch (error) {
     console.error('Error fetching window infos:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
+
+app.get('/api/comments', async (req, res) => {
+  const { calendar_id, window_nr } = req.query;
+  try {
+    // Fetch comments based on calendar_id and window_nr
+    const result = await pool.query(
+      'SELECT * FROM adventWindow WHERE window_nr = $2 AND calendar_id = $1',
+      [calendar_id, window_nr]
+    );
+    const comments = result.rows.length > 0 ? result.rows[0].comments : [];
+    const hasApero = result.rows[0].apero;
+    const location_hint = result.rows[0].location_hint.length > 0 ? result.rows[0].location_hint : "";
+
+    res.json({ success: true, comments: comments, hasApero: hasApero, location_hint: location_hint});
+  } catch (error) {
+    console.error('Error fetching comments:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
+
+app.get('/api/picture/:calendar_id/:window_nr', async (req, res) => {
+  try {
+    const { calendar_id, window_nr } = req.params;
+
+    // Retrieve only first pictures from the database for the specified calendar and window
+    const selectQuery = `
+      SELECT pictures[1] AS picture -- Fetch the first element from the pictures array
+      FROM adventWindow
+      WHERE calendar_id = $1 AND window_nr = $2
+    `;
+
+    const result = await pool.query(selectQuery, [calendar_id, window_nr]);
+
+    if (result.rows.length > 0) {
+      const picture = result.rows[0].picture;
+      if (picture) {
+        res.status(200).json({ success: true, isFree: false, picture: [picture] });
+      } else {
+        res.status(200).json({ success: true, isFree: false, picture: [] });
+      }
+    } else {
+      res.status(200).json({ success: true, isFree: true, picture: [] });
+    }
+  } catch (error) {
+    console.error('Error fetching picture:', error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+});
+// TODO: think about only returning a number of pictures per request
+app.get('/api/pictures/:calendar_id/:window_nr', async (req, res) => {
+  try {
+    const { calendar_id, window_nr } = req.params;
+
+    // Retrieve all pictures from the database for the specified calendar and window
+    const selectQuery = `
+      SELECT pictures
+      FROM adventWindow
+      WHERE calendar_id = $1 AND window_nr = $2
+    `;
+
+    const result = await pool.query(selectQuery, [calendar_id, window_nr]);
+
+    if (result.rows.length > 0) {
+      const pictures = result.rows[0].pictures || [];
+      res.status(200).json({ success: true, pictures });
+    } else {
+      res.status(404).json({ success: false, message: 'No pictures found for the specified calendar and window.' });
+    }
+  } catch (error) {
+    console.error('Error fetching pictures:', error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+});
+
+app.get('/api/calendarMapInfo', async (req, res) => {
+  const { calendar_id } = req.query;
+  try {
+    // Fetch coordwindow info based on calendar_id
+    const result = await pool.query(
+      'SELECT * FROM adventWindow WHERE calendar_id = $1',
+      [calendar_id]
+    );
+    if (result.rows.length > 0) {
+      // The query returned some rows
+      const calendarMapInfos = [];
+      for (const row of result.rows) {
+        calendarMapInfos.push({
+          window_nr: row.window_nr,
+          address_name: row.address_name,
+          address: row.address,
+          time: row.time
+        });
+      }
+      res.json({ success: true, calendarMapInfos: calendarMapInfos});
+    } else {
+      // The query did not return any rows
+      res.json({ success: true, calendarMapInfos: []});
+    }
+  } catch (error) {
+    console.error('Error fetching calendar map infos:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
+
+
+// Post Calender Data
+app.post("/api/calendars", async (req, res) => {
+  const { windowId, comment} = req.body;
+  try {
+    // Insert the comment into the database
+    // Checks if comment array exists, if not inserts comment as array else concatenates existing array with new comment array
+    const result = await pool.query(
+      'INSERT INTO adventWindow (id, comments) VALUES ($1, ARRAY[$2]) ON CONFLICT (id) DO UPDATE SET comments = adventWindow.comments || ARRAY[$2]',
+      [windowId, comment]
+    );
+
+    res.json({ success: true, message: 'Comment added successfully' });
+  } catch (error) {
+    console.error('Error adding comment:', error);
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });
@@ -435,29 +428,21 @@ app.post('/api/upload-image/:calendar_id/:window_nr', upload.single('image'), as
   }
 });
 
-// TODO: think about only returning a number of pictures per request
-app.get('/api/get-all-pictures/:calendar_id/:window_nr', async (req, res) => {
+app.post('/api/calendars/addComment', async (req, res) => {
+  const { window_nr, calendar_id } = req.query;
+  const { comment } = req.body;
   try {
-    const { calendar_id, window_nr } = req.params;
+    // Insert the comment into the database
+    // Checks if comment array exists, if not inserts comment as array else concatenates existing array with new comment array
+    const result = await pool.query(
+      'INSERT INTO adventWindow (window_nr, calendar_id, comments) VALUES ($1, $2, ARRAY[$3]) ON CONFLICT (window_nr, calendar_id) DO UPDATE SET comments = adventWindow.comments || ARRAY[$3]',
+      [window_nr, calendar_id, comment]
+    );
 
-    // Retrieve all pictures from the database for the specified calendar and window
-    const selectQuery = `
-      SELECT pictures
-      FROM adventWindow
-      WHERE calendar_id = $1 AND window_nr = $2
-    `;
-
-    const result = await pool.query(selectQuery, [calendar_id, window_nr]);
-
-    if (result.rows.length > 0) {
-      const pictures = result.rows[0].pictures || [];
-      res.status(200).json({ success: true, pictures });
-    } else {
-      res.status(404).json({ success: false, message: 'No pictures found for the specified calendar and window.' });
-    }
+    res.json({ success: true, message: 'Comment added successfully' });
   } catch (error) {
-    console.error('Error fetching pictures:', error);
-    res.status(500).json({ success: false, message: 'Internal Server Error' });
+    console.error('Error adding comment:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });
 

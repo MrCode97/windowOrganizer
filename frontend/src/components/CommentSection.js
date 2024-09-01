@@ -14,7 +14,7 @@ function CommentSection({ calendar_id, window_nr}) {
 
     useEffect(() => {
         const fetchData = async () => {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/calendar/comments?calendar_id=${calendar_id}&window_nr=${window_nr}`);
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/comments?calendar_id=${calendar_id}&window_nr=${window_nr}`);
             const data = await response.json();
             setComments(data.comments);
         };

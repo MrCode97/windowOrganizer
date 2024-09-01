@@ -16,7 +16,7 @@ function WindowTile({ window_nr, calendar_id, imageUpload, setImageUpload, reRen
   useEffect(() => {
     const fetchImage = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/get-first-picture/${calendar_id}/${window_nr}`);
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/picture/${calendar_id}/${window_nr}`);
         const data = await response.json();
 
         if (data.success) {
