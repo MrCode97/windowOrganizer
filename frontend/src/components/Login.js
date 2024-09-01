@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Typography, TextField, Button, Box } from '@mui/material';
+import { Typography, TextField, Button, Box, Snackbar } from '@mui/material';
 import { useAuth } from '../AuthProvider';
 
 function Login( { reRender, token } ) {
@@ -7,6 +7,8 @@ function Login( { reRender, token } ) {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [message, setMessage] = useState('');
+    const [messageOpen, setMessageOpen] = useState(false);
 
     useEffect(() => {
         // Check if the user is authenticated when the component mounts
@@ -39,17 +41,23 @@ function Login( { reRender, token } ) {
             console.log('Login successful!');
             // Handle successful login, e.g., redirecting the user or setting authentication state
             const { token } = await response.json();
-
             login({ username }, token);
+
             reRender(true);
         } else {
             console.error('Login failed');
             // Handle failed login, e.g., display an error message to the user
+            setMessageOpen(true);
+            setMessage('Login failed!')
         }
         } catch (error) {
         console.error('Error during login', error);
         // Handle error, e.g., display an error message to the user
         }
+    };
+
+    const handleClose = (event, reason) => {
+        setMessageOpen(false);
     };
 
     return (
@@ -72,6 +80,7 @@ function Login( { reRender, token } ) {
             <Button type="submit" variant="contained" sx={{backgroundColor: 'green', marginTop: '10px'}}>
                 Login
             </Button>
+            <Snackbar open={messageOpen} autoHideDuration={3000} onClose={handleClose} message={message}/>
             </form>
         ) : (
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
