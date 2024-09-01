@@ -113,32 +113,21 @@ function App() {
             <ListItem>
               <ListItemText>
                 <Typography variant="p" style={{ fontWeight: 'bold' }}>
-                  Administration
+                  Info
                 </Typography>
               </ListItemText>
             </ListItem>
           </List>  
           <List>
             {!user && (
-              <ListItemButton onClick={() => {setShowLogin(true); setShowRegistration(false); setShowRegistrationCalendar(false); setSelectedCalendar(null);} }>
-                <ListItemText primary="Login" />
+              <ListItemButton onClick={() => {setShowLogin(false); setShowRegistration(false); setShowRegistrationCalendar(false); setSelectedCalendar(null);} }>
+                <ListItemText primary="Welcome" />
               </ListItemButton>
             )}
-            {!user && (
-              <ListItemButton button onClick={() => {setShowRegistration(true); setShowLogin(false); setShowRegistrationCalendar(false); setSelectedCalendar(null);} }>
-                <ListItemText primary="Register a User" />
-              </ListItemButton>
-            )}
-            {user && (
-              <ListItemButton button onClick={() => {setShowRegistrationCalendar(true); setShowLogin(false); setShowRegistration(false); setSelectedCalendar(null);} }>
-                <ListItemText primary="Register a Calender" />
-              </ListItemButton>
-            )}
-          </List>
-          <List>
             <ListItem>
             </ListItem>
-          </List>   
+          </List>
+   
           <List>
             <ListItem>
               <ListItemText>
@@ -170,7 +159,37 @@ function App() {
                 <ListItemText primary={calendar.name} />
               </ListItem>
             ))}
+            <ListItem>
+            </ListItem>
           </List>
+
+          <List>
+            <ListItem>
+              <ListItemText>
+                <Typography variant="p" style={{ fontWeight: 'bold' }}>
+                  Administration
+                </Typography>
+              </ListItemText>
+            </ListItem>
+          </List>  
+          <List>
+            {!user && (
+              <ListItemButton onClick={() => {setShowLogin(true); setShowRegistration(false); setShowRegistrationCalendar(false); setSelectedCalendar(null);} }>
+                <ListItemText primary="Login" />
+              </ListItemButton>
+            )}
+            {!user && (
+              <ListItemButton button onClick={() => {setShowRegistration(true); setShowLogin(false); setShowRegistrationCalendar(false); setSelectedCalendar(null);} }>
+                <ListItemText primary="Register a User" />
+              </ListItemButton>
+            )}
+            {user && (
+              <ListItemButton button onClick={() => {setShowRegistrationCalendar(true); setShowLogin(false); setShowRegistration(false); setSelectedCalendar(null);} }>
+                <ListItemText primary="Register a Calender" />
+              </ListItemButton>
+            )}
+          </List>
+
         </Drawer>
         <MainBox component="main" className='mainBox'>
           <Container className='mainContainer' >
@@ -183,7 +202,7 @@ function App() {
             {!user && showRegistration && (
               <UserRegistrationForm reRender={setReRender}/>
             )}
-            {!user && !showRegistration && (
+            {!user && !showLogin && !showRegistration && (
               <>
                 {calendars.length !== 0 && selectedCalendar ? (
                   <DefaultCalendar
