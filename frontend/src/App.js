@@ -62,7 +62,7 @@ function App() {
     // Fetch calendar data when the component mounts
     const fetchCalendars = async () => {
       try {
-        const response = await fetch('http://localhost:7007/api/calendars');
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/calendars`);
         const data = await response.json();
         setCalendars(data);
       } catch (error) {
