@@ -47,6 +47,7 @@ function Login( { reRender, token } ) {
         } else {
             console.error('Login failed');
             // Handle failed login, e.g., display an error message to the user
+            setPassword('');
             setMessageOpen(true);
             setMessage('Login failed!')
         }
