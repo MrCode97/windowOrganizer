@@ -1,5 +1,5 @@
 // WindowRegisterWindow.js
-import React, { useState, useEffect  } from 'react';
+import React, { useState  } from 'react';
 import { Dialog, DialogContent, Typography, TextField, Button, FormControlLabel, Checkbox, Snackbar } from '@mui/material';
 import { translate } from './GeocodeAddress';
 
@@ -10,23 +10,6 @@ function WindowRegisterWindow({window_nr, calendar_id, onClose, token, locationA
   const [hasApero, setHasApero] = useState(false);
   const [message, setMessage] = useState('');
   const [messageOpen, setMessageOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-    // Check if the user is authenticated when the component mounts
-    const checkAuthentication = () => {
-      const token = localStorage.getItem('token');
-      if (token) {
-        // User is logged in
-        setIsLoggedIn(true);
-      } else {
-        // User is not logged in
-        setIsLoggedIn(false);
-      }
-    };
-
-    checkAuthentication();
-  }, []);
 
   // API request
   const handleSubmit = async (event) => {
@@ -69,7 +52,7 @@ function WindowRegisterWindow({window_nr, calendar_id, onClose, token, locationA
 
   return (
     <div>
-      {isLoggedIn ? (
+      {token ? (
         <Dialog open={true} onClose={onClose} sx={{ zIndex: 9999, top: '4%', position: 'fixed', overflowY: 'auto'}}>
           <DialogContent sx={{ width: '400px', height: '700px', backgroundColor: 'rgb(173, 216, 230)' }}>
             <form onSubmit={handleSubmit}>

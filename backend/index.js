@@ -47,7 +47,7 @@ async function isValidToken(req){
     console.debug('Unauthorized. Invalid token.');
     return false;
   }
-  
+  console.log("HEERE");
   // Check if the user exists
   try {
     const userExists = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
@@ -133,7 +133,7 @@ app.post('/api/registerUser', async (req, res) => {
     }
 });
 app.post('/api/registerAdventCalendar', async (req, res) => {
-  if (!isValidToken(req)){
+  if (! await isValidToken(req)){
     return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
   }
   const token = req.headers.authorization;
@@ -178,7 +178,7 @@ app.post('/api/registerAdventCalendar', async (req, res) => {
   }
 });
 app.post('/api/registerWindowHosting', async (req, res) => {
-  if (!isValidToken(req)){
+  if (! await isValidToken(req)){
     return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
   }
   const { calendar_id, window_nr, addressName, coords, time, locationHint, hasApero } = req.body;
@@ -330,6 +330,10 @@ app.get('/api/pictures', async (req, res) => {
 });
 // TODO: maybe do some preprocessing on the image data before storing it in the database or set a limit
 app.post('/api/pictures', upload.single('image'), async (req, res) => {
+  if (! await isValidToken(req)){
+    return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
+  }
+
   try {
     const { calendar_id, window_nr } = req.query;
     const { buffer } = req.file; // Image data
@@ -362,25 +366,24 @@ app.get('/api/comments', async (req, res) => {
   try {
     // Fetch comments based on calendar_id and window_nr
     const result = await pool.query(
-      'SELECT * FROM adventWindow WHERE window_nr = $2 AND calendar_id = $1',
+      'SELECT comments FROM adventWindow WHERE window_nr = $2 AND calendar_id = $1',
       [calendar_id, window_nr]
     );
     const comments = result.rows.length > 0 ? result.rows[0].comments : [];
-    const hasApero = result.rows[0].apero;
-    const location_hint = result.rows[0].location_hint.length > 0 ? result.rows[0].location_hint : "";
 
-    res.json({ success: true, comments: comments, hasApero: hasApero, location_hint: location_hint});
+    res.json({ success: true, comments: comments});
   } catch (error) {
     console.error('Error fetching comments:', error);
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });
 app.post('/api/comments', async (req, res) => {
+  if (! await isValidToken(req)){
+    return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
+  }
   const { window_nr, calendar_id } = req.query;
   const { comment } = req.body;
   try {
-    // Insert the comment into the database
-    // Checks if comment array exists, if not inserts comment as array else concatenates existing array with new comment array
     const result = await pool.query(
       'INSERT INTO adventWindow (window_nr, calendar_id, comments) VALUES ($1, $2, ARRAY[$3]) ON CONFLICT (window_nr, calendar_id) DO UPDATE SET comments = adventWindow.comments || ARRAY[$3]',
       [window_nr, calendar_id, comment]
@@ -426,8 +429,3 @@ app.get('/api/locations', async (req, res) => {
 app.listen(7007, () => {
   console.log('Server listening on port 7007');
 });
-
-
-// TODOs:
-// only allow "logged in" users to register calendars
-// refresh navigation bar after registration to render new calendars

@@ -7,6 +7,7 @@ import CommentSection from './CommentSection';
 const InfoSection = ({
   calendar_id,
   window_nr,
+  token,
   onClose
 }) => {
   
@@ -45,7 +46,7 @@ const InfoSection = ({
         <DrawMap coordinates={coordinates}/>
       </div>
 
-      <CommentSection calendar_id={calendar_id} window_nr={window_nr} />
+      <CommentSection calendar_id={calendar_id} window_nr={window_nr} token={token}/>
       <br />
     </>
   );

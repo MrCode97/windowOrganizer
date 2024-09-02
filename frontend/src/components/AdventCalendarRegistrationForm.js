@@ -1,5 +1,5 @@
 // AdventCalendarRegistrationForm.js
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Typography, TextField, Button, Snackbar} from '@mui/material';
 
 function LoginHint() {
@@ -15,22 +15,6 @@ function AdventCalendarRegistrationForm( { calendarAdded, setCalendarAdded, toke
   const [adventCalendarId, setAdventCalendarId] = useState('');
   const [message, setMessage] = useState('');
   const [messageOpen, setMessageOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  
-    useEffect(() => {
-      // Check if the user is authenticated when the component mounts
-      const checkAuthentication = () => {
-        if (token) {
-          // User is logged in
-          setIsLoggedIn(true);
-        } else {
-          // User is not logged in
-          setIsLoggedIn(false);
-        }
-      };
-  
-      checkAuthentication();
-    }, [token]);  
 
   // API request
   const handleSubmit = async (event) => {
@@ -73,7 +57,7 @@ function AdventCalendarRegistrationForm( { calendarAdded, setCalendarAdded, toke
   };
 
   return (
-    <div> {isLoggedIn ? (
+    <div> {token ? (
       <form onSubmit={handleSubmit}>
         <Typography className='pageTitle' variant="h4">Advent Calendar Registration</Typography>
         <TextField

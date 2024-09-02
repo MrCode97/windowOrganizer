@@ -72,7 +72,7 @@ function App() {
     };
 
     fetchCalendars();
-  }, [calendarAdded, userAdded]);
+  }, [calendarAdded, userAdded, token]);
 
 
   return (
@@ -192,9 +192,6 @@ function App() {
           <Container className='mainContainer' >
             {!user && showLogin && (
               <Login userAdded={userAdded} setUserAdded={setUserAdded} />
-            )}
-            {!user && showRegistrationCalendar && ( // Happens only if on page while clicking: logout
-              <AdventCalendarRegistrationForm calendarAdded={calendarAdded} setCalendarAdded={setCalendarAdded} />
             )}
             {!user && showRegistration && (
               <UserRegistrationForm />

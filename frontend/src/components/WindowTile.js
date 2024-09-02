@@ -132,6 +132,7 @@ function WindowTile({ window_nr, calendar_id, token, locationAdded, setLocationA
           onClose={() => setSlidingWindowOpen(false)}
           imageUpload={imageUpload}
           setImageUpload={setImageUpload}
+          token={token}
         />
       )}
       {isWindowRegisterWindowOpen && (
