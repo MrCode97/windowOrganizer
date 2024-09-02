@@ -3,10 +3,9 @@ const { Pool } = require('pg');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const jwt_secret = "jwt_secret_sign_key"; // TODO read from ENV
 const multer = require('multer');
 
-// read config/secrets from .env
+const jwt_secret = process.env.JWT_SECRET;
 const dbUser = process.env.DB_USER;
 const dbHost = process.env.DB_HOST;
 const dbName = process.env.DB;
@@ -47,7 +46,6 @@ async function isValidToken(req){
     console.debug('Unauthorized. Invalid token.');
     return false;
   }
-  console.log("HEERE");
   // Check if the user exists
   try {
     const userExists = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
@@ -87,7 +85,7 @@ app.post('/api/login', async (req, res) => {
 
     if (passwordMatch) {
       const token = jwt.sign({ username: result.rows[0].username }, jwt_secret, {
-        expiresIn: '1h', // Token expiration time (adjust as needed)
+        expiresIn: '1h',
       });
       res.status(200).json({ message: 'Login successful!', token });
     } else {
@@ -156,7 +154,6 @@ app.post('/api/registerAdventCalendar', async (req, res) => {
     const existingCalendar = await pool.query('SELECT name FROM adventCalendars WHERE name = $1', [adventCalendarId]);
 
     if (existingCalendar.rows.length > 0) {
-        console.log(`Advent calendar with a same name: ${adventCalendarId} already registered`);
         return res.status(400).json({ error: 'Advent calendar name already taken.' });
     }
   } catch (error) {
@@ -204,7 +201,7 @@ app.post('/api/registerWindowHosting', async (req, res) => {
     );
 
     if (existingWindow.rows.length > 0) {
-      console.log(`Advent calendar: ${calendar_id} already registered`);
+      console.debug(`Advent calendar: ${calendar_id} already registered`);
        return res.status(400).json({ error: 'Advent calendar already registered.' });
     }
   } catch (error) {
@@ -218,16 +215,12 @@ app.post('/api/registerWindowHosting', async (req, res) => {
       'SELECT id FROM users WHERE username = $1',
       [username]
     );
-    console.log("Owner id:", userId.rows[0].id);
-    console.log("Calendar id:", calendar_id);
-    console.log("Window nr:", window_nr);
-    console.log(coords);
-    // register window hosting
+    
     await pool.query(
       'INSERT INTO adventWindow (id, owner, address_name, address, apero, time, location_hint, window_nr, calendar_id, pictures, comments) VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10)',
       [userId.rows[0].id, addressName, `(${coords[0]},${coords[1]})`, hasApero, time, locationHint, window_nr, calendar_id, [], []]
     );
-    console.log(`Window hosting for calendar ${calendar_id}, window ${window_nr} registered successfully!`);
+    console.debug(`Window hosting for calendar ${calendar_id}, window ${window_nr} registered successfully!`);
     res.status(200).json({ message: 'Window hosting registered successfully!' });
   } catch (error) {
     console.error('Error registering window hosting', error);
@@ -236,7 +229,7 @@ app.post('/api/registerWindowHosting', async (req, res) => {
 });
 
 
-// Get Calender Data
+// Data
 app.get('/api/calendars', async (req, res) => {
     try {
       const result = await pool.query('SELECT id, name FROM adventCalendars');
@@ -283,19 +276,17 @@ app.get('/api/windowTile', async (req, res) => {
   }
 });
 app.get('/api/window', async (req, res) => {
+  // Window info based on calendar_id and window_nr
   const { calendar_id, window_nr } = req.query;
   try {
-    // Fetch window info based on calendar_id and window_nr
     const result = await pool.query(
       'SELECT address_name, address, apero, time, location_hint FROM adventWindow WHERE window_nr = $2 AND calendar_id = $1',
       [calendar_id, window_nr]
     );
     if (result.rows.length > 0) {
-      // The query returned some rows
       const windowData = result.rows[0];
       res.json({ success: true, windowData: windowData});
     } else {
-      // The query did not return any rows
       res.json({ success: true, windowData: {} });
     }
   } catch (error) {
@@ -305,10 +296,9 @@ app.get('/api/window', async (req, res) => {
 });
 
 app.get('/api/pictures', async (req, res) => {
+  // Retrieve all pictures from the database for the specified calendar and window
   try {
     const { calendar_id, window_nr } = req.query;
-
-    // Retrieve all pictures from the database for the specified calendar and window
     const selectQuery = `
       SELECT pictures
       FROM adventWindow
@@ -328,8 +318,9 @@ app.get('/api/pictures', async (req, res) => {
     res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 });
-// TODO: maybe do some preprocessing on the image data before storing it in the database or set a limit
 app.post('/api/pictures', upload.single('image'), async (req, res) => {
+  // TODO: maybe do some preprocessing on the image data before storing it in the database or set a limit
+  // Take uploaded image for a particular window
   if (! await isValidToken(req)){
     return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
   }
@@ -362,9 +353,9 @@ app.post('/api/pictures', upload.single('image'), async (req, res) => {
 });
 
 app.get('/api/comments', async (req, res) => {
+  // Return comments for a particular window
   const { calendar_id, window_nr } = req.query;
   try {
-    // Fetch comments based on calendar_id and window_nr
     const result = await pool.query(
       'SELECT comments FROM adventWindow WHERE window_nr = $2 AND calendar_id = $1',
       [calendar_id, window_nr]
@@ -378,6 +369,7 @@ app.get('/api/comments', async (req, res) => {
   }
 });
 app.post('/api/comments', async (req, res) => {
+  // Add a comment to a particular window
   if (! await isValidToken(req)){
     return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
   }
@@ -395,16 +387,16 @@ app.post('/api/comments', async (req, res) => {
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });
+
 app.get('/api/locations', async (req, res) => {
+  // Fetch all locations for a particular calendar
   const { calendar_id } = req.query;
   try {
-    // Fetch coordwindow info based on calendar_id
     const result = await pool.query(
       'SELECT window_nr, address_name, address, time FROM adventWindow WHERE calendar_id = $1',
       [calendar_id]
     );
     if (result.rows.length > 0) {
-      // The query returned some rows
       const calendarMapInfos = [];
       for (const row of result.rows) {
         calendarMapInfos.push({
@@ -416,7 +408,6 @@ app.get('/api/locations', async (req, res) => {
       }
       res.json({ success: true, calendarMapInfos: calendarMapInfos});
     } else {
-      // The query did not return any rows
       res.json({ success: true, calendarMapInfos: []});
     }
   } catch (error) {

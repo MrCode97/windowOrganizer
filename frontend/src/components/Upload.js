@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
-import { Button, Snackbar} from '@mui/material';
+import { useState } from 'react';
+import { Button, Snackbar } from '@mui/material';
 
-const UploadImage = ({ calendarId, windowNr, onClose, imageUpload, setImageUpload, token}) => {
+const UploadImage = ({ calendarId, windowNr, onClose, imageUpload, setImageUpload, token }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [message, setMessage] = useState('');
   const [messageOpen, setMessageOpen] = useState(false);
 
-  // API request
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     setSelectedFile(file);
@@ -20,14 +19,13 @@ const UploadImage = ({ calendarId, windowNr, onClose, imageUpload, setImageUploa
       try {
         const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/pictures?calendar_id=${calendarId}&window_nr=${windowNr}`, {
           method: 'POST',
-          headers: {'Authorization': 'Bearer ' + token,},
+          headers: { 'Authorization': 'Bearer ' + token, },
           body: formData,
         });
 
         const data = await response.json();
 
         if (data.success) {
-          console.log('Image submitted successfully');
           setImageUpload(!imageUpload);
           setSelectedFile(null);
           setMessage('Image uploaded successfully!');
@@ -52,7 +50,7 @@ const UploadImage = ({ calendarId, windowNr, onClose, imageUpload, setImageUploa
     }
     setMessageOpen(false);
   };
-  
+
 
   return (
     <div>
@@ -68,12 +66,12 @@ const UploadImage = ({ calendarId, windowNr, onClose, imageUpload, setImageUploa
       ) : (
         <>
           <input disabled type="file" onChange={handleFileChange} /><p>Share your memories with us! Upload your photos and images.</p><span className='buttonContainerSlidingWindow'>
-          <Button disabled variant="contained" style={{ backgroundColor: 'gray' }}>Login to upload pictures</Button>
+            <Button disabled variant="contained" style={{ backgroundColor: 'gray' }}>Login to upload pictures</Button>
           </span>
           <Snackbar open={messageOpen} autoHideDuration={3000} onClose={handleClose} message={message} />
         </>
       )}
-      
+
     </div>
   );
 };

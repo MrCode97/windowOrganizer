@@ -1,17 +1,17 @@
 // AdventCalendarRegistrationForm.js
-import React, { useState } from 'react';
-import { Typography, TextField, Button, Snackbar} from '@mui/material';
+import { useState } from 'react';
+import { Typography, TextField, Button, Snackbar } from '@mui/material';
 
 function LoginHint() {
   return (
     <div>
       <Typography className='pageTitle' variant="h4">Advent Calendar Registration</Typography>
-      <Typography sx={{padding: '10px'}} variant="p">Please log in first to register an advent calendar.</Typography>
+      <Typography sx={{ padding: '10px' }} variant="p">Please log in first to register an advent calendar.</Typography>
     </div>
   );
 }
 
-function AdventCalendarRegistrationForm( { calendarAdded, setCalendarAdded, token } ) {
+function AdventCalendarRegistrationForm({ calendarAdded, setCalendarAdded, token }) {
   const [adventCalendarId, setAdventCalendarId] = useState('');
   const [message, setMessage] = useState('');
   const [messageOpen, setMessageOpen] = useState(false);
@@ -47,7 +47,7 @@ function AdventCalendarRegistrationForm( { calendarAdded, setCalendarAdded, toke
       setMessageOpen(true);
     }
   };
-  
+
   // Message display
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
@@ -66,7 +66,7 @@ function AdventCalendarRegistrationForm( { calendarAdded, setCalendarAdded, toke
           value={adventCalendarId}
           onChange={(e) => setAdventCalendarId(e.target.value)}
         />
-        <Button type="submit" variant="contained" sx={{backgroundColor: 'green', marginTop: '10px'}}>
+        <Button type="submit" variant="contained" sx={{ backgroundColor: 'green', marginTop: '10px' }}>
           Register
         </Button>
         <Snackbar open={messageOpen} autoHideDuration={3000} onClose={handleClose} message={message} />

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Typography, TextField, Button, Snackbar, Box } from '@mui/material';
 
 function UserRegistrationForm({ token }) {
@@ -6,22 +6,6 @@ function UserRegistrationForm({ token }) {
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [messageOpen, setMessageOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-    // Check if the user is authenticated when the component mounts
-    const checkAuthentication = () => {
-      if (token) {
-        // User is logged in
-        setIsLoggedIn(true);
-      } else {
-        // User is not logged in
-        setIsLoggedIn(false);
-      }
-    };
-
-    checkAuthentication();
-  }, [token]);
 
   // API request
   const handleSubmit = async (event) => {
@@ -42,7 +26,6 @@ function UserRegistrationForm({ token }) {
         setPassword('');
       } else {
         console.error('Failed to register user');
-        console.log('response: ', response);
         setMessageOpen(true);
         setUsername('');
         setPassword('');
@@ -60,7 +43,7 @@ function UserRegistrationForm({ token }) {
   };
 
   return (
-    <div> {!isLoggedIn ? (
+    <div> {!token ? (
       <form onSubmit={handleSubmit}>
         <Typography className='pageTitle' variant="h4">User Registration</Typography>
         <TextField
@@ -76,15 +59,15 @@ function UserRegistrationForm({ token }) {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <Button type="submit" variant="contained" sx={{backgroundColor: 'green', marginTop: '10px'}}>
+        <Button type="submit" variant="contained" sx={{ backgroundColor: 'green', marginTop: '10px' }}>
           Register
         </Button>
         <Snackbar open={messageOpen} autoHideDuration={3000} onClose={handleClose} message={message} />
       </form>
     ) : (
-      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-          <Typography className='welcomeParagraph' align='center'>You are already logged in!</Typography>
-        </Box>
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <Typography className='welcomeParagraph' align='center'>You are already logged in!</Typography>
+      </Box>
     )}
     </div>
   );

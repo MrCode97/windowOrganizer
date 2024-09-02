@@ -1,9 +1,9 @@
 // WindowRegisterWindow.js
-import React, { useState  } from 'react';
+import { useState } from 'react';
 import { Dialog, DialogContent, Typography, TextField, Button, FormControlLabel, Checkbox, Snackbar } from '@mui/material';
 import { translate } from './GeocodeAddress';
 
-function WindowRegisterWindow({window_nr, calendar_id, onClose, token, locationAdded, setLocationAdded}) {
+function WindowRegisterWindow({ window_nr, calendar_id, onClose, token, locationAdded, setLocationAdded }) {
   const [addressName, setAddressName] = useState('');
   const [time, setTime] = useState('');
   const [locationHint, setLocationHint] = useState('');
@@ -21,7 +21,7 @@ function WindowRegisterWindow({window_nr, calendar_id, onClose, token, locationA
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + token,
-        },        
+        },
         body: JSON.stringify({ calendar_id, window_nr, addressName, coords, time, locationHint, hasApero }),
       });
 
@@ -42,7 +42,6 @@ function WindowRegisterWindow({window_nr, calendar_id, onClose, token, locationA
     }
   };
 
-  // Message display
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
       return;
@@ -53,7 +52,7 @@ function WindowRegisterWindow({window_nr, calendar_id, onClose, token, locationA
   return (
     <div>
       {token ? (
-        <Dialog open={true} onClose={onClose} sx={{ zIndex: 9999, top: '4%', position: 'fixed', overflowY: 'auto'}}>
+        <Dialog open={true} onClose={onClose} sx={{ zIndex: 9999, top: '4%', position: 'fixed', overflowY: 'auto' }}>
           <DialogContent sx={{ width: '400px', height: '700px', backgroundColor: 'rgb(173, 216, 230)' }}>
             <form onSubmit={handleSubmit}>
               <Typography variant="h4">Window Hosting Registration</Typography>
@@ -95,15 +94,14 @@ function WindowRegisterWindow({window_nr, calendar_id, onClose, token, locationA
           <Snackbar open={messageOpen} autoHideDuration={3000} onClose={handleClose} message={message} />
         </Dialog>
       ) : (
-        // Display a message or redirect to the login page
         <div>
           <Dialog open={true} onClose={onClose} sx={{ zIndex: 9999, position: 'sticky' }}>
-          <DialogContent sx={{ width: '400px', height: '700px', backgroundColor: 'rgb(173, 216, 230)' }}>
-            <Typography variant="h4">Window Registration</Typography>
-            <Typography variant="p">Please login first, to register a window hosting.</Typography>
-          </DialogContent>
-          <Snackbar open={messageOpen} autoHideDuration={3000} onClose={handleClose} message={message} />
-        </Dialog>
+            <DialogContent sx={{ width: '400px', height: '700px', backgroundColor: 'rgb(173, 216, 230)' }}>
+              <Typography variant="h4">Window Registration</Typography>
+              <Typography variant="p">Please login first, to register a window hosting.</Typography>
+            </DialogContent>
+            <Snackbar open={messageOpen} autoHideDuration={3000} onClose={handleClose} message={message} />
+          </Dialog>
         </div>
       )}
     </div>

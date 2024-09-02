@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState } from 'react';
 import { Dialog, DialogContent, Tabs, Tab } from '@mui/material';
 import "leaflet/dist/leaflet.css";
 import { UploadImage } from './Upload';
@@ -7,8 +7,8 @@ import InfoSection from './InfoSection';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 
-function SlidingWindow({ window_nr, calendar_id, onClose, imageUpload, setImageUpload, token}) {
-  const [activeTab, setActiveTab] = React.useState(0);
+function SlidingWindow({ window_nr, calendar_id, onClose, imageUpload, setImageUpload, token }) {
+  const [activeTab, setActiveTab] = useState(0);
 
   const handleChangeTab = (event, newValue) => {
     setActiveTab(newValue);
@@ -41,7 +41,7 @@ function SlidingWindow({ window_nr, calendar_id, onClose, imageUpload, setImageU
         </div>
       </div>
 
-      <DialogContent sx={{backgroundColor: 'rgb(173, 216, 230)',}}
+      <DialogContent sx={{ backgroundColor: 'rgb(173, 216, 230)', }}
       >
         {/* Tab Content */}
         {activeTab === 0 && (

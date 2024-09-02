@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { styled } from '@mui/system';
 import Button from '@mui/material/Button';
@@ -60,7 +60,6 @@ function App() {
   const [userAdded, setUserAdded] = useState(false);
 
   useEffect(() => {
-    // Fetch calendar data when the component mounts
     const fetchCalendars = async () => {
       try {
         const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/calendars`);
@@ -142,7 +141,7 @@ function App() {
           <List>
             {calendars
               .filter(calendar =>
-                calendar.name.toLowerCase().includes(searchTerm.toLowerCase()) // Convert both to lowercase
+                calendar.name.toLowerCase().includes(searchTerm.toLowerCase())
               )
               .map((calendar) => (
                 <ListItem

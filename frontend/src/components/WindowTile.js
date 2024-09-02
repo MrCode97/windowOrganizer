@@ -1,6 +1,6 @@
 // WindowTile.js
-import React, { useState, useEffect  } from 'react';
-import { Card, CardMedia, CardActionArea, Typography, Paper} from '@mui/material';
+import { useState, useEffect } from 'react';
+import { Card, CardMedia, CardActionArea, Typography, Paper } from '@mui/material';
 import SlidingWindow from './SlidingWindow';
 import WindowRegisterWindow from './WindowRegisterWindow';
 
@@ -13,7 +13,7 @@ function WindowTile({ window_nr, calendar_id, token, locationAdded, setLocationA
   // State variable to track if SlidingWindow is open or closed
   const [isSlidingWindowOpen, setSlidingWindowOpen] = useState(false);
   const [isWindowRegisterWindowOpen, setWindowRegisterWindowOpen] = useState(false);
-  
+
   useEffect(() => {
     const fetchWindowTileData = async () => {
       try {
@@ -33,7 +33,7 @@ function WindowTile({ window_nr, calendar_id, token, locationAdded, setLocationA
               };
               reader.readAsDataURL(blob);
             });
-            base64Image.then(img => {setImage(img);})
+            base64Image.then(img => { setImage(img); })
           } else {
             setImage('/Window.png');
           }
@@ -46,13 +46,14 @@ function WindowTile({ window_nr, calendar_id, token, locationAdded, setLocationA
     fetchWindowTileData();
   }, [calendar_id, window_nr, imageUpload, locationAdded]);
 
-  // Event handler for clicking on the CardMedia
   const handleCardMediaClick = () => {
     // Open or close the SlidingWindow when the CardMedia is clicked
     if (isFree) {
-      setWindowRegisterWindowOpen(!isWindowRegisterWindowOpen);
+      setWindowRegisterWindowOpen(true);
+      setSlidingWindowOpen(false);
     } else {
-      setSlidingWindowOpen(!isSlidingWindowOpen);
+      setSlidingWindowOpen(true);
+      setWindowRegisterWindowOpen(false);
     }
   };
 
@@ -75,14 +76,14 @@ function WindowTile({ window_nr, calendar_id, token, locationAdded, setLocationA
         <CardActionArea sx={{
           width: '100%',
           height: '100%',
-        }} 
-        onClick={handleCardMediaClick}
+        }}
+          onClick={handleCardMediaClick}
         >
           <CardMedia
             component="img"
             image={image}
             alt="advent window"
-            sx={{ width: '100%', height: '100%', objectFit: 'cover'}}
+            sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
           />
           <Paper
             variant="outlined"
@@ -121,12 +122,10 @@ function WindowTile({ window_nr, calendar_id, token, locationAdded, setLocationA
             <Typography variant="h4">{window_nr}</Typography>
           </Paper>
         </CardActionArea>
-      </Card>  
+      </Card>
 
-      {/* Conditional rendering of SlidingWindow or WindowRegisterWindow (short-circuit) */}
       {isSlidingWindowOpen && (
         <SlidingWindow
-          // Pass any necessary props to SlidingWindow component
           window_nr={window_nr}
           calendar_id={calendar_id}
           onClose={() => setSlidingWindowOpen(false)}
@@ -137,7 +136,6 @@ function WindowTile({ window_nr, calendar_id, token, locationAdded, setLocationA
       )}
       {isWindowRegisterWindowOpen && (
         <WindowRegisterWindow
-          // Pass any necessary props to WindowRegisterWindow component
           window_nr={window_nr}
           calendar_id={calendar_id}
           onClose={() => setWindowRegisterWindowOpen(false)}

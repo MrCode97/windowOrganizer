@@ -70,15 +70,15 @@ function CommentSection({ calendar_id, window_nr, token }) {
                 </from>
             ) : (
                 <>
-                <TextField disabled
-                    sx={{ marginTop: '5px', border: '1px solid black', backgroundColor: 'white', borderRadius: '5px' }}
-                    label="Comment"
-                    variant="outlined"
-                    fullWidth value={newComment}
-                    onChange={(e) => setNewComment(e.target.value)} />
-                <div style={{ marginTop: '10px' }}></div>
-                <Button disabled variant="contained" style={{ backgroundColor: 'gray' }}>Login to add comments</Button></>)}
-                </>
+                    <TextField disabled
+                        sx={{ marginTop: '5px', border: '1px solid black', backgroundColor: 'white', borderRadius: '5px' }}
+                        label="Comment"
+                        variant="outlined"
+                        fullWidth value={newComment}
+                        onChange={(e) => setNewComment(e.target.value)} />
+                    <div style={{ marginTop: '10px' }}></div>
+                    <Button disabled variant="contained" style={{ backgroundColor: 'gray' }}>Login to add comments</Button></>)}
+        </>
     );
 };
 
