@@ -5,18 +5,11 @@ CREATE TABLE IF NOT EXISTS users (
     password VARCHAR(255) NOT NULL
 );
 
--- Create AdventCalendar table
-CREATE TABLE IF NOT EXISTS adventCalendar (
-    id SERIAL PRIMARY KEY,
-    name VARCHAR(255) UNIQUE NOT NULL
-);
-
 -- Create AdventCalendars table
 CREATE TABLE IF NOT EXISTS adventCalendars (
     id SERIAL PRIMARY KEY,
     owner INT NOT NULL,
     name VARCHAR(255) UNIQUE NOT NULL,
-    FOREIGN KEY (name) REFERENCES adventCalendar(name),
     FOREIGN KEY (owner) REFERENCES users(id)
 );
 
@@ -35,7 +28,7 @@ CREATE TABLE IF NOT EXISTS adventWindow (
     pictures BYTEA[], -- BYTEA for storing image data (in PostgreSQL)
     comments VARCHAR(255)[],
     FOREIGN KEY (owner) REFERENCES users(id),
-    FOREIGN KEY (calendar_id) REFERENCES adventCalendar(id),
+    FOREIGN KEY (calendar_id) REFERENCES adventCalendars(id),
     CONSTRAINT unique_window_calendar_key UNIQUE (window_nr, calendar_id)
 );
 
@@ -47,13 +40,6 @@ INSERT INTO users (username, password) VALUES
     ('user3', '$2b$10$BGa9DGKq1SdKJs8QGK29De3qPxqrDpRg52We6nRgx7LixHi6Ba0Ka'), --password3
     ('user4', 'password4'),
     ('user5', 'password5');
-
--- Insert data into adventCalendar
-INSERT INTO adventCalendar (name)
-VALUES
-    ('Adventskalender Schlieren 8952'),
-    ('Adventskalender Basel 4057'),
-    ('Adventskalender Zürich 8053');
 
 -- Insert data into adventCalendars
 INSERT INTO adventCalendars (owner, name)

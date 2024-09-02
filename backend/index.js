@@ -169,7 +169,6 @@ app.post('/api/registerAdventCalendar', async (req, res) => {
     // get user id from username
     const userId = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
     // register advent calendar
-    await pool.query('INSERT INTO adventCalendar (name) VALUES ($1)', [adventCalendarId]);
     await pool.query('INSERT INTO adventCalendars (owner, name) VALUES ($1, $2)', [userId.rows[0].id, adventCalendarId]);
     console.debug(`Advent calendar: ${adventCalendarId} registerd successfully!`);
     res.status(200).json({ message: 'Advent calendar registered successfully!' });
