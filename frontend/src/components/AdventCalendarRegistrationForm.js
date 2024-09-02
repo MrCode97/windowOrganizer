@@ -11,7 +11,7 @@ function LoginHint() {
   );
 }
 
-function AdventCalendarRegistrationForm( { reRender, token } ) {
+function AdventCalendarRegistrationForm( { calendarAdded, setCalendarAdded, token } ) {
   const [adventCalendarId, setAdventCalendarId] = useState('');
   const [message, setMessage] = useState('');
   const [messageOpen, setMessageOpen] = useState(false);
@@ -48,8 +48,8 @@ function AdventCalendarRegistrationForm( { reRender, token } ) {
       });
 
       if (response.ok) {
-        console.log('Advent calendar registered successfully!');
-        reRender(!reRender);
+        setCalendarAdded(!calendarAdded);
+        setAdventCalendarId('');
         setMessage('Advent calendar registered successfully!');
         setMessageOpen(true);
       } else {

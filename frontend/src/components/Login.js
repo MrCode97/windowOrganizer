@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Typography, TextField, Button, Box, Snackbar } from '@mui/material';
 import { useAuth } from '../AuthProvider';
 
-function Login( { reRender, token } ) {
+function Login( { userAdded, setUserAdded, token } ) {
     const { login } = useAuth();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -43,7 +43,7 @@ function Login( { reRender, token } ) {
             const { token } = await response.json();
             login({ username }, token);
 
-            reRender(!reRender);
+            setUserAdded(!userAdded);
         } else {
             console.error('Login failed');
             // Handle failed login, e.g., display an error message to the user

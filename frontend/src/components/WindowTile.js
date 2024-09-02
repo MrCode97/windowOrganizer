@@ -4,22 +4,25 @@ import { Card, CardMedia, CardActionArea, Typography, Paper} from '@mui/material
 import SlidingWindow from './SlidingWindow';
 import WindowRegisterWindow from './WindowRegisterWindow';
 
-function WindowTile({ window_nr, calendar_id, imageUpload, setImageUpload, reRender, token }) {
+function WindowTile({ window_nr, calendar_id, token, locationAdded, setLocationAdded }) {
   // variables to get from SQL request based on window number and calendar id
   const [isFree, setIsFree] = useState(false);
+  const [imageUpload, setImageUpload] = useState(false);
   const [image, setImage] = useState('/Window.png');
 
   // State variable to track if SlidingWindow is open or closed
-  const [isSlidingWindowOpen, setSlidingWindowOpen] = React.useState(false);
-  const [isWindowRegisterWindowOpen, setWindowRegisterWindowOpen] = React.useState(false);
+  const [isSlidingWindowOpen, setSlidingWindowOpen] = useState(false);
+  const [isWindowRegisterWindowOpen, setWindowRegisterWindowOpen] = useState(false);
   
   useEffect(() => {
-    const fetchImage = async () => {
+    const fetchWindowTileData = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/picture/${calendar_id}/${window_nr}`);
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/windowTile/${calendar_id}/${window_nr}`);
         const data = await response.json();
 
         if (data.success) {
+          setIsFree(data.isFree);
+
           if (data.picture.length > 0) {
             const arrayBuffer = Uint8Array.from(data.picture[0].data).buffer;
             const blob = new Blob([arrayBuffer], { type: 'image/png' });
@@ -30,24 +33,16 @@ function WindowTile({ window_nr, calendar_id, imageUpload, setImageUpload, reRen
               };
               reader.readAsDataURL(blob);
             });
-            Promise.all([base64Image]).then(image => {
-              setImage(image[0]);
-            });
-            // setHasImage(true);
-          } else if (data.isFree) {
-          setIsFree(true);
-          };
-        } else {
-          console.error('Failed to fetch image:', data.message);
-        }
+            Promise.all([base64Image]).then(image => {setImage(image[0]);});
+          }
+        } 
       } catch (error) {
-        console.error('Error fetching image:', error);
+        console.error('Error fetching windowTile:', error);
       }
     };
 
-    fetchImage();
-    reRender(false);
-  }, [calendar_id, window_nr, isFree, imageUpload, reRender]);
+    fetchWindowTileData();
+  }, [calendar_id, window_nr, imageUpload, locationAdded]);
 
   // Event handler for clicking on the CardMedia
   const handleCardMediaClick = () => {
@@ -133,6 +128,7 @@ function WindowTile({ window_nr, calendar_id, imageUpload, setImageUpload, reRen
           window_nr={window_nr}
           calendar_id={calendar_id}
           onClose={() => setSlidingWindowOpen(false)}
+          imageUpload={imageUpload}
           setImageUpload={setImageUpload}
         />
       )}
@@ -142,9 +138,9 @@ function WindowTile({ window_nr, calendar_id, imageUpload, setImageUpload, reRen
           window_nr={window_nr}
           calendar_id={calendar_id}
           onClose={() => setWindowRegisterWindowOpen(false)}
-          setIsFree={setIsFree}
-          reRender={reRender}
           token={token}
+          locationAdded={locationAdded}
+          setLocationAdded={setLocationAdded}
         />
       )}
     </div>

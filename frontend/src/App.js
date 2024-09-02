@@ -56,7 +56,8 @@ function App() {
   const [showLogin, setShowLogin] = useState(false);
   const [showRegistration, setShowRegistration] = useState(false);
   const [showRegistrationCalendar, setShowRegistrationCalendar] = useState(false);
-  const [reRender, setReRender] = useState(false);
+  const [calendarAdded, setCalendarAdded] = useState(false);
+  const [userAdded, setUserAdded] = useState(false);
 
   useEffect(() => {
     // Fetch calendar data when the component mounts
@@ -71,7 +72,7 @@ function App() {
     };
 
     fetchCalendars();
-  }, [reRender]);
+  }, [calendarAdded, userAdded]);
 
 
   return (
@@ -190,13 +191,13 @@ function App() {
         <MainBox component="main" className='mainBox'>
           <Container className='mainContainer' >
             {!user && showLogin && (
-              <Login reRender={setReRender} />
+              <Login userAdded={userAdded} setUserAdded={setUserAdded} />
             )}
             {!user && showRegistrationCalendar && ( // Happens only if on page while clicking: logout
-              <AdventCalendarRegistrationForm reRender={setReRender} />
+              <AdventCalendarRegistrationForm calendarAdded={calendarAdded} setCalendarAdded={setCalendarAdded} />
             )}
             {!user && showRegistration && (
-              <UserRegistrationForm reRender={setReRender} />
+              <UserRegistrationForm />
             )}
             {!user && !showLogin && !showRegistration && (
               <>
@@ -214,12 +215,12 @@ function App() {
             {user && (
               <>
                 {showRegistrationCalendar && (
-                  <AdventCalendarRegistrationForm reRender={setReRender} token={token} />
+                  <AdventCalendarRegistrationForm calendarAdded={calendarAdded} setCalendarAdded={setCalendarAdded} token={token} />
                 )}
                 {!showRegistrationCalendar && (
                   <>
                     {showRegistration && (
-                      <UserRegistrationForm reRender={setReRender} token={token} />
+                      <UserRegistrationForm token={token} />
                     )}
                     {!showRegistration && (
                       <>

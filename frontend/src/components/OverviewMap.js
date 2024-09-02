@@ -1,27 +1,24 @@
 // OverviewMap.js
-import React, { useCallback, useState, useEffect  } from 'react';
+import React, { useState, useEffect  } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import L from 'leaflet';
 import "leaflet/dist/leaflet.css";
 
-function OverviewMap({ calendar_id, reRender }) {
+function OverviewMap({ calendar_id, locationAdded }) {
   const [calendarMapInfos, setCalendarMapInfos] = useState([]);
 
-  // Make an API request to fetch calendar infos based on calendar_id
-  const fetchCalendarMapInfo = useCallback(async () => {
-    try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/calendarMapInfo?calendar_id=${calendar_id}`);
-      const data = await response.json();
-      setCalendarMapInfos(data.calendarMapInfos);
-    } catch (error) {
-      console.error('Error fetching calendar info:', error);
-    }
-  }, [calendar_id]);
-
-  // Fetch calendar map info from the backend when the component mounts
   useEffect(() => {
+    const fetchCalendarMapInfo = async () => {
+      try {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/calendarMapInfo?calendar_id=${calendar_id}`);
+        const data = await response.json();
+        setCalendarMapInfos(data.calendarMapInfos);
+      } catch (error) {
+        console.error('Error fetching calendar info:', error);
+      }
+    }
     fetchCalendarMapInfo();
-  }, [fetchCalendarMapInfo, reRender]);
+  }, [calendar_id, locationAdded])
 
   // Calculate average of all window coordinates to set center of map
   const calculateCenter = () => {

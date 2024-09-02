@@ -3,7 +3,7 @@ import React, { useState, useEffect  } from 'react';
 import { Dialog, DialogContent, Typography, TextField, Button, FormControlLabel, Checkbox, Snackbar } from '@mui/material';
 import { translate } from './GeocodeAddress';
 
-function WindowRegisterWindow({window_nr, calendar_id, onClose, setIsFree, reRender, token}) {
+function WindowRegisterWindow({window_nr, calendar_id, onClose, token, locationAdded, setLocationAdded}) {
   const [addressName, setAddressName] = useState('');
   const [time, setTime] = useState('');
   const [locationHint, setLocationHint] = useState('');
@@ -43,17 +43,14 @@ function WindowRegisterWindow({window_nr, calendar_id, onClose, setIsFree, reRen
       });
 
       if (response.ok) {
-        console.log('Window hosting registered successfully!');
         setMessage('Window hosting registered successfully!');
+        setLocationAdded(!locationAdded);
         setMessageOpen(true);
         onClose();
-        setIsFree(false);
-        reRender(true);
       } else {
         console.error('Failed to register window hosting');
         console.log('response: ', response);
         setMessage('Failed to register window hosting');
-        setMessageOpen(true);
       }
     } catch (error) {
       console.error('Error during window hosting registration', error);

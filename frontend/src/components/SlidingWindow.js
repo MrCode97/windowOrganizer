@@ -7,7 +7,7 @@ import InfoSection from './InfoSection';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 
-function SlidingWindow({ window_nr, calendar_id, onClose, setImageUpload }) {
+function SlidingWindow({ window_nr, calendar_id, onClose, imageUpload, setImageUpload }) {
   const [activeTab, setActiveTab] = React.useState(0);
 
   const handleChangeTab = (event, newValue) => {
@@ -55,6 +55,7 @@ function SlidingWindow({ window_nr, calendar_id, onClose, setImageUpload }) {
             calendarId={calendar_id}
             windowNr={window_nr}
             onClose={onClose}
+            imageUpload={imageUpload}
             setImageUpload={setImageUpload}
           />
         )}
