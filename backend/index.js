@@ -27,6 +27,42 @@ const pool = new Pool({
   port: dbPort,
 });
 
+async function isValidToken(req){
+  const token = req.headers.authorization;
+  // Check if the token is provided
+  if (!token) {
+    console.debug('Unauthorized. Token missing.');
+    return false;
+  }
+  // Check if the token is valid
+  try {
+    const decodedToken = jwt.verify(token.split(' ')[1], jwt_secret);
+    if (!decodedToken) {
+      condole.debug('Unauthorized. Invalid token.');
+      return false;
+    }
+    username = decodedToken.username;
+  } catch (error) {
+    console.error('Error verifying token', error);
+    console.debug('Unauthorized. Invalid token.');
+    return false;
+  }
+  
+  // Check if the user exists
+  try {
+    const userExists = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
+
+    if (userExists.rows.length === 0) {
+        console.debug(`User: ${username} does not exist`);
+        return false;
+    }
+  } catch (error) {
+        console.error('Error checking user existence', error);
+        return false;
+  }
+  return true;
+}
+
 // Admin
 app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
@@ -38,7 +74,7 @@ app.post('/api/login', async (req, res) => {
 
   // Check if the user exists
   try {
-    const result = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
+    const result = await pool.query('SELECT username, password FROM users WHERE username = $1', [username]);
 
     if (result.rows.length === 0) {
       return res.status(401).json({ error: 'Invalid credentials. User not found.' });
@@ -62,81 +98,57 @@ app.post('/api/login', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-
 app.post('/api/registerUser', async (req, res) => {
     const { username, password } = req.body;
     // Basic validation
     if (!username || !password) {
+      console.debug('Invalid request. Missing required parameters.');
       return res.status(400).json({ error: 'Invalid request. Missing required parameters.' });
     }
   
     // Check if the username is already taken
     try {
-      const existingUser = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
+      const existingUser = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
   
       if (existingUser.rows.length > 0) {
-        console.log(`Username: ${username} already taken`);
+        console.debug("User already exists");
         return res.status(400).json({ error: 'Username already taken.' });
       }
-      console.log(`User: ${username} registerd successfully!`);
     } catch (error) {
         console.error('Error checking existing user', error);
         return res.status(500).json({ error: 'Internal Server Error' });
     }
   
     // Hash the password before storing it in the database
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 12);
   
     // Register the user
     try {
         await pool.query('INSERT INTO users (username, password) VALUES ($1, $2)', [username, hashedPassword]);
-        console.log(`User: ${username}:${hashedPassword} registerd successfully!`);
+        console.debug(`User: ${username}:${hashedPassword} registerd successfully!`);
         res.status(200).json({ message: 'User registered successfully!' });
     } catch (error) {
         console.error('Error registering user', error);
         res.status(500).json({ error: 'Internal Server Error' });
     }
 });
-
 app.post('/api/registerAdventCalendar', async (req, res) => {
-  const { adventCalendarId } = req.body;
-
-  // Extract the token from the request headers
-  const token = req.headers.authorization;
-  // Check if the token is provided
-  if (!token) {
-    return res.status(401).json({ error: 'Unauthorized. Token missing.' });
+  if (!isValidToken(req)){
+    return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
   }
-
-  // Check if the token is valid
+  const token = req.headers.authorization;
+  const { adventCalendarId } = req.body;
+  
   try {
     const decodedToken = jwt.verify(token.split(' ')[1], jwt_secret);
-    if (!decodedToken) {
-      return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
-    }
     username = decodedToken.username;
   } catch (error) {
-    console.error('Error verifying token', error);
     return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
   }
   
   // Basic validation
   if (!adventCalendarId || !username) {
-    console.log('Invalid request. Missing required parameters.');
     return res.status(400).json({ error: 'Invalid request. Missing required parameters.' });
-  }
-
-  // Check if the user exists
-  try {
-    const userExists = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
-
-    if (userExists.rows.length === 0) {
-        console.log(`User: ${username} does not exist`);
-        return res.status(400).json({ error: 'User does not exist.' });
-    }
-  } catch (error) {
-        console.error('Error checking user existence', error);
-        return res.status(500).json({ error: 'Internal Server Error' });
   }
 
   // Check if the calendar is already registered
@@ -144,8 +156,8 @@ app.post('/api/registerAdventCalendar', async (req, res) => {
     const existingCalendar = await pool.query('SELECT name FROM adventCalendars WHERE name = $1', [adventCalendarId]);
 
     if (existingCalendar.rows.length > 0) {
-        console.log(`Advent calendar: ${adventCalendarId} already registered`);
-        return res.status(400).json({ error: 'Advent calendar already registered.' });
+        console.log(`Advent calendar with a same name: ${adventCalendarId} already registered`);
+        return res.status(400).json({ error: 'Advent calendar name already taken.' });
     }
   } catch (error) {
         console.error('Error checking existing calendar', error);
@@ -159,14 +171,13 @@ app.post('/api/registerAdventCalendar', async (req, res) => {
     // register advent calendar
     await pool.query('INSERT INTO adventCalendar (name) VALUES ($1)', [adventCalendarId]);
     await pool.query('INSERT INTO adventCalendars (owner, name) VALUES ($1, $2)', [userId.rows[0].id, adventCalendarId]);
-    console.log(`Advent calendar: ${adventCalendarId} registerd successfully!`);
+    console.debug(`Advent calendar: ${adventCalendarId} registerd successfully!`);
     res.status(200).json({ message: 'Advent calendar registered successfully!' });
   } catch (error) {
     console.error('Error registering advent calendar', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-
 app.post('/api/registerWindowHosting', async (req, res) => {
   const { calendar_id, window_nr, addressName, coords, time, locationHint, hasApero  } = req.body;
 
@@ -254,53 +265,35 @@ app.get('/api/calendars', async (req, res) => {
       res.status(500).json({ error: 'Internal Server Error' });
     }
 });
-
-app.get('/api/calendar', async (req, res) => {
-  const { calendar_id, window_nr } = req.query;
+app.post("/api/calendars", async (req, res) => {
+  const { windowId, comment} = req.body;
   try {
-    // Fetch window info based on calendar_id and window_nr
+    // Insert the comment into the database
+    // Checks if comment array exists, if not inserts comment as array else concatenates existing array with new comment array
     const result = await pool.query(
-      'SELECT * FROM adventWindow WHERE window_nr = $2 AND calendar_id = $1',
-      [calendar_id, window_nr]
+      'INSERT INTO adventWindow (id, comments) VALUES ($1, ARRAY[$2]) ON CONFLICT (id) DO UPDATE SET comments = adventWindow.comments || ARRAY[$2]',
+      [windowId, comment]
     );
-    if (result.rows.length > 0) {
-      // The query returned some rows
-      const windowData = result.rows[0];
-      res.json({ success: true, windowData: windowData});
-    } else {
-      // The query did not return any rows
-      res.json({ success: true, windowData: {} });
-    }
+
+    res.json({ success: true, message: 'Comment added successfully' });
   } catch (error) {
-    console.error('Error fetching window infos:', error);
+    console.error('Error adding comment:', error);
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });
 
-app.get('/api/comments', async (req, res) => {
-  const { calendar_id, window_nr } = req.query;
+app.get('/api/windowTile', async (req, res) => {
   try {
-    // Fetch comments based on calendar_id and window_nr
-    const result = await pool.query(
-      'SELECT * FROM adventWindow WHERE window_nr = $2 AND calendar_id = $1',
-      [calendar_id, window_nr]
-    );
-    const comments = result.rows.length > 0 ? result.rows[0].comments : [];
-    const hasApero = result.rows[0].apero;
-    const location_hint = result.rows[0].location_hint.length > 0 ? result.rows[0].location_hint : "";
-
-    res.json({ success: true, comments: comments, hasApero: hasApero, location_hint: location_hint});
-  } catch (error) {
-    console.error('Error fetching comments:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
-  }
-});
-
-app.get('/api/picture/:calendar_id/:window_nr', async (req, res) => {
-  try {
-    const { calendar_id, window_nr } = req.params;
-
-    // Retrieve only first pictures from the database for the specified calendar and window
+    const { calendar_id, window_nr } = req.query;
+    /* Provide required data to render the windowTiles in the Calender:
+      - whether the window is claimed or free for registration
+      - Thumbnail (currently just 1st picture)
+      
+      The assumption is that 
+        - if a record exists (result.rows.length > 0), the window
+          was claimed / registered => isFree: false
+        - otherwise it is free for registration => isFree: true
+    */
     const selectQuery = `
       SELECT pictures[1] AS picture -- Fetch the first element from the pictures array
       FROM adventWindow
@@ -324,10 +317,31 @@ app.get('/api/picture/:calendar_id/:window_nr', async (req, res) => {
     res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 });
-// TODO: think about only returning a number of pictures per request
-app.get('/api/pictures/:calendar_id/:window_nr', async (req, res) => {
+app.get('/api/window', async (req, res) => {
+  const { calendar_id, window_nr } = req.query;
   try {
-    const { calendar_id, window_nr } = req.params;
+    // Fetch window info based on calendar_id and window_nr
+    const result = await pool.query(
+      'SELECT address_name, address, apero, time, location_hint FROM adventWindow WHERE window_nr = $2 AND calendar_id = $1',
+      [calendar_id, window_nr]
+    );
+    if (result.rows.length > 0) {
+      // The query returned some rows
+      const windowData = result.rows[0];
+      res.json({ success: true, windowData: windowData});
+    } else {
+      // The query did not return any rows
+      res.json({ success: true, windowData: {} });
+    }
+  } catch (error) {
+    console.error('Error fetching window infos:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
+
+app.get('/api/pictures', async (req, res) => {
+  try {
+    const { calendar_id, window_nr } = req.query;
 
     // Retrieve all pictures from the database for the specified calendar and window
     const selectQuery = `
@@ -349,60 +363,10 @@ app.get('/api/pictures/:calendar_id/:window_nr', async (req, res) => {
     res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 });
-
-app.get('/api/calendarMapInfo', async (req, res) => {
-  const { calendar_id } = req.query;
-  try {
-    // Fetch coordwindow info based on calendar_id
-    const result = await pool.query(
-      'SELECT * FROM adventWindow WHERE calendar_id = $1',
-      [calendar_id]
-    );
-    if (result.rows.length > 0) {
-      // The query returned some rows
-      const calendarMapInfos = [];
-      for (const row of result.rows) {
-        calendarMapInfos.push({
-          window_nr: row.window_nr,
-          address_name: row.address_name,
-          address: row.address,
-          time: row.time
-        });
-      }
-      res.json({ success: true, calendarMapInfos: calendarMapInfos});
-    } else {
-      // The query did not return any rows
-      res.json({ success: true, calendarMapInfos: []});
-    }
-  } catch (error) {
-    console.error('Error fetching calendar map infos:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
-  }
-});
-
-
-// Post Calender Data
-app.post("/api/calendars", async (req, res) => {
-  const { windowId, comment} = req.body;
-  try {
-    // Insert the comment into the database
-    // Checks if comment array exists, if not inserts comment as array else concatenates existing array with new comment array
-    const result = await pool.query(
-      'INSERT INTO adventWindow (id, comments) VALUES ($1, ARRAY[$2]) ON CONFLICT (id) DO UPDATE SET comments = adventWindow.comments || ARRAY[$2]',
-      [windowId, comment]
-    );
-
-    res.json({ success: true, message: 'Comment added successfully' });
-  } catch (error) {
-    console.error('Error adding comment:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
-  }
-});
-
 // TODO: maybe do some preprocessing on the image data before storing it in the database or set a limit
-app.post('/api/upload-image/:calendar_id/:window_nr', upload.single('image'), async (req, res) => {
+app.post('/api/pictures', upload.single('image'), async (req, res) => {
   try {
-    const { calendar_id, window_nr } = req.params;
+    const { calendar_id, window_nr } = req.query;
     const { buffer } = req.file; // Image data
 
     const updateQuery = `
@@ -428,7 +392,25 @@ app.post('/api/upload-image/:calendar_id/:window_nr', upload.single('image'), as
   }
 });
 
-app.post('/api/calendars/addComment', async (req, res) => {
+app.get('/api/comments', async (req, res) => {
+  const { calendar_id, window_nr } = req.query;
+  try {
+    // Fetch comments based on calendar_id and window_nr
+    const result = await pool.query(
+      'SELECT * FROM adventWindow WHERE window_nr = $2 AND calendar_id = $1',
+      [calendar_id, window_nr]
+    );
+    const comments = result.rows.length > 0 ? result.rows[0].comments : [];
+    const hasApero = result.rows[0].apero;
+    const location_hint = result.rows[0].location_hint.length > 0 ? result.rows[0].location_hint : "";
+
+    res.json({ success: true, comments: comments, hasApero: hasApero, location_hint: location_hint});
+  } catch (error) {
+    console.error('Error fetching comments:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
+app.post('/api/comments', async (req, res) => {
   const { window_nr, calendar_id } = req.query;
   const { comment } = req.body;
   try {
@@ -442,6 +424,35 @@ app.post('/api/calendars/addComment', async (req, res) => {
     res.json({ success: true, message: 'Comment added successfully' });
   } catch (error) {
     console.error('Error adding comment:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
+app.get('/api/locations', async (req, res) => {
+  const { calendar_id } = req.query;
+  try {
+    // Fetch coordwindow info based on calendar_id
+    const result = await pool.query(
+      'SELECT window_nr, address_name, address, time FROM adventWindow WHERE calendar_id = $1',
+      [calendar_id]
+    );
+    if (result.rows.length > 0) {
+      // The query returned some rows
+      const calendarMapInfos = [];
+      for (const row of result.rows) {
+        calendarMapInfos.push({
+          window_nr: row.window_nr,
+          address_name: row.address_name,
+          address: row.address,
+          time: row.time
+        });
+      }
+      res.json({ success: true, calendarMapInfos: calendarMapInfos});
+    } else {
+      // The query did not return any rows
+      res.json({ success: true, calendarMapInfos: []});
+    }
+  } catch (error) {
+    console.error('Error fetching calendar map infos:', error);
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });

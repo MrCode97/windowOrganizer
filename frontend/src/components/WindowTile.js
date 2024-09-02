@@ -17,7 +17,7 @@ function WindowTile({ window_nr, calendar_id, token, locationAdded, setLocationA
   useEffect(() => {
     const fetchWindowTileData = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/windowTile/${calendar_id}/${window_nr}`);
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/windowTile?calendar_id=${calendar_id}&window_nr=${window_nr}`);
         const data = await response.json();
 
         if (data.success) {

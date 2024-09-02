@@ -25,7 +25,7 @@ function CommentSection({ calendar_id, window_nr}) {
         event.preventDefault();
 
         try {
-            await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/calendars/addComment?calendar_id=${calendar_id}&window_nr=${window_nr}`, {
+            await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/comments?calendar_id=${calendar_id}&window_nr=${window_nr}`, {
                 method: 'POST',
                 headers: {
                 'Content-Type': 'application/json',

@@ -10,7 +10,7 @@ const [images, setImages] = useState([]);
     console.log('Fetching images for window', windowNr);
     const fetchImages = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/pictures/${calendarId}/${windowNr}`);
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/pictures?calendar_id=${calendarId}&window_nr=${windowNr}`);
         const data = await response.json();
 
         if (data.success) {

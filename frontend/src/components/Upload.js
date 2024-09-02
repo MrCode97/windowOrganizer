@@ -18,7 +18,7 @@ const UploadImage = ({ calendarId, windowNr, onClose, imageUpload, setImageUploa
       formData.append('image', selectedFile);
 
       try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/upload-image/${calendarId}/${windowNr}`, {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/pictures?calendar_id=${calendarId}&window_nr=${windowNr}`, {
           method: 'POST',
           body: formData,
         });
@@ -28,6 +28,7 @@ const UploadImage = ({ calendarId, windowNr, onClose, imageUpload, setImageUploa
         if (data.success) {
           console.log('Image submitted successfully');
           setImageUpload(!imageUpload);
+          setSelectedFile(null);
           setMessage('Image uploaded successfully!');
           setMessageOpen(true);
         } else {
