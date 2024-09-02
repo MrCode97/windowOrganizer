@@ -242,7 +242,7 @@ app.post('/api/registerWindowHosting', async (req, res) => {
     //const hasApero = false;
     // register window hosting
     await pool.query(
-      'INSERT INTO adventWindow (id, owner, address_name, address, apero, time, location_hint, window_nr, calendar_id, image_paths, pictures, comments) VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)',
+      'INSERT INTO adventWindow (id, owner, address_name, address, apero, time, location_hint, window_nr, calendar_id, pictures, comments) VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8, $10, $11)',
       [userId.rows[0].id, addressName, `(${coords[0]},${coords[1]})`, hasApero, time, locationHint, window_nr, calendar_id, [], [], []]
     );
     console.log(`Window hosting for calendar ${calendar_id}, window ${window_nr} registered successfully!`);
