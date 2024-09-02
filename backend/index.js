@@ -178,44 +178,28 @@ app.post('/api/registerAdventCalendar', async (req, res) => {
   }
 });
 app.post('/api/registerWindowHosting', async (req, res) => {
-  const { calendar_id, window_nr, addressName, coords, time, locationHint, hasApero  } = req.body;
-
-  // Extract the token from the request headers
-  const token = req.headers.authorization;
-  // Check if the token is provided
-  if (!token) {
-    return res.status(401).json({ error: 'Unauthorized. Token missing.' });
-  }
-
-  // Check if the token is valid
-  try {
-    const decodedToken = jwt.verify(token.split(' ')[1], jwt_secret);
-    if (!decodedToken) {
-      return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
-    }
-    username = decodedToken.username;
-  } catch (error) {
-    console.error('Error verifying token', error);
+  if (!isValidToken(req)){
     return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
   }
-
-  // Check if the user exists
+  const { calendar_id, window_nr, addressName, coords, time, locationHint, hasApero } = req.body;
+  const token = req.headers.authorization;
+  
   try {
-    const userExists = await pool.query('SELECT * FROM users WHERE username = $1', [username]);
-
-    if (userExists.rows.length === 0) {
-      console.log(`User: ${username} does not exist`);
-      return res.status(400).json({ error: 'User does not exist.' });
-    }
+    const decodedToken = jwt.verify(token.split(' ')[1], jwt_secret);
+    username = decodedToken.username;
   } catch (error) {
-      console.error('Error checking user existence', error);
-      return res.status(500).json({ error: 'Internal Server Error' });
+    return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
+  }
+  
+  // Basic validation
+  if (!calendar_id || !window_nr || !addressName || !coords || !time || hasApero === null) {
+    return res.status(400).json({ error: 'Invalid request. Missing required parameters.' });
   }
 
-  // Check if the window has already been registered in the meantime
+  // Check if window is free
   try {
     const existingWindow = await pool.query(
-      'SELECT * FROM adventWindow WHERE window_nr = $2 AND calendar_id = $1',
+      'SELECT id FROM adventWindow WHERE window_nr = $2 AND calendar_id = $1',
       [calendar_id, window_nr]
     );
 
@@ -230,7 +214,6 @@ app.post('/api/registerWindowHosting', async (req, res) => {
 
   // Register the window hosting
   try {
-    // get user id from username
     const userId = await pool.query(
       'SELECT id FROM users WHERE username = $1',
       [username]
@@ -239,11 +222,10 @@ app.post('/api/registerWindowHosting', async (req, res) => {
     console.log("Calendar id:", calendar_id);
     console.log("Window nr:", window_nr);
     console.log(coords);
-    //const hasApero = false;
     // register window hosting
     await pool.query(
-      'INSERT INTO adventWindow (id, owner, address_name, address, apero, time, location_hint, window_nr, calendar_id, pictures, comments) VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8, $10, $11)',
-      [userId.rows[0].id, addressName, `(${coords[0]},${coords[1]})`, hasApero, time, locationHint, window_nr, calendar_id, [], [], []]
+      'INSERT INTO adventWindow (id, owner, address_name, address, apero, time, location_hint, window_nr, calendar_id, pictures, comments) VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10)',
+      [userId.rows[0].id, addressName, `(${coords[0]},${coords[1]})`, hasApero, time, locationHint, window_nr, calendar_id, [], []]
     );
     console.log(`Window hosting for calendar ${calendar_id}, window ${window_nr} registered successfully!`);
     res.status(200).json({ message: 'Window hosting registered successfully!' });
@@ -257,7 +239,7 @@ app.post('/api/registerWindowHosting', async (req, res) => {
 // Get Calender Data
 app.get('/api/calendars', async (req, res) => {
     try {
-      const result = await pool.query('SELECT * FROM adventCalendars');
+      const result = await pool.query('SELECT id, name FROM adventCalendars');
       res.json(result.rows);
     } catch (error) {
       console.error('Error retrieving calendars', error);
