@@ -246,22 +246,6 @@ app.get('/api/calendars', async (req, res) => {
       res.status(500).json({ error: 'Internal Server Error' });
     }
 });
-app.post("/api/calendars", async (req, res) => {
-  const { windowId, comment} = req.body;
-  try {
-    // Insert the comment into the database
-    // Checks if comment array exists, if not inserts comment as array else concatenates existing array with new comment array
-    const result = await pool.query(
-      'INSERT INTO adventWindow (id, comments) VALUES ($1, ARRAY[$2]) ON CONFLICT (id) DO UPDATE SET comments = adventWindow.comments || ARRAY[$2]',
-      [windowId, comment]
-    );
-
-    res.json({ success: true, message: 'Comment added successfully' });
-  } catch (error) {
-    console.error('Error adding comment:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
-  }
-});
 
 app.get('/api/windowTile', async (req, res) => {
   try {
