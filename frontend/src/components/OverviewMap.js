@@ -37,7 +37,7 @@ function OverviewMap({ calendar_id, locationAdded }) {
 
   return (
     <>
-      {calendarMapInfos.length > 0 &&
+      {calendarMapInfos.length > 0 && (
         <MapContainer
           center={calculateCenter()}
           zoom={13}
@@ -48,7 +48,7 @@ function OverviewMap({ calendar_id, locationAdded }) {
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
-          {calendarMapInfos.length === 0 && calendarMapInfos.map((window, index) => (
+          {calendarMapInfos.map((window, index) => (
             <Marker key={index} position={[window.address.x, window.address.y]} icon={new L.icon({
               iconUrl: require('../assets/staricons/' + window.window_nr + '.png'),
               iconSize: [32, 32],
@@ -60,9 +60,11 @@ function OverviewMap({ calendar_id, locationAdded }) {
             </Marker>
           ))}
         </MapContainer>
-      }
+      )}
     </>
+
   )
+
 }
 
 export default OverviewMap;
