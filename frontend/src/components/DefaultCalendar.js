@@ -1,5 +1,5 @@
 // DefaultCalendar.js
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Grid2, Typography, Box } from '@mui/material';
 import OverviewMap from './OverviewMap';
 import WindowTile from './WindowTile';
@@ -7,6 +7,8 @@ import WindowTile from './WindowTile';
 function DefaultCalendar({ id, name, token }) {
   const window_nrs = Array(24).fill().map((_, index) => index + 1);
   const [locationAdded, setLocationAdded] = useState(false); // Trigger re-rendering of map with all locations
+
+  useEffect(() => {},[id]);
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center'}}>

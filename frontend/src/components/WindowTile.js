@@ -33,9 +33,11 @@ function WindowTile({ window_nr, calendar_id, token, locationAdded, setLocationA
               };
               reader.readAsDataURL(blob);
             });
-            Promise.all([base64Image]).then(image => {setImage(image[0]);});
+            base64Image.then(img => {setImage(img);})
+          } else {
+            setImage('/Window.png');
           }
-        } 
+        }
       } catch (error) {
         console.error('Error fetching windowTile:', error);
       }
