@@ -4,7 +4,7 @@ import { Grid2, Typography, Box } from '@mui/material';
 import OverviewMap from './OverviewMap';
 import WindowTile from './WindowTile';
 
-function DefaultCalendar({ id, name, token }) {
+function DefaultCalendar({ id, name, user, token }) {
   const window_nrs = Array(24).fill().map((_, index) => index + 1);
   const [locationAdded, setLocationAdded] = useState(false); // Trigger re-rendering of map with all locations
 
@@ -15,7 +15,7 @@ function DefaultCalendar({ id, name, token }) {
       <Grid2 container spacing={2} justifyContent="center">
         {window_nrs.map((window_nr) =>
           <Grid2 item key={window_nr}>
-            <WindowTile window_nr={window_nr} calendar_id={id} token={token} locationAdded={locationAdded} setLocationAdded={setLocationAdded} />
+            <WindowTile window_nr={window_nr} calendar_id={id} user={user} token={token} locationAdded={locationAdded} setLocationAdded={setLocationAdded} />
           </Grid2>
         )}
       </Grid2>

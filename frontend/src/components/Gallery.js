@@ -7,7 +7,6 @@ const Gallery = ({ calendarId, windowNr }) => {
   const [images, setImages] = useState([]);
 
   useEffect(() => {
-    console.log('Fetching images for window', windowNr);
     const fetchImages = async () => {
       try {
         const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/pictures?calendar_id=${calendarId}&window_nr=${windowNr}`);

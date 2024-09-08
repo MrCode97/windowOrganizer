@@ -30,23 +30,23 @@ const InfoSection = ({
     };
 
     fetchData();
-  }, [calendar_id, window_nr]);
+  }, [calendar_id, token, window_nr]);
 
   return (
     <>
-      <Typography variant="h4">{window_nr}. Advent Window</Typography>
-      <Typography variant="body1">Apéro: {hasApero ?
+
+      <Typography variant="h4">{window_nr}. Advent Window</Typography><Typography variant="body1">Apéro: {hasApero ?
         <span style={{ fontSize: '24px', color: 'black' }}>✓</span> :
         <span style={{ fontSize: '24px', color: 'red' }}>✗</span>}</Typography>
       <Typography variant="body1">{addressName}, starting: {startTime}</Typography>
       {location_hint && <Typography variant="body1">{location_hint}</Typography>}
-
       <div style={{ display: 'flex', justifyContent: 'center' }}>
         <DrawMap coordinates={coordinates} />
       </div>
-
       <CommentSection calendar_id={calendar_id} window_nr={window_nr} token={token} />
       <br />
+
+
     </>
   );
 };

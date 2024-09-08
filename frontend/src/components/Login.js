@@ -22,10 +22,8 @@ function Login({ userAdded, setUserAdded, token }) {
             });
 
             if (response.ok) {
-                console.log('Login successful!');
                 const { token } = await response.json();
                 login({ username }, token);
-
                 setUserAdded(!userAdded);
             } else {
                 console.error('Login failed');

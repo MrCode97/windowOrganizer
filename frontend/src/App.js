@@ -19,6 +19,9 @@ import WelcomePage from './components/WelcomePage';
 import Login from './components/Login';
 import UserRegistrationForm from './components/UserRegistrationForm';
 import AdventCalendarRegistrationForm from './components/AdventCalendarRegistrationForm';
+import UserSettings from './components/UserSettings';
+import MyCalendars from './components/MyCalendars';
+import MyWindows from './components/MyWindows';
 
 
 const drawerWidth = 240;
@@ -56,8 +59,12 @@ function App() {
   const [showLogin, setShowLogin] = useState(false);
   const [showRegistration, setShowRegistration] = useState(false);
   const [showRegistrationCalendar, setShowRegistrationCalendar] = useState(false);
+  const [showMyCalendars, setShowMyCalendars] = useState(false);
+  const [showMyWindows, setShowMyWindows] = useState(false);
+  const [showUserSettings, setShowUserSettings] = useState(false);
   const [calendarAdded, setCalendarAdded] = useState(false);
   const [userAdded, setUserAdded] = useState(false);
+
 
   useEffect(() => {
     const fetchCalendars = async () => {
@@ -116,7 +123,8 @@ function App() {
                 </Typography>
               </ListItemText>
             </ListItem>
-            <ListItemButton onClick={() => { setShowLogin(false); setShowRegistration(false); setShowRegistrationCalendar(false); setSelectedCalendar(null); }}>
+            <ListItemButton onClick={() => { 
+              setShowLogin(false); setShowRegistration(false); setShowRegistrationCalendar(false); setSelectedCalendar(null); setShowMyCalendars(false); setShowMyWindows(false); setShowUserSettings(false);}}>
               <ListItemText primary="Welcome" />
             </ListItemButton>
             <ListItem>
@@ -144,19 +152,14 @@ function App() {
                 calendar.name.toLowerCase().includes(searchTerm.toLowerCase())
               )
               .map((calendar) => (
-                <ListItem
-                  button
-                  onClick={() => {
-                    setSelectedCalendar(null);
-                    setSelectedCalendar(calendar);
-                    setShowRegistration(false);
-                    setShowRegistrationCalendar(false);
-                    setShowLogin(false);
+                <ListItemButton
+                  onClick={() => {setSelectedCalendar(calendar);
+                    setShowRegistration(false); setShowRegistrationCalendar(false); setShowLogin(false); setShowMyCalendars(false); setShowUserSettings(false); setShowMyWindows(false);
                   }}
                   key={calendar.name}
                 >
                   <ListItemText primary={calendar.name} />
-                </ListItem>
+                </ListItemButton>
               ))}
             <ListItem>
             </ListItem>
@@ -170,18 +173,39 @@ function App() {
               </ListItemText>
             </ListItem>
             {!user && (
-              <ListItemButton onClick={() => { setShowLogin(true); setShowRegistration(false); setShowRegistrationCalendar(false); setSelectedCalendar(null); }}>
+              <ListItemButton onClick={() => { setShowLogin(true); 
+                setShowRegistration(false); setShowRegistrationCalendar(false); setSelectedCalendar(null); setShowMyCalendars(false); setShowUserSettings(false); setShowMyWindows(false); }}>
                 <ListItemText primary="Login" />
               </ListItemButton>
             )}
             {!user && (
-              <ListItemButton button onClick={() => { setShowRegistration(true); setShowLogin(false); setShowRegistrationCalendar(false); setSelectedCalendar(null); }}>
+              <ListItemButton onClick={() => { setShowRegistration(true); 
+                setShowLogin(false); setShowRegistrationCalendar(false); setSelectedCalendar(null); setShowMyCalendars(false); setShowUserSettings(false); setShowMyWindows(false);}}>
                 <ListItemText primary="Register a User" />
               </ListItemButton>
             )}
             {user && (
-              <ListItemButton button onClick={() => { setShowRegistrationCalendar(true); setShowLogin(false); setShowRegistration(false); setSelectedCalendar(null); }}>
+              <ListItemButton onClick={() => { setShowMyCalendars(true);
+                setShowRegistrationCalendar(false); setShowLogin(false); setShowRegistration(false); setSelectedCalendar(null); setShowUserSettings(false); setShowMyWindows(false);}}>
+                <ListItemText primary="My Calendars" />
+              </ListItemButton>
+            )}
+            {user && (
+              <ListItemButton onClick={() => { setShowMyWindows(true);
+                setShowMyCalendars(false); setShowUserSettings(false); setShowRegistrationCalendar(false); setShowLogin(false); setShowRegistration(false); setSelectedCalendar(null); }}>
+                <ListItemText primary="My Windows" />
+              </ListItemButton>
+            )}
+            {user && (
+              <ListItemButton onClick={() => { setShowRegistrationCalendar(true); 
+                setShowLogin(false); setShowRegistration(false); setSelectedCalendar(null); setShowMyCalendars(false); setShowMyCalendars(false); setShowMyWindows(false); setShowUserSettings(false);}}>
                 <ListItemText primary="Register a Calender" />
+              </ListItemButton>
+            )}
+            {user && (
+              <ListItemButton onClick={() => { setShowUserSettings(true); 
+                setShowRegistrationCalendar(false); setShowLogin(false); setShowRegistration(false); setSelectedCalendar(null); setShowMyCalendars(false); setShowMyWindows(false); }}>
+                <ListItemText primary="User Settings" />
               </ListItemButton>
             )}
           </List>
@@ -189,49 +213,54 @@ function App() {
         </Drawer>
         <MainBox component="main" className='mainBox'>
           <Container className='mainContainer' >
-            {!user && showLogin && (
-              <Login userAdded={userAdded} setUserAdded={setUserAdded} />
-            )}
-            {!user && showRegistration && (
-              <UserRegistrationForm />
-            )}
-            {!user && !showLogin && !showRegistration && (
+            {!user && (
               <>
-                {calendars.length !== 0 && selectedCalendar ? (
-                  <DefaultCalendar
-                    id={selectedCalendar.id}
-                    name={selectedCalendar.name}
-                    token={token}
-                  />
-                ) : (
-                  <WelcomePage />
-                )}
-              </>
-            )}
+              {showLogin && (
+                <Login userAdded={userAdded} setUserAdded={setUserAdded} />
+              )}
+              {showRegistration && (
+                <UserRegistrationForm />
+              )}
+              {calendars.length > 0 && selectedCalendar && (
+                <DefaultCalendar
+                id={selectedCalendar.id}
+                name={selectedCalendar.name}
+                user={user}
+                token={token}
+              />
+              )}
+              {!selectedCalendar && !showLogin && !showRegistration && (
+                <WelcomePage/>
+              )}
+            </>
+          )}
             {user && (
               <>
-                {showRegistrationCalendar && (
-                  <AdventCalendarRegistrationForm calendarAdded={calendarAdded} setCalendarAdded={setCalendarAdded} token={token} />
+                {showRegistration && (
+                  <UserRegistrationForm token={token} />
                 )}
-                {!showRegistrationCalendar && (
-                  <>
-                    {showRegistration && (
-                      <UserRegistrationForm token={token} />
-                    )}
-                    {!showRegistration && (
-                      <>
-                        {calendars.length !== 0 && selectedCalendar ? (
+                {calendars.length > 0 && selectedCalendar && (
                           <DefaultCalendar
                             id={selectedCalendar.id}
                             name={selectedCalendar.name}
+                            user={user}
                             token={token}
                           />
-                        ) : (
-                          <WelcomePage />
                         )}
-                      </>
-                    )}
-                  </>
+                {showMyCalendars && (
+                  <MyCalendars calendarAdded={calendarAdded} setCalendarAdded={setCalendarAdded} user={user} token={token}/>
+                )}
+                {showMyWindows && (
+                  <MyWindows user={user} token={token}/>
+                )}
+                {showRegistrationCalendar && (
+                  <AdventCalendarRegistrationForm calendarAdded={calendarAdded} setCalendarAdded={setCalendarAdded} token={token} />
+                )}
+                {showUserSettings && (
+                  <UserSettings user={user} token={token} userAdded={userAdded} setUserAdded={setUserAdded}/>
+                )}
+                {!selectedCalendar && !showMyCalendars && !showMyWindows && !showRegistrationCalendar && !showUserSettings && (
+                  <WelcomePage/>
                 )}
               </>
             )}

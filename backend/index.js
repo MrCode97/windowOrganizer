@@ -36,6 +36,7 @@ async function isValidToken(req){
   // Check if the token is valid
   try {
     const decodedToken = jwt.verify(token.split(' ')[1], jwt_secret);
+
     if (!decodedToken) {
       condole.debug('Unauthorized. Invalid token.');
       return false;
@@ -174,6 +175,54 @@ app.post('/api/registerAdventCalendar', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+app.post('/api/updateAdventCalendar', async (req, res) => {
+  if (!await isValidToken(req)) {
+    return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
+  }
+
+  const { calendar_id, name } = req.body;
+  const token = req.headers.authorization;
+  let username;
+
+  try {
+    const decodedToken = jwt.verify(token.split(' ')[1], jwt_secret);
+    username = decodedToken.username;
+  } catch (error) {
+    return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
+  }
+
+  // Basic validation
+  if (!calendar_id || !name) {
+    return res.status(400).json({ error: 'Invalid request. Missing required parameters.' });
+  }
+
+  try {
+    // Verify that the user owns the calendar
+    const userQuery = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
+    const userId = userQuery.rows[0]?.id;
+
+    if (!userId) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    // Check if the user is the owner of the calendar
+    const ownershipQuery = await pool.query('SELECT owner FROM adventCalendars WHERE id = $1 AND owner = $2', [calendar_id, userId]);
+
+    if (ownershipQuery.rows.length === 0) {
+      return res.status(403).json({ error: 'Forbidden. You do not have permission to edit this calendar.' });
+    }
+
+    // Update the advent calendar details
+    await pool.query('UPDATE adventCalendars SET name = $1 WHERE id = $2', [name, calendar_id]);
+
+    console.debug(`Advent calendar ${calendar_id} updated successfully!`);
+    res.status(200).json({ message: 'Advent calendar updated successfully!' });
+
+  } catch (error) {
+    console.error('Error updating advent calendar', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 app.post('/api/registerWindowHosting', async (req, res) => {
   if (! await isValidToken(req)){
     return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
@@ -227,9 +276,205 @@ app.post('/api/registerWindowHosting', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+app.post('/api/updateWindowHosting', async (req, res) => {
+  // Validate token
+  if (!await isValidToken(req)) {
+    return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
+  }
 
+  const token = req.headers.authorization;
+  const { calendar_id, window_nr, addressName, coords, time, locationHint, hasApero } = req.body;
+  let username;
+
+  try {
+    // Decode the token to get the username
+    const decodedToken = jwt.verify(token.split(' ')[1], jwt_secret);
+    username = decodedToken.username;
+  } catch (error) {
+    return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
+  }
+
+  // Basic validation
+  if (!calendar_id || !window_nr || !addressName || !coords || !time || hasApero === null) {
+    return res.status(400).json({ error: 'Invalid request. Missing required parameters.' });
+  }
+
+  try {
+    // Verify that the user owns the window
+    const userQuery = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
+    const userId = userQuery.rows[0]?.id;
+
+    if (!userId) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    // Check if the user is the owner of the calendar to which the window belongs
+    const ownershipQuery = await pool.query(`
+      SELECT owner FROM adventWindow
+      WHERE calendar_id = $1 AND window_nr = $2 AND owner = $3
+    `, [calendar_id, window_nr, userId]);
+
+    if (ownershipQuery.rows.length === 0) {
+      return res.status(403).json({ error: 'Forbidden. You do not have permission to edit this window.' });
+    }
+
+    // Update the advent window details
+    await pool.query(`
+      UPDATE adventWindow
+      SET 
+        address_name = $1,
+        address = POINT($2, $3),
+        time = $4,
+        location_hint = $5,
+        apero = $6
+      WHERE calendar_id = $7 AND window_nr = $8
+    `, [addressName, coords[0], coords[1], time, locationHint, hasApero, calendar_id, window_nr]);
+
+    console.debug(`Advent window ${window_nr} for calendar ${calendar_id} updated successfully!`);
+    res.status(200).json({ message: 'Advent window updated successfully!' });
+
+  } catch (error) {
+    console.error('Error updating advent window', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+app.post('/api/user/changePassword', async (req, res) => {
+  // Validate token
+  if (!await isValidToken(req)) {
+    return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
+  }
+
+  const { oldPassword, newPassword } = req.body;
+  let username;
+  const token = req.headers.authorization;
+
+  try {
+    // Decode the token to get the username
+    const decodedToken = jwt.verify(token.split(' ')[1], jwt_secret);
+    username = decodedToken.username;
+  } catch (error) {
+    console.error('Error decoding token', error);
+    return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
+  }
+  // Basic validation
+  if (!username || !oldPassword || !newPassword) {
+    return res.status(400).json({ error: 'Invalid request. Missing required parameters.' });
+  }
+  // Check if the user exists
+  try {
+    const result = await pool.query('SELECT username, password FROM users WHERE username = $1', [username]);
+
+    if (result.rows.length === 0) {
+      return res.status(401).json({ error: 'Invalid credentials. User not found.' });
+    }
+
+    const hashedPassword = result.rows[0].password;
+    
+    // Check if the provided password matches the stored hashed password
+    const passwordMatch = await bcrypt.compare(oldPassword, hashedPassword);
+
+    if (passwordMatch) {
+      const token = jwt.sign({ username: result.rows[0].username }, jwt_secret, {
+        expiresIn: '1h',
+      });
+      const hashedNewPassword = await bcrypt.hash(newPassword, 12);
+      await pool.query('UPDATE users SET password = $1 WHERE username = $2', [hashedNewPassword, username]);
+      res.status(200).json({ message: 'Password successfully changed!', token });
+    } else {
+      res.status(401).json({ error: 'Invalid credentials. Password does not match.' });
+    }
+  } catch (error) {
+    console.error('Error during login', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
 // Data
+app.get('/api/user/ownedCalendars', async (req, res) => {
+  if (!await isValidToken(req)) {
+    return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
+  }
+
+  const { user } = req.query;
+  const token = req.headers.authorization;
+
+  try {
+    const selectQuery = `
+      SELECT 
+        ac.id,
+        ac.name
+      FROM 
+        adventCalendars ac
+      JOIN 
+        users u ON u.id = ac.owner
+      WHERE 
+        u.username = $1;
+    `;
+    const result = await pool.query(selectQuery, [user]);
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error retrieving calendars', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+app.get('/api/user/ownedWindows', async (req, res) => {
+  /*
+    Return owned windows of a user, i.e. (username) => [{calendar_id, [window_nr]}]
+    Requires authenticated user, but doesn't have to be the owing user, i.e. fetch other users owned windows is allowed
+  */
+  if (! await isValidToken(req)){
+    return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
+  }
+    const { user } = req.query;
+    const token = req.headers.authorization;
+
+  try {
+    const selectQuery = `
+      SELECT 
+        aw.calendar_id,
+        JSON_AGG(aw.window_nr ORDER BY aw.window_nr) AS windows
+      FROM 
+        adventWindow aw
+      JOIN 
+        users u ON u.id = aw.owner
+      WHERE 
+        u.username = $1
+      GROUP BY 
+        aw.calendar_id;
+    `;
+    const result = await pool.query(selectQuery, [user]);
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error retrieving calendars', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+app.get('/api/user/idToUser', async (req, res) => {
+  /*
+    Return owned windows of a user, i.e. (username) => [{calendar_id, [window_nr]}]
+    Requires authenticated user, but doesn't have to be the owing user, i.e. fetch other users owned windows is allowed
+  */
+  if (! await isValidToken(req)){
+    return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
+  }
+    const { id } = req.query;
+    const token = req.headers.authorization;
+
+  try {
+    const selectQuery = `
+      SELECT username FROM users WHERE id = $1`;
+    const result = await pool.query(selectQuery, [id]);
+    if (result.rows.length > 0) {
+      res.json(result.rows[0]);
+    } else {
+      res.json({});
+    }
+  } catch (error) {
+    console.error('Error retrieving calendars', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 app.get('/api/calendars', async (req, res) => {
     try {
       const result = await pool.query('SELECT id, name FROM adventCalendars');
@@ -239,7 +484,41 @@ app.get('/api/calendars', async (req, res) => {
       res.status(500).json({ error: 'Internal Server Error' });
     }
 });
+app.get('/api/calendar', async (req, res) => {
+  const { calendar_id } = req.query;
+  try {
+    const result = await pool.query('SELECT id, name FROM adventCalendars WHERE id = $1', [calendar_id]);
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error('Error retrieving calendars', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
+app.get('/api/windowTile/owner', async (req, res) => {
+  /* Provide owner-username to authenticated users
+    The assumption is that we call this endpoint only form SlidingWindow.js, where we already established that the window is claimed, hence owner exists
+    */
+  if (! await isValidToken(req)){
+    return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
+  }
+
+  const { calendar_id, window_nr } = req.query;
+  try {
+    const selectQuery = `
+      SELECT u.username
+      FROM adventWindow aw
+      JOIN users u ON aw.owner = u.id
+      WHERE aw.calendar_id = $1 AND aw.window_nr = $2
+    `;
+
+    const result = await pool.query(selectQuery, [calendar_id, window_nr]);
+    res.status(200).json(result.rows[0]);
+  } catch (error) {
+    console.error('Error fetching finding owner:', error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+});
 app.get('/api/windowTile', async (req, res) => {
   try {
     const { calendar_id, window_nr } = req.query;
@@ -280,7 +559,7 @@ app.get('/api/window', async (req, res) => {
   const { calendar_id, window_nr } = req.query;
   try {
     const result = await pool.query(
-      'SELECT address_name, address, apero, time, location_hint FROM adventWindow WHERE window_nr = $2 AND calendar_id = $1',
+      'SELECT address_name, address, apero, time, location_hint, owner FROM adventWindow WHERE window_nr = $2 AND calendar_id = $1',
       [calendar_id, window_nr]
     );
     if (result.rows.length > 0) {

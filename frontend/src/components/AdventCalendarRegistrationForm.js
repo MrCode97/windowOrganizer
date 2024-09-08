@@ -21,7 +21,6 @@ function AdventCalendarRegistrationForm({ calendarAdded, setCalendarAdded, token
     event.preventDefault();
 
     try {
-      // Replace the following with your actual API endpoint
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/registerAdventCalendar`, {
         method: 'POST',
         headers: {

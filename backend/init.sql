@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS adventWindow (
     id SERIAL PRIMARY KEY,
     owner INT REFERENCES users(id),
     address_name VARCHAR(255),
-    address POINT,
+    address POINT NOT NULL,
     apero BOOLEAN,
     time TIME,
     location_hint VARCHAR(255),
