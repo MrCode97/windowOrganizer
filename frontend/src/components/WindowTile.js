@@ -35,7 +35,7 @@ function WindowTile({ window_nr, calendar_id, user, token, locationAdded, setLoc
             });
             base64Image.then(img => { setImage(img); })
           } else {
-            setImage('/Window.png');
+            setImage('/Window_hl.png');
           }
         }
       } catch (error) {

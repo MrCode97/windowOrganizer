@@ -20,6 +20,14 @@ code {
   min-height: 100vh;
 }
 
+.toolbar {
+  background-color: green;
+}
+
+.sidebar {
+  background-color: rgb(173, 216, 230);
+}
+
 .buttonContainerSlidingWindow {
   display: flex;
   justify-content:space-between;
