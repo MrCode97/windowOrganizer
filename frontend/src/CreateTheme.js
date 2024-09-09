@@ -3,13 +3,13 @@ import { createTheme } from '@mui/material/styles';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#122413;', // Customize your primary color
+      main: '#122413', // Customize your primary color
     },
     secondary: {
       main: '#2D2923', // Customize your secondary color
     },
     background: {
-      background: { default: '#FFF4E0' }, // Background color
+      default: '#FFF4E0', // Background color
     },
     text: {
       primary: 'rgb(255, 225, 186)', // Default text color
@@ -22,7 +22,7 @@ const theme = createTheme({
       fontWeight: 'bold',
       textAlign: 'center',
       padding: '8px 0',
-      color: '#ffe1ba;',
+      color: '#ffe1ba',
       backgroundColor: '#515151'
     },
     body1: {
@@ -32,7 +32,7 @@ const theme = createTheme({
       padding: '8px 16px',
       //backgroundColor: 'rgba(255, 255, 255, 0.8)', // Semi-transparent background
       borderRadius: '4px', // Rounded corners
-      color: '#ffe1ba;',
+      color: '#ffe1ba',
     },
   },
   components: {
@@ -68,7 +68,11 @@ const theme = createTheme({
     MuiTab: {
       styleOverrides: {
         root: {
-          color: '#ffe1ba', // Tab text color
+          color: '#ffe1ba',
+          '&.Mui-selected': {
+            color: '#ffe1ba', // Keep the text color the same when selected
+            backgroundColor: 'transparent', // Make selected tab background transparent
+          },
         },
       },
     },
