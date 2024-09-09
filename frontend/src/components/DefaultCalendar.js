@@ -3,9 +3,8 @@ import { useState } from 'react';
 import { Grid2, Typography, Box } from '@mui/material';
 import OverviewMap from './OverviewMap';
 import WindowTile from './WindowTile';
-import shadows from '@mui/material/styles/shadows';
 
-function DefaultCalendar({ id, name, user, token }) {
+function DefaultCalendar({ id, name, additionalInfo, user, token }) {
   const window_nrs = Array(24).fill().map((_, index) => index + 1);
   const [locationAdded, setLocationAdded] = useState(false); // Trigger re-rendering of map with all locations
 
@@ -24,6 +23,20 @@ function DefaultCalendar({ id, name, user, token }) {
       >
         {name}
       </Typography>
+      {additionalInfo && (
+        <Typography
+          sx={{
+            padding: '10px',
+            marginBottom: '20px',
+            borderRadius: '10px',
+            fontWeight: 'bold',
+          }}
+          variant="body1"
+          align="center"
+        >
+          {additionalInfo}
+        </Typography>
+      )}
       <OverviewMap
         key={id}
         calendar_id={id}

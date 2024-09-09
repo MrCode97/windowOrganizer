@@ -44,13 +44,12 @@ const MyWindows = ({ user, token }) => {
           }
 
           const calendarData = await calendarResponse.json();
-          return { id: calendarData.id, name: calendarData.name };
+          return { id: calendarData.id, name: calendarData.name, additionalInfo: calendarData.additional_info }; // Fetch additional info
         });
 
         const calendars = await Promise.all(calendarRequests);
-        // Store calendar details in a state object keyed by calendar_id
         const calendarMap = calendars.reduce((acc, calendar) => {
-          acc[calendar.id] = calendar.name;
+          acc[calendar.id] = { name: calendar.name, additionalInfo: calendar.additionalInfo }; // Store name and additional info
           return acc;
         }, {});
 
@@ -78,14 +77,17 @@ const MyWindows = ({ user, token }) => {
         {windowsData.map((windowItem) => (
           <div key={windowItem.calendar_id}>
             <ListItem button onClick={() => handleToggle(windowItem.calendar_id)}>
-              <ListItemText primary={calendarDetails[windowItem.calendar_id] || "Loading..."} />
+              <ListItemText 
+                primary={calendarDetails[windowItem.calendar_id]?.name || "Loading..."} 
+                secondary={calendarDetails[windowItem.calendar_id]?.additionalInfo || ""} // Display additional info
+              />
               {openCalendars[windowItem.calendar_id] ? <ExpandLessIcon /> : <ExpandMoreIcon />}
             </ListItem>
             <Collapse in={openCalendars[windowItem.calendar_id]} timeout="auto" unmountOnExit>
               <Grid2 container spacing={2}>
-              {windowItem.windows.map((windowNr) => (
-                <WindowTile key={windowNr} window_nr={windowNr} calendar_id={windowItem.calendar_id} user={user} token={token} />
-              ))}
+                {windowItem.windows.map((windowNr) => (
+                  <WindowTile key={windowNr} window_nr={windowNr} calendar_id={windowItem.calendar_id} user={user} token={token} />
+                ))}
               </Grid2>
             </Collapse>
           </div>
@@ -93,6 +95,6 @@ const MyWindows = ({ user, token }) => {
       </List>
     </Box>
   );
-}
+};
 
 export default MyWindows;

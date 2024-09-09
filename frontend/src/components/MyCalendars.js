@@ -29,6 +29,17 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, user, token }) => {
 
         const calendars = await response.json();
         setCalendarData(calendars);
+
+        // Initialize updateData with fetched calendars
+        const initialUpdateData = calendars.reduce((acc, calendar) => {
+          acc[calendar.id] = {
+            name: calendar.name || '',
+            additionalInfo: calendar.additional_info || '',
+          };
+          return acc;
+        }, {});
+
+        setUpdateData(initialUpdateData);
       } catch (error) {
         console.error('Error fetching calendars:', error);
       }
@@ -100,7 +111,10 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, user, token }) => {
         {calendarData.map((calendar) => (
           <div key={calendar.id}>
             <ListItem button onClick={() => handleToggle(calendar.id)}>
-              <ListItemText primary={calendar.name || "Loading..."} />
+            <ListItemText 
+                primary={calendar.name || "Loading..."} 
+                secondary={calendar.additionalInfo || ""} // Display additional info below name
+              />
               {openCalendars[calendar.id] ? <ExpandLessIcon /> : <ExpandMoreIcon />}
             </ListItem>
             {openCalendars[calendar.id] && (
@@ -110,6 +124,15 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, user, token }) => {
                   fullWidth
                   value={updateData[calendar.id]?.name || ''}
                   onChange={(e) => handleInputChange(calendar.id, 'name', e.target.value)}
+                />
+                <TextField
+                  label="Additional Information"
+                  fullWidth
+                  multiline
+                  rows={4}
+                  value={updateData[calendar.id]?.additionalInfo || ''}
+                  onChange={(e) => handleInputChange(calendar.id, 'additionalInfo', e.target.value)}
+                  sx={{ mt: 2 }}
                 />
                 <Button
                   variant="contained"

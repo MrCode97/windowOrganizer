@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS adventCalendars (
     id SERIAL PRIMARY KEY,
     owner INT NOT NULL,
     name VARCHAR(255) UNIQUE NOT NULL,
+    additional_info TEXT,
     FOREIGN KEY (owner) REFERENCES users(id)
 );
 
@@ -40,12 +41,13 @@ INSERT INTO users (username, password) VALUES
     ('user4', 'password4'),
     ('user5', 'password5');
 
--- Insert data into adventCalendars
-INSERT INTO adventCalendars (owner, name)
+-- Insert data into adventCalendars with additional_info
+INSERT INTO adventCalendars (owner, name, additional_info)
 VALUES
-    (1, 'Adventskalender Schlieren 8952'),
-    (2, 'Adventskalender Basel 4057'),
-    (3, 'Adventskalender Zürich 8053');
+    (1, 'Adventskalender Schlieren 8952', 'A unique advent calendar in Schlieren.'),
+    (2, 'Adventskalender Basel 4057', 'Join the festive celebration in Basel!'),
+    (3, 'Adventskalender Zürich 8053', 'Experience the magic of Zurich this December.');
+
 
 
 INSERT INTO adventWindow (owner, address_name, address, apero, time, location_hint, window_nr, calendar_id, pictures, comments)

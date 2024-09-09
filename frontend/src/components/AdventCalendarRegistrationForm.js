@@ -15,6 +15,7 @@ function AdventCalendarRegistrationForm({ calendarAdded, setCalendarAdded, token
   const [adventCalendarId, setAdventCalendarId] = useState('');
   const [message, setMessage] = useState('');
   const [messageOpen, setMessageOpen] = useState(false);
+  const [additionalInfo, setAdditionalInfo] = useState(''); 
 
   // API request
   const handleSubmit = async (event) => {
@@ -27,12 +28,13 @@ function AdventCalendarRegistrationForm({ calendarAdded, setCalendarAdded, token
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + localStorage.getItem('token'),
         },
-        body: JSON.stringify({ adventCalendarId }),
+        body: JSON.stringify({ adventCalendarId, additionalInfo }),
       });
 
       if (response.ok) {
         setCalendarAdded(!calendarAdded);
         setAdventCalendarId('');
+        setAdditionalInfo('');
         setMessage('Advent calendar registered successfully!');
         setMessageOpen(true);
       } else {
@@ -65,6 +67,14 @@ function AdventCalendarRegistrationForm({ calendarAdded, setCalendarAdded, token
           value={adventCalendarId}
           onChange={(e) => setAdventCalendarId(e.target.value)}
         />
+        <TextField
+            label="Additional Information"
+            fullWidth
+            multiline
+            rows={4}
+            value={additionalInfo}
+            onChange={(e) => setAdditionalInfo(e.target.value)}
+          />
         <Button type="submit" variant="contained" sx={{ backgroundColor: 'green', marginTop: '10px' }}>
           Register
         </Button>

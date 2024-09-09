@@ -26,7 +26,7 @@ const pool = new Pool({
   port: dbPort,
 });
 
-async function isValidToken(req){
+async function isValidToken(req) {
   const token = req.headers.authorization;
   // Check if the token is provided
   if (!token) {
@@ -52,12 +52,12 @@ async function isValidToken(req){
     const userExists = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
 
     if (userExists.rows.length === 0) {
-        console.debug(`User: ${username} does not exist`);
-        return false;
+      console.debug(`User: ${username} does not exist`);
+      return false;
     }
   } catch (error) {
-        console.error('Error checking user existence', error);
-        return false;
+    console.error('Error checking user existence', error);
+    return false;
   }
   return true;
 }
@@ -80,7 +80,7 @@ app.post('/api/login', async (req, res) => {
     }
 
     const hashedPassword = result.rows[0].password;
-    
+
     // Check if the provided password matches the stored hashed password
     const passwordMatch = await bcrypt.compare(password, hashedPassword);
 
@@ -98,53 +98,53 @@ app.post('/api/login', async (req, res) => {
   }
 });
 app.post('/api/registerUser', async (req, res) => {
-    const { username, password } = req.body;
-    // Basic validation
-    if (!username || !password) {
-      console.debug('Invalid request. Missing required parameters.');
-      return res.status(400).json({ error: 'Invalid request. Missing required parameters.' });
+  const { username, password } = req.body;
+  // Basic validation
+  if (!username || !password) {
+    console.debug('Invalid request. Missing required parameters.');
+    return res.status(400).json({ error: 'Invalid request. Missing required parameters.' });
+  }
+
+  // Check if the username is already taken
+  try {
+    const existingUser = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
+
+    if (existingUser.rows.length > 0) {
+      console.debug("User already exists");
+      return res.status(400).json({ error: 'Username already taken.' });
     }
-  
-    // Check if the username is already taken
-    try {
-      const existingUser = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
-  
-      if (existingUser.rows.length > 0) {
-        console.debug("User already exists");
-        return res.status(400).json({ error: 'Username already taken.' });
-      }
-    } catch (error) {
-        console.error('Error checking existing user', error);
-        return res.status(500).json({ error: 'Internal Server Error' });
-    }
-  
-    // Hash the password before storing it in the database
-    const hashedPassword = await bcrypt.hash(password, 12);
-  
-    // Register the user
-    try {
-        await pool.query('INSERT INTO users (username, password) VALUES ($1, $2)', [username, hashedPassword]);
-        console.debug(`User: ${username}:${hashedPassword} registerd successfully!`);
-        res.status(200).json({ message: 'User registered successfully!' });
-    } catch (error) {
-        console.error('Error registering user', error);
-        res.status(500).json({ error: 'Internal Server Error' });
-    }
+  } catch (error) {
+    console.error('Error checking existing user', error);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+
+  // Hash the password before storing it in the database
+  const hashedPassword = await bcrypt.hash(password, 12);
+
+  // Register the user
+  try {
+    await pool.query('INSERT INTO users (username, password) VALUES ($1, $2)', [username, hashedPassword]);
+    console.debug(`User: ${username}:${hashedPassword} registerd successfully!`);
+    res.status(200).json({ message: 'User registered successfully!' });
+  } catch (error) {
+    console.error('Error registering user', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 app.post('/api/registerAdventCalendar', async (req, res) => {
-  if (! await isValidToken(req)){
+  if (! await isValidToken(req)) {
     return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
   }
   const token = req.headers.authorization;
-  const { adventCalendarId } = req.body;
-  
+  const { adventCalendarId, additionalInfo } = req.body;
+
   try {
     const decodedToken = jwt.verify(token.split(' ')[1], jwt_secret);
     username = decodedToken.username;
   } catch (error) {
     return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
   }
-  
+
   // Basic validation
   if (!adventCalendarId || !username) {
     return res.status(400).json({ error: 'Invalid request. Missing required parameters.' });
@@ -155,19 +155,23 @@ app.post('/api/registerAdventCalendar', async (req, res) => {
     const existingCalendar = await pool.query('SELECT name FROM adventCalendars WHERE name = $1', [adventCalendarId]);
 
     if (existingCalendar.rows.length > 0) {
-        return res.status(400).json({ error: 'Advent calendar name already taken.' });
+      return res.status(400).json({ error: 'Advent calendar name already taken.' });
     }
   } catch (error) {
-        console.error('Error checking existing calendar', error);
-        return res.status(500).json({ error: 'Internal Server Error' });
+    console.error('Error checking existing calendar', error);
+    return res.status(500).json({ error: 'Internal Server Error' });
   }
 
   // Register the advent calendar
   try {
-    // get user id from username
-    const userId = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
-    // register advent calendar
-    await pool.query('INSERT INTO adventCalendars (owner, name) VALUES ($1, $2)', [userId.rows[0].id, adventCalendarId]);
+    const userIdResult = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
+    const userId = userIdResult.rows[0].id;
+
+    // Register advent calendar with additional info
+    await pool.query(
+      'INSERT INTO adventCalendars (owner, name, additional_info) VALUES ($1, $2, $3)',
+      [userId, adventCalendarId, additionalInfo]
+    );
     console.debug(`Advent calendar: ${adventCalendarId} registerd successfully!`);
     res.status(200).json({ message: 'Advent calendar registered successfully!' });
   } catch (error) {
@@ -180,7 +184,7 @@ app.post('/api/updateAdventCalendar', async (req, res) => {
     return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
   }
 
-  const { calendar_id, name } = req.body;
+  const { calendar_id, name, additionalInfo } = req.body;
   const token = req.headers.authorization;
   let username;
 
@@ -213,8 +217,7 @@ app.post('/api/updateAdventCalendar', async (req, res) => {
     }
 
     // Update the advent calendar details
-    await pool.query('UPDATE adventCalendars SET name = $1 WHERE id = $2', [name, calendar_id]);
-
+    await pool.query('UPDATE adventCalendars SET name = $1, additional_info = $2 WHERE id = $3', [name, additionalInfo, calendar_id]);
     console.debug(`Advent calendar ${calendar_id} updated successfully!`);
     res.status(200).json({ message: 'Advent calendar updated successfully!' });
 
@@ -224,19 +227,19 @@ app.post('/api/updateAdventCalendar', async (req, res) => {
   }
 });
 app.post('/api/registerWindowHosting', async (req, res) => {
-  if (! await isValidToken(req)){
+  if (! await isValidToken(req)) {
     return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
   }
   const { calendar_id, window_nr, addressName, coords, time, locationHint, hasApero } = req.body;
   const token = req.headers.authorization;
-  
+
   try {
     const decodedToken = jwt.verify(token.split(' ')[1], jwt_secret);
     username = decodedToken.username;
   } catch (error) {
     return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
   }
-  
+
   // Basic validation
   if (!calendar_id || !window_nr || !addressName || !coords || !time || hasApero === null) {
     return res.status(400).json({ error: 'Invalid request. Missing required parameters.' });
@@ -251,11 +254,11 @@ app.post('/api/registerWindowHosting', async (req, res) => {
 
     if (existingWindow.rows.length > 0) {
       console.debug(`Advent calendar: ${calendar_id} already registered`);
-       return res.status(400).json({ error: 'Advent calendar already registered.' });
+      return res.status(400).json({ error: 'Advent calendar already registered.' });
     }
   } catch (error) {
-      console.error('Error checking existing calendar', error);
-      return res.status(500).json({ error: 'Internal Server Error' });
+    console.error('Error checking existing calendar', error);
+    return res.status(500).json({ error: 'Internal Server Error' });
   }
 
   // Register the window hosting
@@ -264,7 +267,7 @@ app.post('/api/registerWindowHosting', async (req, res) => {
       'SELECT id FROM users WHERE username = $1',
       [username]
     );
-    
+
     await pool.query(
       'INSERT INTO adventWindow (id, owner, address_name, address, apero, time, location_hint, window_nr, calendar_id, pictures, comments) VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10)',
       [userId.rows[0].id, addressName, `(${coords[0]},${coords[1]})`, hasApero, time, locationHint, window_nr, calendar_id, [], []]
@@ -369,7 +372,7 @@ app.post('/api/user/changePassword', async (req, res) => {
     }
 
     const hashedPassword = result.rows[0].password;
-    
+
     // Check if the provided password matches the stored hashed password
     const passwordMatch = await bcrypt.compare(oldPassword, hashedPassword);
 
@@ -402,7 +405,8 @@ app.get('/api/user/ownedCalendars', async (req, res) => {
     const selectQuery = `
       SELECT 
         ac.id,
-        ac.name
+        ac.name,
+        ac.additional_info
       FROM 
         adventCalendars ac
       JOIN 
@@ -422,11 +426,11 @@ app.get('/api/user/ownedWindows', async (req, res) => {
     Return owned windows of a user, i.e. (username) => [{calendar_id, [window_nr]}]
     Requires authenticated user, but doesn't have to be the owing user, i.e. fetch other users owned windows is allowed
   */
-  if (! await isValidToken(req)){
+  if (! await isValidToken(req)) {
     return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
   }
-    const { user } = req.query;
-    const token = req.headers.authorization;
+  const { user } = req.query;
+  const token = req.headers.authorization;
 
   try {
     const selectQuery = `
@@ -454,11 +458,11 @@ app.get('/api/user/idToUser', async (req, res) => {
     Return owned windows of a user, i.e. (username) => [{calendar_id, [window_nr]}]
     Requires authenticated user, but doesn't have to be the owing user, i.e. fetch other users owned windows is allowed
   */
-  if (! await isValidToken(req)){
+  if (! await isValidToken(req)) {
     return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
   }
-    const { id } = req.query;
-    const token = req.headers.authorization;
+  const { id } = req.query;
+  const token = req.headers.authorization;
 
   try {
     const selectQuery = `
@@ -476,18 +480,19 @@ app.get('/api/user/idToUser', async (req, res) => {
 });
 
 app.get('/api/calendars', async (req, res) => {
-    try {
-      const result = await pool.query('SELECT id, name FROM adventCalendars');
-      res.json(result.rows);
-    } catch (error) {
-      console.error('Error retrieving calendars', error);
-      res.status(500).json({ error: 'Internal Server Error' });
-    }
+  try {
+    const result = await pool.query('SELECT id, name, additional_info FROM adventCalendars'); // Fetch additional info
+    res.json(result.rows);
+  } catch (error) {
+    console.error('Error retrieving calendars', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
+
 app.get('/api/calendar', async (req, res) => {
   const { calendar_id } = req.query;
   try {
-    const result = await pool.query('SELECT id, name FROM adventCalendars WHERE id = $1', [calendar_id]);
+    const result = await pool.query('SELECT id, name, additional_info FROM adventCalendars WHERE id = $1', [calendar_id]);
     res.json(result.rows[0]);
   } catch (error) {
     console.error('Error retrieving calendars', error);
@@ -499,7 +504,7 @@ app.get('/api/windowTile/owner', async (req, res) => {
   /* Provide owner-username to authenticated users
     The assumption is that we call this endpoint only form SlidingWindow.js, where we already established that the window is claimed, hence owner exists
     */
-  if (! await isValidToken(req)){
+  if (! await isValidToken(req)) {
     return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
   }
 
@@ -564,7 +569,7 @@ app.get('/api/window', async (req, res) => {
     );
     if (result.rows.length > 0) {
       const windowData = result.rows[0];
-      res.json({ success: true, windowData: windowData});
+      res.json({ success: true, windowData: windowData });
     } else {
       res.json({ success: true, windowData: {} });
     }
@@ -600,7 +605,7 @@ app.get('/api/pictures', async (req, res) => {
 app.post('/api/pictures', upload.single('image'), async (req, res) => {
   // TODO: maybe do some preprocessing on the image data before storing it in the database or set a limit
   // Take uploaded image for a particular window
-  if (! await isValidToken(req)){
+  if (! await isValidToken(req)) {
     return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
   }
 
@@ -641,7 +646,7 @@ app.get('/api/comments', async (req, res) => {
     );
     const comments = result.rows.length > 0 ? result.rows[0].comments : [];
 
-    res.json({ success: true, comments: comments});
+    res.json({ success: true, comments: comments });
   } catch (error) {
     console.error('Error fetching comments:', error);
     res.status(500).json({ success: false, message: 'Internal server error' });
@@ -692,9 +697,9 @@ app.get('/api/locations', async (req, res) => {
           time: row.time
         });
       }
-      res.json({ success: true, calendarMapInfos: calendarMapInfos});
+      res.json({ success: true, calendarMapInfos: calendarMapInfos });
     } else {
-      res.json({ success: true, calendarMapInfos: []});
+      res.json({ success: true, calendarMapInfos: [] });
     }
   } catch (error) {
     console.error('Error fetching calendar map infos:', error);

@@ -262,6 +262,7 @@ function App() {
                     <DefaultCalendar
                       id={selectedCalendar.id}
                       name={selectedCalendar.name}
+                      additionalInfo={selectedCalendar.additional_info}
                       user={user}
                       token={token}
                     />
@@ -280,6 +281,7 @@ function App() {
                     <DefaultCalendar
                       id={selectedCalendar.id}
                       name={selectedCalendar.name}
+                      additionalInfo={selectedCalendar.additional_info}
                       user={user}
                       token={token}
                     />
