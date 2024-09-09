@@ -311,10 +311,14 @@ app.post('/api/updateWindowHosting', async (req, res) => {
       return res.status(404).json({ error: 'User not found.' });
     }
 
-    // Check if the user is the owner of the calendar to which the window belongs
+    // Check if the user is the owner of the particular window or the owner of the calendar to which the window belongs
     const ownershipQuery = await pool.query(`
-      SELECT owner FROM adventWindow
-      WHERE calendar_id = $1 AND window_nr = $2 AND owner = $3
+      SELECT 
+        w.owner AS window_owner, 
+        c.owner AS calendar_owner
+      FROM adventWindow w
+      JOIN adventCalendars c ON w.calendar_id = c.id
+      WHERE w.calendar_id = $1 AND w.window_nr = $2 AND (w.owner = $3 OR c.owner = $3)
     `, [calendar_id, window_nr, userId]);
 
     if (ownershipQuery.rows.length === 0) {
@@ -481,7 +485,7 @@ app.get('/api/user/idToUser', async (req, res) => {
 
 app.get('/api/calendars', async (req, res) => {
   try {
-    const result = await pool.query('SELECT id, name, additional_info FROM adventCalendars'); // Fetch additional info
+    const result = await pool.query('SELECT id, name, owner, additional_info FROM adventCalendars'); // Fetch additional info
     res.json(result.rows);
   } catch (error) {
     console.error('Error retrieving calendars', error);

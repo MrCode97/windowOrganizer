@@ -3,7 +3,7 @@ import { Card, CardMedia, CardActionArea, Typography, Paper } from '@mui/materia
 import SlidingWindow from './SlidingWindow';
 import WindowRegisterWindow from './WindowRegisterWindow';
 
-function WindowTile({ window_nr, calendar_id, user, token, locationAdded, setLocationAdded }) {
+function WindowTile({ window_nr, calendar_id, user, calendarOwner, token, locationAdded, setLocationAdded }) {
   // variables to get from SQL request based on window number and calendar id
   const [isFree, setIsFree] = useState(false);
   const [imageUpload, setImageUpload] = useState(false);
@@ -155,6 +155,7 @@ function WindowTile({ window_nr, calendar_id, user, token, locationAdded, setLoc
           setImageUpload={setImageUpload}
           locationAdded={locationAdded}
           setLocationAdded={setLocationAdded}
+          calendarOwner={calendarOwner}
           user={user}
           token={token}
         />

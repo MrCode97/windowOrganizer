@@ -263,6 +263,7 @@ function App() {
                       id={selectedCalendar.id}
                       name={selectedCalendar.name}
                       additionalInfo={selectedCalendar.additional_info}
+                      owner={selectedCalendar.owner}
                       user={user}
                       token={token}
                     />
@@ -282,6 +283,7 @@ function App() {
                       id={selectedCalendar.id}
                       name={selectedCalendar.name}
                       additionalInfo={selectedCalendar.additional_info}
+                      calendarOwner={selectedCalendar.owner}
                       user={user}
                       token={token}
                     />
