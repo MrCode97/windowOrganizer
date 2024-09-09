@@ -96,7 +96,7 @@ function WindowRegisterWindow({ window_nr, calendar_id, onClose, token, location
       ) : (
         <div>
           <Dialog open={true} onClose={onClose} sx={{ zIndex: 9999, position: 'sticky' }}>
-            <DialogContent sx={{ width: '400px', height: '700px', backgroundColor: 'rgb(173, 216, 230)' }}>
+            <DialogContent sx={{ width: '400px', height: '700px' }}>
               <Typography variant="h4">Window Registration</Typography>
               <Typography variant="p">Please login first, to register a window hosting.</Typography>
             </DialogContent>
