@@ -13,6 +13,12 @@ function WindowTile({ window_nr, calendar_id, user, token, locationAdded, setLoc
   // State variable to track if SlidingWindow is open or closed
   const [isSlidingWindowOpen, setSlidingWindowOpen] = useState(false);
   const [isWindowRegisterWindowOpen, setWindowRegisterWindowOpen] = useState(false);
+  const getDynamicImagePath = (isFree) => {
+    if (imageUpload) return image; // Return the uploaded image if it exists
+    const basePath = isFree ? '/emptyWindow/art' : '/happyWindow';
+    const fileName = `${window_nr}.png`; // Generate file name dynamically based on window number
+    return `${basePath}/${fileName}`;
+  };
 
   useEffect(() => {
     const fetchWindowTileData = async () => {
@@ -35,7 +41,7 @@ function WindowTile({ window_nr, calendar_id, user, token, locationAdded, setLoc
             });
             base64Image.then(img => { setImage(img); })
           } else {
-            setImage('/Window_hl.png');
+            setImage(getDynamicImagePath(isFree));
           }
         }
       } catch (error) {
@@ -44,7 +50,7 @@ function WindowTile({ window_nr, calendar_id, user, token, locationAdded, setLoc
     };
 
     fetchWindowTileData();
-  }, [calendar_id, window_nr, imageUpload, locationAdded]);
+  }, [calendar_id, window_nr, imageUpload, locationAdded, getDynamicImagePath, isFree]);
 
   const handleCardMediaClick = () => {
     // Open or close the SlidingWindow when the CardMedia is clicked
@@ -72,6 +78,9 @@ function WindowTile({ window_nr, calendar_id, user, token, locationAdded, setLoc
         border: today_border,
         borderColor: 'gold',
         margin: today_margin,
+        filter: isFree ? 'none' : 'grayscale(100%)', // Greyed-out effect for taken windows
+        transition: 'all 0.3s ease', // Smooth transition for visual changes
+        boxShadow: isFree ? '0px 0px 10px rgba(255, 215, 0, 0.8)' : 'none', // Optional: Glow effect for available windows
       }}>
         <CardActionArea sx={{
           width: '100%',
@@ -103,7 +112,7 @@ function WindowTile({ window_nr, calendar_id, user, token, locationAdded, setLoc
               variant="body2"
               color="text.secondary"
             >
-              Still Free
+              Available!
             </Typography>
           </Paper>
           <Paper

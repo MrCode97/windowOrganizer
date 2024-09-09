@@ -28,7 +28,7 @@ const theme = createTheme({
     body1: {
       fontSize: '1rem', // Default paragraph font size
       lineHeight: 1.6,
-      textAlign: 'center',
+      textAlign: 'left',
       padding: '8px 16px',
       //backgroundColor: 'rgba(255, 255, 255, 0.8)', // Semi-transparent background
       borderRadius: '4px', // Rounded corners
