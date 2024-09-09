@@ -1,4 +1,3 @@
-// WindowTile.js
 import { useState, useEffect } from 'react';
 import { Card, CardMedia, CardActionArea, Typography, Paper } from '@mui/material';
 import SlidingWindow from './SlidingWindow';
@@ -13,6 +12,7 @@ function WindowTile({ window_nr, calendar_id, user, token, locationAdded, setLoc
   // State variable to track if SlidingWindow is open or closed
   const [isSlidingWindowOpen, setSlidingWindowOpen] = useState(false);
   const [isWindowRegisterWindowOpen, setWindowRegisterWindowOpen] = useState(false);
+
   const getDynamicImagePath = (isFree) => {
     if (imageUpload) return image; // Return the uploaded image if it exists
     const basePath = isFree ? '/emptyWindow/art' : '/happyWindow';
@@ -39,9 +39,13 @@ function WindowTile({ window_nr, calendar_id, user, token, locationAdded, setLoc
               };
               reader.readAsDataURL(blob);
             });
-            base64Image.then(img => { setImage(img); })
+            base64Image.then((img) => {
+              setImage(img);
+              setImageUpload(true);
+            });
           } else {
             setImage(getDynamicImagePath(isFree));
+            setImageUpload(false);
           }
         }
       } catch (error) {
@@ -64,11 +68,13 @@ function WindowTile({ window_nr, calendar_id, user, token, locationAdded, setLoc
   };
 
   // other variables
-  const is_today = new Date().getDate() === window_nr
+  const is_today = new Date().getDate() === window_nr;
   const is_free_visiblity = isFree ? 'visible' : 'hidden';
   const today_border = is_today ? 5 : 0;
   const today_margin = is_today ? '0px' : '5px';
   const cardSize = 150;
+
+  const greyedOutEffect = !isFree && !imageUpload ? 'grayscale(100%)' : 'none';
 
   return (
     <div className="window-tile">
@@ -78,9 +84,9 @@ function WindowTile({ window_nr, calendar_id, user, token, locationAdded, setLoc
         border: today_border,
         borderColor: 'gold',
         margin: today_margin,
-        filter: isFree ? 'none' : 'grayscale(100%)', // Greyed-out effect for taken windows
-        transition: 'all 0.3s ease', // Smooth transition for visual changes
-        boxShadow: isFree ? '0px 0px 10px rgba(255, 215, 0, 0.8)' : 'none', // Optional: Glow effect for available windows
+        filter: greyedOutEffect,
+        transition: 'all 0.3s ease',
+        boxShadow: isFree ? '0px 0px 10px rgba(255, 215, 0, 0.8)' : 'none',
       }}>
         <CardActionArea sx={{
           width: '100%',
@@ -105,12 +111,15 @@ function WindowTile({ window_nr, calendar_id, user, token, locationAdded, setLoc
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              visibility: is_free_visiblity
+              backgroundColor: 'rgba(0, 128, 0, 0.8)',
+              color: 'white', 
+              borderRadius: '4px',
+              visibility: is_free_visiblity,
             }}
           >
             <Typography
               variant="body2"
-              color="text.secondary"
+              color="inherit"
             >
               Available!
             </Typography>
@@ -121,14 +130,18 @@ function WindowTile({ window_nr, calendar_id, user, token, locationAdded, setLoc
               position: 'absolute',
               bottom: 5,
               right: 5,
-              width: '32%',
-              height: '32%',
+              width: '24%',
+              height: '24%',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              backgroundColor: '#504d52',
+              color: 'white',
+              borderRadius: '4px',
+              padding: 0,
             }}
           >
-            <Typography variant="h4">{window_nr}</Typography>
+            <Typography variant="h5" sx={{ lineHeight: 1 }}>{window_nr}</Typography>
           </Paper>
         </CardActionArea>
       </Card>
@@ -158,8 +171,6 @@ function WindowTile({ window_nr, calendar_id, user, token, locationAdded, setLoc
       )}
     </div>
   );
-
-
 }
 
 export default WindowTile;
