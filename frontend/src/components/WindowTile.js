@@ -13,15 +13,15 @@ function WindowTile({ window_nr, calendar_id, user, calendarOwner, token, locati
   const [isSlidingWindowOpen, setSlidingWindowOpen] = useState(false);
   const [isWindowRegisterWindowOpen, setWindowRegisterWindowOpen] = useState(false);
 
-  const getDynamicImagePath = (isFree) => {
-    if (imageUpload) return image; // Return the uploaded image if it exists
-    const basePath = isFree ? '/emptyWindow/art' : '/happyWindow';
-    const fileName = `${window_nr}.png`; // Generate file name dynamically based on window number
-    return `${basePath}/${fileName}`;
-  };
-
   useEffect(() => {
     const fetchWindowTileData = async () => {
+      const getDynamicImagePath = (isFree) => {
+        if (imageUpload) return image; // Return the uploaded image if it exists
+        const basePath = isFree ? '/emptyWindow/art' : '/happyWindow';
+        const fileName = `${window_nr}.png`; // Generate file name dynamically based on window number
+        return `${basePath}/${fileName}`;
+      };
+    
       try {
         const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/windowTile?calendar_id=${calendar_id}&window_nr=${window_nr}`);
         const data = await response.json();
@@ -54,7 +54,7 @@ function WindowTile({ window_nr, calendar_id, user, calendarOwner, token, locati
     };
 
     fetchWindowTileData();
-  }, [calendar_id, window_nr, imageUpload, locationAdded, getDynamicImagePath, isFree]);
+  }, [calendar_id, window_nr, imageUpload, locationAdded, isFree, image]);
 
   const handleCardMediaClick = () => {
     // Open or close the SlidingWindow when the CardMedia is clicked
