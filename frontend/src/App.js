@@ -60,6 +60,8 @@ function App() {
   const [calendarAdded, setCalendarAdded] = useState(false);
   const [userAdded, setUserAdded] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(true);
 
   useEffect(() => {
     const fetchCalendars = async () => {
@@ -128,12 +130,12 @@ function App() {
                 </ListItemText>
               </ListItem>
               <ListItemButton onClick={() => {
-                setShowLogin(false); setShowRegistration(false); setShowRegistrationCalendar(false); setSelectedCalendar(null); setShowMyCalendars(false); setShowMyWindows(false); setShowUserSettings(false); setSearchTerm(''); setShowSearch(false);
+                setShowWelcome(true); setShowCalendar(false); setShowLogin(false); setShowRegistration(false); setShowRegistrationCalendar(false); setShowMyCalendars(false); setShowMyWindows(false); setShowUserSettings(false); setSearchTerm(''); setShowSearch(false);
               }}>
                 <ListItemText primary="Welcome" />
               </ListItemButton>
             </List>
-            
+
             <List>
               <ListItem>
                 <ListItemText>
@@ -147,45 +149,44 @@ function App() {
                 </IconButton>
               </ListItem>
               {selectedCalendar && !showSearch && (
-              <ListItem sx={{
-                border: '2px solid orange', // Orange border
-                borderRadius: '4px', // Optional: rounded corners
-                padding: '8px', // Optional: add padding to the item
-              }}>
-                <ListItemText primary={selectedCalendar.name} />
-              </ListItem>
-            )}
+                <ListItem sx={{
+                  border: '2px solid orange', // Orange border
+                  borderRadius: '4px', // Optional: rounded corners
+                  padding: '8px', // Optional: add padding to the item
+                }}>
+                  <ListItemButton
+                    onClick={() => { setShowWelcome(false); setShowCalendar(true); setSearchTerm(''); setShowSearch(false); setShowRegistration(false); setShowMyWindows(false); setShowMyCalendars(false); setShowUserSettings(false); setShowRegistrationCalendar(false); setShowLogin(false); setShowMyWindows(false); setShowUserSettings(false); }}
+                    key={selectedCalendar.name}
+                  >
+                    <ListItemText primary={selectedCalendar.name} />
+                  </ListItemButton>
+                </ListItem>
+              )}
             </List>
 
-            
+
             {/* Conditionally Render Search Field */}
             {showSearch && (
               <>
-              <TextField
-                label="Search"
-                variant="outlined"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                sx={{ margin: '0 10px', borderRadius: '5px', backgroundColor: '#FFF4E0', border: '1px solid #D4AF37' }} /><List>
+                <TextField
+                  label="Search"
+                  variant="outlined"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  sx={{ margin: '0 10px', borderRadius: '5px', border: '1px solid #D4AF37' }} /><List>
                   {/* Render calendars conditionally */}
                   {calendars
                     .filter((calendar) => calendar.name.toLowerCase().includes(searchTerm.toLowerCase())) // Filter calendars based on search term
                     .map((calendar) => (
                       <ListItemButton
-                        sx={{
-                          borderRadius: '5px',
-                          '&:hover': {
-                            backgroundColor: '#F5CBA7',
-                          },
-                        }}
-                        onClick={() => {setSelectedCalendar(calendar); setSearchTerm(''); setShowSearch(false); setShowRegistration(false); setShowMyWindows(false); setShowMyCalendars(false); setShowUserSettings(false); setShowRegistrationCalendar(false); setShowLogin(false); setShowMyWindows(false); setShowUserSettings(false);}}
+                        onClick={() => { setShowWelcome(false); setShowCalendar(true); setSelectedCalendar(calendar); setSearchTerm(''); setShowSearch(false); setShowRegistration(false); setShowMyWindows(false); setShowMyCalendars(false); setShowUserSettings(false); setShowRegistrationCalendar(false); setShowLogin(false); setShowMyWindows(false); setShowUserSettings(false); }}
                         key={calendar.name}
                       >
                         <ListItemText primary={calendar.name} />
                       </ListItemButton>
                     ))}
                 </List>
-                </>
+              </>
             )}
 
             <List>
@@ -199,7 +200,7 @@ function App() {
               {!user && (
                 <ListItemButton onClick={() => {
                   setShowLogin(true);
-                  setShowRegistration(false); setShowRegistrationCalendar(false); setSelectedCalendar(null); setShowMyCalendars(false); setShowUserSettings(false); setShowMyWindows(false); setSearchTerm(''); setShowSearch(false);
+                  setShowWelcome(false); setShowCalendar(false); setShowRegistration(false); setShowRegistrationCalendar(false); setShowMyCalendars(false); setShowUserSettings(false); setShowMyWindows(false); setSearchTerm(''); setShowSearch(false);
                 }}>
                   <ListItemText primary="Login" />
                 </ListItemButton>
@@ -207,7 +208,7 @@ function App() {
               {!user && (
                 <ListItemButton onClick={() => {
                   setShowRegistration(true);
-                  setShowLogin(false); setShowRegistrationCalendar(false); setSelectedCalendar(null); setShowMyCalendars(false); setShowUserSettings(false); setShowMyWindows(false); setSearchTerm(''); setShowSearch(false);
+                  setShowWelcome(false); setShowCalendar(false); setShowLogin(false); setShowRegistrationCalendar(false); setShowMyCalendars(false); setShowUserSettings(false); setShowMyWindows(false); setSearchTerm(''); setShowSearch(false);
                 }}>
                   <ListItemText primary="Register a User" />
                 </ListItemButton>
@@ -215,7 +216,7 @@ function App() {
               {user && (
                 <ListItemButton onClick={() => {
                   setShowMyCalendars(true);
-                  setShowRegistrationCalendar(false); setShowLogin(false); setShowRegistration(false); setSelectedCalendar(null); setShowUserSettings(false); setShowMyWindows(false); setSearchTerm(''); setShowSearch(false);
+                  setShowWelcome(false); setShowCalendar(false); setShowRegistrationCalendar(false); setShowLogin(false); setShowRegistration(false); setShowUserSettings(false); setShowMyWindows(false); setSearchTerm(''); setShowSearch(false);
                 }}>
                   <ListItemText primary="My Calendars" />
                 </ListItemButton>
@@ -223,7 +224,7 @@ function App() {
               {user && (
                 <ListItemButton onClick={() => {
                   setShowMyWindows(true);
-                  setShowMyCalendars(false); setShowUserSettings(false); setShowRegistrationCalendar(false); setShowLogin(false); setShowRegistration(false); setSelectedCalendar(null); setSearchTerm(''); setShowSearch(false);
+                  setShowWelcome(false); setShowCalendar(false); setShowMyCalendars(false); setShowUserSettings(false); setShowRegistrationCalendar(false); setShowLogin(false); setShowRegistration(false); setSearchTerm(''); setShowSearch(false);
                 }}>
                   <ListItemText primary="My Windows" />
                 </ListItemButton>
@@ -231,7 +232,7 @@ function App() {
               {user && (
                 <ListItemButton onClick={() => {
                   setShowRegistrationCalendar(true);
-                  setShowLogin(false); setShowRegistration(false); setSelectedCalendar(null); setShowMyCalendars(false); setShowMyWindows(false); setShowUserSettings(false); setSearchTerm(''); setShowSearch(false);
+                  setShowWelcome(false); setShowCalendar(false); setShowLogin(false); setShowRegistration(false); setShowMyCalendars(false); setShowMyWindows(false); setShowUserSettings(false); setSearchTerm(''); setShowSearch(false);
                 }}>
                   <ListItemText primary="Register a Calender" />
                 </ListItemButton>
@@ -239,7 +240,7 @@ function App() {
               {user && (
                 <ListItemButton onClick={() => {
                   setShowUserSettings(true);
-                  setShowRegistrationCalendar(false); setShowLogin(false); setShowRegistration(false); setSelectedCalendar(null); setShowMyCalendars(false); setShowMyWindows(false); setSearchTerm(''); setShowSearch(false);
+                  setShowWelcome(false); setShowCalendar(false); setShowRegistrationCalendar(false); setShowLogin(false); setShowRegistration(false); setShowMyCalendars(false); setShowMyWindows(false); setSearchTerm(''); setShowSearch(false);
                 }}>
                   <ListItemText primary="User Settings" />
                 </ListItemButton>
@@ -257,7 +258,7 @@ function App() {
                   {showRegistration && (
                     <UserRegistrationForm />
                   )}
-                  {calendars.length > 0 && selectedCalendar && (
+                  {showCalendar && calendars.length > 0 && selectedCalendar && (
                     <DefaultCalendar
                       id={selectedCalendar.id}
                       name={selectedCalendar.name}
@@ -265,7 +266,7 @@ function App() {
                       token={token}
                     />
                   )}
-                  {!selectedCalendar && !showLogin && !showRegistration && (
+                  {showWelcome && (
                     <WelcomePage />
                   )}
                 </>
@@ -275,7 +276,7 @@ function App() {
                   {showRegistration && (
                     <UserRegistrationForm token={token} />
                   )}
-                  {calendars.length > 0 && selectedCalendar && (
+                  {showCalendar && calendars.length > 0 && selectedCalendar && (
                     <DefaultCalendar
                       id={selectedCalendar.id}
                       name={selectedCalendar.name}
@@ -295,7 +296,7 @@ function App() {
                   {showUserSettings && (
                     <UserSettings user={user} token={token} userAdded={userAdded} setUserAdded={setUserAdded} />
                   )}
-                  {!selectedCalendar && !showMyCalendars && !showMyWindows && !showRegistrationCalendar && !showUserSettings && (
+                  {showWelcome && (
                     <WelcomePage />
                   )}
                 </>
