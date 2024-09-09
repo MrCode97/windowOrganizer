@@ -51,21 +51,21 @@ function SlidingWindow({ window_nr, calendar_id, onClose, imageUpload, setImageU
         borderRadius: '10px',
       }}
     >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px', backgroundColor: '#7A1B1B', color: '#FFF4E0' }}>
-        <Tabs value={activeTab} onChange={handleChangeTab} sx={{ backgroundColor: '#7A1B1B', color: '#FFF4E0' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px', }}>
+        <Tabs value={activeTab} onChange={handleChangeTab}>
           <Tab label="Window information" />
           <Tab label="Gallery" />
           <Tab label="Image Upload" />
           {user === ownerUsername && <Tab label="Edit" />}
+          <IconButton onClick={onClose}><CloseIcon/></IconButton>
         </Tabs>
         <div>
           {/* Close Button */}
-          <IconButton onClick={onClose}>
-            <CloseIcon sx={{ color: '#FFF4E0' }} />          </IconButton>
+          
         </div>
       </div>
 
-      <DialogContent sx={{ backgroundColor: '#FFF4E0', padding: '20px', borderRadius: '10px' }}>
+      <DialogContent sx={{ padding: '20px', borderRadius: '10px' }}>
         {/* Tab Content */}
         {user && user !== ownerUsername && (
           <h3>Host: {ownerUsername}</h3>

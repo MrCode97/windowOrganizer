@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Grid2, Typography, Box } from '@mui/material';
 import OverviewMap from './OverviewMap';
 import WindowTile from './WindowTile';
+import shadows from '@mui/material/styles/shadows';
 
 function DefaultCalendar({ id, name, user, token }) {
   const window_nrs = Array(24).fill().map((_, index) => index + 1);
@@ -30,7 +31,7 @@ function DefaultCalendar({ id, name, user, token }) {
         sx={{
           border: '2px solid #D4AF37',
           borderRadius: '10px',
-          marginBottom: '20px'
+          marginBottom: '20px',
         }}
       />
       <Grid2 container spacing={2} justifyContent="center">

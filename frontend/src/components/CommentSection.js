@@ -44,7 +44,7 @@ function CommentSection({ calendar_id, window_nr, token }) {
         <>
             {/* Display comments */}
             {comments.length > 0 && (
-                <List sx={{ marginTop: 2, padding: 2, border: '1px solid black', borderRadius: '5px', backgroundColor: 'white' }}>
+                <List sx={{ marginTop: 2, padding: 2, border: '1px solid black', borderRadius: '5px', backgroundColor: '#3e3c36' }}>
                     {comments.map((pers_comment, index) => (
                         <ListItem key={index} alignItems="flex-start">
                             <ListItemText primary={pers_comment} />
@@ -57,7 +57,7 @@ function CommentSection({ calendar_id, window_nr, token }) {
             {token ? (
                 <from onSubmit={handleNewComment}>
                     <TextField
-                        sx={{ marginTop: '5px', border: '1px solid black', backgroundColor: 'white', borderRadius: '5px' }}
+                        sx={{ marginTop: '5px', border: '1px solid black', backgroundColor: '#3e3c36', borderRadius: '5px' }}
                         label="Comment"
                         variant="outlined"
                         fullWidth value={newComment}
@@ -71,7 +71,7 @@ function CommentSection({ calendar_id, window_nr, token }) {
             ) : (
                 <>
                     <TextField disabled
-                        sx={{ marginTop: '5px', border: '1px solid black', backgroundColor: 'white', borderRadius: '5px' }}
+                        sx={{ marginTop: '5px', border: '1px solid black', backgroundColor: '#3e3c36', borderRadius: '5px' }}
                         label="Comment"
                         variant="outlined"
                         fullWidth value={newComment}

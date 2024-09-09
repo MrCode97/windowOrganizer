@@ -12,7 +12,7 @@ const theme = createTheme({
       background: { default: '#FFF4E0' }, // Background color
     },
     text: {
-      primary: '#333', // Default text color
+      primary: 'rgb(255, 225, 186)', // Default text color
       secondary: '#666', // Secondary text color
     },
   },
@@ -48,7 +48,7 @@ const theme = createTheme({
     MuiDialog: {
       styleOverrides: {
         paper: {
-          backgroundColor: 'rgb(173, 216, 230)', // Light blue background for dialogs
+          backgroundColor: '#2D2923', // Light blue background for dialogs
           borderRadius: '8px',
           padding: '16px',
         },
@@ -57,17 +57,18 @@ const theme = createTheme({
     MuiTabs: {
       styleOverrides: {
         root: {
-          backgroundColor: 'rgb(173, 216, 230)', // Matching the dialog header background
+          backgroundColor: '#122413', // Matching the dialog header background
+          borderRadius: '8px',
         },
         indicator: {
-          backgroundColor: '#3f51b5', // Primary color for the tab indicator
+          backgroundColor: 'rgb(255, 165, 0)', // Primary color for the tab indicator
         },
       },
     },
     MuiTab: {
       styleOverrides: {
         root: {
-          color: '#333', // Tab text color
+          color: '#ffe1ba', // Tab text color
         },
       },
     },
@@ -133,7 +134,7 @@ const theme = createTheme({
         root: {
           padding: '8px 16px', // Padding inside list items
           '&:hover': {
-            backgroundColor: '#F5CBA7', // Background color on hover
+            //backgroundColor: '#F5CBA7', // Background color on hover
           },
         },
       },
@@ -143,7 +144,7 @@ const theme = createTheme({
         root: {
           borderRadius: '5px', // Rounded corners for list item button
           '&:hover': {
-            backgroundColor: '#F5CBA7', // Hover background color for list item button
+            backgroundColor: '#122413', // Hover background color for list item button
           },
         },
       },

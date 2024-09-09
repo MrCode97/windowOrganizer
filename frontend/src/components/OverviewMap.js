@@ -42,25 +42,40 @@ function OverviewMap({ calendar_id, locationAdded }) {
           center={calculateCenter()}
           zoom={13}
           scrollWheelZoom={false}
-          style={{ height: "300px", width: "80%", margin: 20 }}
+          style={{
+            height: "300px",
+            width: "80%",
+            margin: 20,
+            border: '2px solid #D4AF37',
+            borderRadius: '10px', 
+            boxShadow: '0px 0px 5px rgba(255, 215, 0, 0.8)',
+          }}
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
           {calendarMapInfos.map((window, index) => (
-            <Marker key={index} position={[window.address.x, window.address.y]} icon={new L.icon({
-              iconUrl: require('../assets/staricons/' + window.window_nr + '.png'),
-              iconSize: [32, 32],
-            })}
+            <Marker
+              key={index}
+              position={[window.address.x, window.address.y]}
+              icon={new L.icon({
+                iconUrl: require('../assets/staricons/' + window.window_nr + '.png'),
+                iconSize: [32, 32],
+              })}
             >
               <Popup>
-                {<div>{window.window_nr}. Dezember, {window.time}<br />{window.address_name}</div>}
+                <div>
+                  {window.window_nr}. Dezember, {window.time}
+                  <br />
+                  {window.address_name}
+                </div>
               </Popup>
             </Marker>
           ))}
         </MapContainer>
       )}
+
     </>
 
   )

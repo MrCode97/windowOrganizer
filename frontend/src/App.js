@@ -73,7 +73,7 @@ function App() {
     };
 
     fetchCalendars();
-  }, [calendarAdded, userAdded, token]);
+  }, [selectedCalendar, calendarAdded, userAdded, token]);
 
   // Function to toggle search field visibility
   const toggleSearchField = () => {
@@ -178,7 +178,7 @@ function App() {
                             backgroundColor: '#F5CBA7',
                           },
                         }}
-                        onClick={() => {setSelectedCalendar(calendar); setSearchTerm(''); setShowSearch(false);}}
+                        onClick={() => {setSelectedCalendar(calendar); setSearchTerm(''); setShowSearch(false); setShowRegistration(false); setShowMyWindows(false); setShowMyCalendars(false); setShowUserSettings(false); setShowRegistrationCalendar(false); setShowLogin(false); setShowMyWindows(false); setShowUserSettings(false);}}
                         key={calendar.name}
                       >
                         <ListItemText primary={calendar.name} />
@@ -231,7 +231,7 @@ function App() {
               {user && (
                 <ListItemButton onClick={() => {
                   setShowRegistrationCalendar(true);
-                  setShowLogin(false); setShowRegistration(false); setSelectedCalendar(null); setShowMyCalendars(false); setShowMyCalendars(false); setShowMyWindows(false); setShowUserSettings(false); setSearchTerm(''); setShowSearch(false);
+                  setShowLogin(false); setShowRegistration(false); setSelectedCalendar(null); setShowMyCalendars(false); setShowMyWindows(false); setShowUserSettings(false); setSearchTerm(''); setShowSearch(false);
                 }}>
                   <ListItemText primary="Register a Calender" />
                 </ListItemButton>
