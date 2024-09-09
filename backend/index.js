@@ -648,17 +648,23 @@ app.get('/api/comments', async (req, res) => {
   }
 });
 app.post('/api/comments', async (req, res) => {
-  // Add a comment to a particular window
-  if (! await isValidToken(req)){
+  if (!await isValidToken(req)) {
     return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
   }
+
   const { window_nr, calendar_id } = req.query;
   const { comment } = req.body;
+
   try {
     const result = await pool.query(
-      'INSERT INTO adventWindow (window_nr, calendar_id, comments) VALUES ($1, $2, ARRAY[$3]) ON CONFLICT (window_nr, calendar_id) DO UPDATE SET comments = adventWindow.comments || ARRAY[$3]',
+      'UPDATE adventWindow SET comments = adventWindow.comments || ARRAY[$3] ' +
+      'WHERE window_nr = $1 AND calendar_id = $2',
       [window_nr, calendar_id, comment]
     );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ success: false, message: 'Window not found.' });
+    }
 
     res.json({ success: true, message: 'Comment added successfully' });
   } catch (error) {
@@ -666,6 +672,7 @@ app.post('/api/comments', async (req, res) => {
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });
+
 
 app.get('/api/locations', async (req, res) => {
   // Fetch all locations for a particular calendar
