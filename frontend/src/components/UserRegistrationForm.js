@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Typography, TextField, Button, Snackbar, Box } from '@mui/material';
 
-function UserRegistrationForm({ token }) {
+function UserRegistrationForm({ token, setShowRegistration, setShowLogin }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -24,6 +24,8 @@ function UserRegistrationForm({ token }) {
         setMessage('Registered successfully!')
         setUsername('');
         setPassword('');
+        setShowLogin(true);
+        setShowRegistration(false);
       } else {
         console.error('Failed to register user');
         setMessageOpen(true);

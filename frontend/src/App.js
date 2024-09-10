@@ -277,7 +277,7 @@ function App() {
                   <Login userAdded={userAdded} setUserAdded={setUserAdded} />
                 )}
                 {showRegistration && (
-                  <UserRegistrationForm />
+                  <UserRegistrationForm setShowRegistration={setShowRegistration} setShowLogin={setShowLogin}/>
                 )}
                 {showCalendar && calendars.length > 0 && selectedCalendar && (
                   <DefaultCalendar
