@@ -118,7 +118,7 @@ function App() {
               </Typography>
             )}
             {user && (
-              <Button sx={{ paddingLeft: '20px', color: '#FFF4E0' }} onClick={logout}>
+              <Button sx={{ paddingLeft: '20px', color: '#FFF4E0' }} onClick={() => {logout(); setShowLogin(false);}}>
                 Logout
               </Button>
             )}
