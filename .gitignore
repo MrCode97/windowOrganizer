@@ -50,7 +50,8 @@ backend/TODO.md
 /backend/node_modules/
 
 # Ignore .env files containing sensitive information
-.env*
+frontend/.env
+backend/.env
 
 # Ignore IDE files
 .idea/

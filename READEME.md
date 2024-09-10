@@ -1,9 +1,16 @@
-The repo:
+###### 1. The repo:
 ```bash
-git clone https://github.com/MrCode97/adventCalender.git
+git clone https://github.com/MrCode97/windowOrganizer.git
 ```
 
-Frontend:
+###### 2. Create your own `.env` files, i.e. 
+```bash
+cp frontend/.env.example frontend/.env
+cp backend/.env.example backend/.env
+```
+and modify accordingly.
+
+##### 3. Frontend:
 ```bash
 cd adventCalender/frontend
 export $(cat .env | xargs) # export env variables
@@ -11,7 +18,7 @@ npm install     # install dependencies
 npm start       # run
 ```
 
-Backend:
+##### 4. Backend:
 ```bash
 cd adventCalender/backend
 npm install     # install dependencies
@@ -24,7 +31,7 @@ Get-Content .env | ForEach-Object { [System.Environment]::SetEnvironmentVariable
 ```
 
 
-DB:
+##### 5. DB:
 ```bash
 cd adventCalender/backend
 docker build -t advent_db .
