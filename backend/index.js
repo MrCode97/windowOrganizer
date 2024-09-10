@@ -382,7 +382,7 @@ app.post('/api/user/changePassword', async (req, res) => {
 
     if (passwordMatch) {
       const token = jwt.sign({ username: result.rows[0].username }, jwt_secret, {
-        expiresIn: '1h',
+        expiresIn: '6h',
       });
       const hashedNewPassword = await bcrypt.hash(newPassword, 12);
       await pool.query('UPDATE users SET password = $1 WHERE username = $2', [hashedNewPassword, username]);
