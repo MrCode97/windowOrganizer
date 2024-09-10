@@ -20,7 +20,7 @@ function AdventCalendarRegistrationForm({ calendarAdded, setCalendarAdded, token
   // API request
   const handleSubmit = async (event) => {
     event.preventDefault();
-
+  
     try {
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/registerAdventCalendar`, {
         method: 'POST',
@@ -30,13 +30,14 @@ function AdventCalendarRegistrationForm({ calendarAdded, setCalendarAdded, token
         },
         body: JSON.stringify({ adventCalendarId, additionalInfo }),
       });
-
+  
       if (response.ok) {
         setCalendarAdded(!calendarAdded);
         setAdventCalendarId('');
         setAdditionalInfo('');
         setMessage('Advent calendar registered successfully!');
         setMessageOpen(true);
+        window.location.href = `/?calendarName=${adventCalendarId}`;
       } else {
         console.error('Failed to register advent calendar');
         setMessage('Failed to register advent calendar');
