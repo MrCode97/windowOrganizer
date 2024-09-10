@@ -1,6 +1,5 @@
-// MyCalendars.js
 import { useState, useEffect } from 'react';
-import { Typography, Box, List, ListItem, ListItemText, Button, Snackbar, TextField } from '@mui/material';
+import { Typography, Box, List, ListItem, ListItemText, Button, Snackbar, TextField, Tooltip } from '@mui/material';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
@@ -10,6 +9,8 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, user, token }) => {
   const [updateData, setUpdateData] = useState({});
   const [message, setMessage] = useState('');
   const [messageOpen, setMessageOpen] = useState(false);
+  const [showShareLink, setShowShareLink] = useState({}); 
+  const [copySuccess, setCopySuccess] = useState('');
 
   useEffect(() => {
     // Fetch owned calendars by the user
@@ -96,6 +97,14 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, user, token }) => {
     }
   };
 
+  // Handle copy to clipboard
+  const handleCopyToClipboard = (calendarName) => {
+    const shareableLink = `${window.location.origin}/?calendarName=${encodeURIComponent(calendarName)}`;
+    navigator.clipboard.writeText(shareableLink)
+      .then(() => setCopySuccess('Link copied to clipboard!'))
+      .catch(() => setCopySuccess('Failed to copy link'));
+  };
+
   // Close message snackbar
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
@@ -111,8 +120,8 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, user, token }) => {
         {calendarData.map((calendar) => (
           <div key={calendar.id}>
             <ListItem button onClick={() => handleToggle(calendar.id)}>
-            <ListItemText 
-                primary={calendar.name || "Loading..."} 
+              <ListItemText
+                primary={calendar.name || "Loading..."}
                 secondary={calendar.additionalInfo || ""} // Display additional info below name
               />
               {openCalendars[calendar.id] ? <ExpandLessIcon /> : <ExpandMoreIcon />}
@@ -141,12 +150,41 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, user, token }) => {
                 >
                   Update Calendar
                 </Button>
+
+                <Button
+                  variant="contained"
+                  color="primary"
+                  sx={{ mt: 2 }}
+                  onClick={() => setShowShareLink((prev) => ({ ...prev, [calendar.id]: !prev[calendar.id] }))}
+                >
+                  Share Calendar
+                </Button>
+
+                {showShareLink[calendar.id] && (
+                  <Box sx={{ display: 'flex', alignItems: 'center', marginTop: '10px' }}>
+                    <TextField
+                      value={`${window.location.origin}/?calendarName=${encodeURIComponent(calendar.name)}`}
+                      variant="outlined"
+                      size="small"
+                      InputProps={{
+                        readOnly: true,
+                      }}
+                      sx={{ width: '300px', marginRight: '10px' }}
+                    />
+                    <Tooltip title="Copy to Clipboard">
+                      <Button onClick={() => handleCopyToClipboard(calendar.name)} variant="contained">
+                        Copy
+                      </Button>
+                    </Tooltip>
+                  </Box>
+                )}
               </Box>
             )}
           </div>
         ))}
       </List>
       <Snackbar open={messageOpen} autoHideDuration={3000} onClose={handleClose} message={message} />
+      {copySuccess && <Typography color="success.main">{copySuccess}</Typography>}
     </Box>
   );
 }
