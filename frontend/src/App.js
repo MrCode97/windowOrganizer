@@ -67,7 +67,8 @@ function App() {
   const [showCalendar, setShowCalendar] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
 
-  const query = useQuery(); // Use the custom hook to retrieve URL parameters
+  const query = useQuery();
+  const calendarNameParam = query.get('calendarName');
 
   useEffect(() => {
     const fetchCalendars = async () => {
@@ -81,9 +82,8 @@ function App() {
         setCalendars(data);
 
         // Check for 'calendarName' parameter in the URL
-        const calendarNameParam = query.get('calendarName');
         if (calendarNameParam) {
-          const calendar = data.find((c) => c.name.toLowerCase() === calendarNameParam.toLowerCase());
+          const calendar = data.find((c) => c.name === calendarNameParam);
           if (calendar) {
             setSelectedCalendar(calendar); // Preselect the calendar
             setShowCalendar(true);
@@ -96,7 +96,7 @@ function App() {
     };
 
     fetchCalendars();
-  }, [calendarAdded, userAdded, token, query]);
+  }, [calendarAdded, userAdded, token, calendarNameParam]);
 
   // Function to toggle search field visibility
   const toggleSearchField = () => {
