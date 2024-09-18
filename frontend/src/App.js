@@ -26,6 +26,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import theme from './CreateTheme';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
+import ImpressumPage from './components/Impressum';
 
 const drawerWidth = 240;
 
@@ -66,6 +67,7 @@ function App() {
   const [showSearch, setShowSearch] = useState(false);
   const [showCalendar, setShowCalendar] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
+  const [showImpressum, setShowImpressum] = useState(false);
 
   const query = useQuery();
   const calendarNameParam = query.get('calendarName');
@@ -118,7 +120,7 @@ function App() {
               </Typography>
             )}
             {user && (
-              <Button sx={{ paddingLeft: '20px', color: '#FFF4E0' }} onClick={() => {logout(); setShowLogin(false);}}>
+              <Button sx={{ paddingLeft: '20px', color: '#FFF4E0' }} onClick={() => { logout(); setShowLogin(false); }}>
                 Logout
               </Button>
             )}
@@ -151,9 +153,14 @@ function App() {
               </ListItemText>
             </ListItem>
             <ListItemButton onClick={() => {
-              setShowWelcome(true); setShowCalendar(false); setShowLogin(false); setShowRegistration(false); setShowRegistrationCalendar(false); setShowMyCalendars(false); setShowMyWindows(false); setShowUserSettings(false); setSearchTerm(''); setShowSearch(false);
+              setShowWelcome(true); setShowCalendar(false); setShowLogin(false); setShowRegistration(false); setShowRegistrationCalendar(false); setShowMyCalendars(false); setShowMyWindows(false); setShowUserSettings(false); setSearchTerm(''); setShowSearch(false); setShowImpressum(false);
             }}>
               <ListItemText primary="Welcome" />
+            </ListItemButton>
+            <ListItemButton onClick={() => {
+              setShowImpressum(true); setShowWelcome(false); setShowCalendar(false); setShowLogin(false); setShowRegistration(false); setShowRegistrationCalendar(false); setShowMyCalendars(false); setShowMyWindows(false); setShowUserSettings(false); setSearchTerm(''); setShowSearch(false);
+            }}>
+              <ListItemText primary="Impressum" />
             </ListItemButton>
           </List>
 
@@ -176,7 +183,7 @@ function App() {
                 padding: '8px', // Optional: add padding to the item
               }}>
                 <ListItemButton
-                  onClick={() => { setShowWelcome(false); setShowCalendar(true); setSearchTerm(''); setShowSearch(false); setShowRegistration(false); setShowMyWindows(false); setShowMyCalendars(false); setShowUserSettings(false); setShowRegistrationCalendar(false); setShowLogin(false); setShowMyWindows(false); setShowUserSettings(false); }}
+                  onClick={() => { setShowWelcome(false); setShowCalendar(true); setSearchTerm(''); setShowSearch(false); setShowRegistration(false); setShowMyWindows(false); setShowMyCalendars(false); setShowUserSettings(false); setShowRegistrationCalendar(false); setShowLogin(false); setShowMyWindows(false); setShowUserSettings(false); setShowImpressum(false); }}
                   key={selectedCalendar.name}
                 >
                   <ListItemText primary={selectedCalendar.name} />
@@ -200,7 +207,7 @@ function App() {
                   .filter((calendar) => calendar.name.toLowerCase().includes(searchTerm.toLowerCase())) // Filter calendars based on search term
                   .map((calendar) => (
                     <ListItemButton
-                      onClick={() => { setShowWelcome(false); setShowCalendar(true); setSelectedCalendar(calendar); setSearchTerm(''); setShowSearch(false); setShowRegistration(false); setShowMyWindows(false); setShowMyCalendars(false); setShowUserSettings(false); setShowRegistrationCalendar(false); setShowLogin(false); setShowMyWindows(false); setShowUserSettings(false); }}
+                      onClick={() => { setShowWelcome(false); setShowCalendar(true); setSelectedCalendar(calendar); setSearchTerm(''); setShowSearch(false); setShowRegistration(false); setShowMyWindows(false); setShowMyCalendars(false); setShowUserSettings(false); setShowRegistrationCalendar(false); setShowLogin(false); setShowMyWindows(false); setShowUserSettings(false); setShowImpressum(false); }}
                       key={calendar.name}
                     >
                       <ListItemText primary={calendar.name} />
@@ -221,7 +228,7 @@ function App() {
             {!user && (
               <ListItemButton onClick={() => {
                 setShowLogin(true);
-                setShowWelcome(false); setShowCalendar(false); setShowRegistration(false); setShowRegistrationCalendar(false); setShowMyCalendars(false); setShowUserSettings(false); setShowMyWindows(false); setSearchTerm(''); setShowSearch(false);
+                setShowWelcome(false); setShowCalendar(false); setShowRegistration(false); setShowRegistrationCalendar(false); setShowMyCalendars(false); setShowUserSettings(false); setShowMyWindows(false); setSearchTerm(''); setShowSearch(false); setShowImpressum(false);
               }}>
                 <ListItemText primary="Login" />
               </ListItemButton>
@@ -229,7 +236,7 @@ function App() {
             {!user && (
               <ListItemButton onClick={() => {
                 setShowRegistration(true);
-                setShowWelcome(false); setShowCalendar(false); setShowLogin(false); setShowRegistrationCalendar(false); setShowMyCalendars(false); setShowUserSettings(false); setShowMyWindows(false); setSearchTerm(''); setShowSearch(false);
+                setShowWelcome(false); setShowCalendar(false); setShowLogin(false); setShowRegistrationCalendar(false); setShowMyCalendars(false); setShowUserSettings(false); setShowMyWindows(false); setSearchTerm(''); setShowSearch(false); setShowImpressum(false);
               }}>
                 <ListItemText primary="Register a User" />
               </ListItemButton>
@@ -237,7 +244,7 @@ function App() {
             {user && (
               <ListItemButton onClick={() => {
                 setShowMyCalendars(true);
-                setShowWelcome(false); setShowCalendar(false); setShowRegistrationCalendar(false); setShowLogin(false); setShowRegistration(false); setShowUserSettings(false); setShowMyWindows(false); setSearchTerm(''); setShowSearch(false);
+                setShowWelcome(false); setShowCalendar(false); setShowRegistrationCalendar(false); setShowLogin(false); setShowRegistration(false); setShowUserSettings(false); setShowMyWindows(false); setSearchTerm(''); setShowSearch(false); setShowImpressum(false);
               }}>
                 <ListItemText primary="My Calendars" />
               </ListItemButton>
@@ -245,7 +252,7 @@ function App() {
             {user && (
               <ListItemButton onClick={() => {
                 setShowMyWindows(true);
-                setShowWelcome(false); setShowCalendar(false); setShowMyCalendars(false); setShowUserSettings(false); setShowRegistrationCalendar(false); setShowLogin(false); setShowRegistration(false); setSearchTerm(''); setShowSearch(false);
+                setShowWelcome(false); setShowCalendar(false); setShowMyCalendars(false); setShowUserSettings(false); setShowRegistrationCalendar(false); setShowLogin(false); setShowRegistration(false); setSearchTerm(''); setShowSearch(false); setShowImpressum(false);
               }}>
                 <ListItemText primary="My Windows" />
               </ListItemButton>
@@ -253,7 +260,7 @@ function App() {
             {user && (
               <ListItemButton onClick={() => {
                 setShowRegistrationCalendar(true);
-                setShowWelcome(false); setShowCalendar(false); setShowLogin(false); setShowRegistration(false); setShowMyCalendars(false); setShowMyWindows(false); setShowUserSettings(false); setSearchTerm(''); setShowSearch(false);
+                setShowWelcome(false); setShowCalendar(false); setShowLogin(false); setShowRegistration(false); setShowMyCalendars(false); setShowMyWindows(false); setShowUserSettings(false); setSearchTerm(''); setShowSearch(false); setShowImpressum(false);
               }}>
                 <ListItemText primary="Register a Calender" />
               </ListItemButton>
@@ -261,7 +268,7 @@ function App() {
             {user && (
               <ListItemButton onClick={() => {
                 setShowUserSettings(true);
-                setShowWelcome(false); setShowCalendar(false); setShowRegistrationCalendar(false); setShowLogin(false); setShowRegistration(false); setShowMyCalendars(false); setShowMyWindows(false); setSearchTerm(''); setShowSearch(false);
+                setShowWelcome(false); setShowCalendar(false); setShowRegistrationCalendar(false); setShowLogin(false); setShowRegistration(false); setShowMyCalendars(false); setShowMyWindows(false); setSearchTerm(''); setShowSearch(false); setShowImpressum(false);
               }}>
                 <ListItemText primary="User Settings" />
               </ListItemButton>
@@ -277,7 +284,7 @@ function App() {
                   <Login userAdded={userAdded} setUserAdded={setUserAdded} />
                 )}
                 {showRegistration && (
-                  <UserRegistrationForm setShowRegistration={setShowRegistration} setShowLogin={setShowLogin}/>
+                  <UserRegistrationForm setShowRegistration={setShowRegistration} setShowLogin={setShowLogin} />
                 )}
                 {showCalendar && calendars.length > 0 && selectedCalendar && (
                   <DefaultCalendar
@@ -288,9 +295,6 @@ function App() {
                     user={user}
                     token={token}
                   />
-                )}
-                {showWelcome && (
-                  <WelcomePage />
                 )}
               </>
             )}
@@ -321,11 +325,14 @@ function App() {
                 {showUserSettings && (
                   <UserSettings user={user} token={token} userAdded={userAdded} setUserAdded={setUserAdded} />
                 )}
-                {showWelcome && (
-                  <WelcomePage />
-                )}
               </>
             )}
+            {showWelcome && (
+                  <WelcomePage />
+                )}
+            {showImpressum && (
+                  <ImpressumPage />
+                )}
           </Container>
           <br />
         </MainBox>

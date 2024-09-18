@@ -4,13 +4,17 @@ import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Snackbar from '@mui/material/Snackbar';
 
-// CommentSection.js
 function CommentSection({ calendar_id, window_nr, token }) {
-
     const [comments, setComments] = useState([]);
     const [newComment, setNewComment] = useState('');
     const [pullComments, setPullComments] = useState(false);
+    const [consentChecked, setConsentChecked] = useState(false);
+    const [message, setMessage] = useState('');
+    const [messageOpen, setMessageOpen] = useState(false);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -23,6 +27,12 @@ function CommentSection({ calendar_id, window_nr, token }) {
 
     const handleNewComment = async (event) => {
         event.preventDefault();
+
+        if (!consentChecked) {
+            setMessage('You must agree to the terms before adding a comment.');
+            setMessageOpen(true);
+            return;
+        }
 
         try {
             await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/comments?calendar_id=${calendar_id}&window_nr=${window_nr}`, {
@@ -40,9 +50,12 @@ function CommentSection({ calendar_id, window_nr, token }) {
         }
     };
 
+    const handleClose = () => {
+        setMessageOpen(false);
+    };
+
     return (
         <>
-            {/* Display comments */}
             {comments.length > 0 && (
                 <List sx={{ marginTop: 2, padding: 2, border: '1px solid black', borderRadius: '5px', backgroundColor: '#3e3c36' }}>
                     {comments.map((pers_comment, index) => (
@@ -53,31 +66,40 @@ function CommentSection({ calendar_id, window_nr, token }) {
                 </List>
             )}
 
-            {/* Adding comments */}
             {token ? (
-                <from onSubmit={handleNewComment}>
+                <form onSubmit={handleNewComment}>
                     <TextField
                         sx={{ marginTop: '5px', border: '1px solid black', backgroundColor: '#3e3c36', borderRadius: '5px' }}
                         label="Comment"
                         variant="outlined"
-                        fullWidth value={newComment}
-                        onChange={(e) => setNewComment(e.target.value)} />
-                    <div style={{ marginTop: '10px' }}></div>
-                    <Button type="submit" variant="contained" style={{ backgroundColor: 'green' }} onClick={handleNewComment}>
+                        fullWidth
+                        value={newComment}
+                        onChange={(e) => setNewComment(e.target.value)}
+                    />
+                    <FormControlLabel
+                        control={<Checkbox checked={consentChecked} onChange={(e) => setConsentChecked(e.target.checked)} />}
+                        label="I agree that no problematic content will be tolerated, and my comment is respectful."
+                        sx={{ marginTop: '10px' }}
+                    />
+                    <Button type="submit" variant="contained" style={{ backgroundColor: 'green' }} sx={{ marginTop: '10px' }}>
                         Add Comment
                     </Button>
-
-                </from>
+                </form>
             ) : (
                 <>
                     <TextField disabled
                         sx={{ marginTop: '5px', border: '1px solid black', backgroundColor: '#3e3c36', borderRadius: '5px' }}
                         label="Comment"
                         variant="outlined"
-                        fullWidth value={newComment}
+                        fullWidth
+                        value={newComment}
                         onChange={(e) => setNewComment(e.target.value)} />
-                    <div style={{ marginTop: '10px' }}></div>
-                    <Button disabled variant="contained" style={{ backgroundColor: 'gray' }}>Login to add comments</Button></>)}
+                    <Button disabled variant="contained" style={{ backgroundColor: 'gray' }} sx={{ marginTop: '10px' }}>
+                        Login to add comments
+                    </Button>
+                </>
+            )}
+            <Snackbar open={messageOpen} autoHideDuration={3000} onClose={handleClose} message={message} />
         </>
     );
 };

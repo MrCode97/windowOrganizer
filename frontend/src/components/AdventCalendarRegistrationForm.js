@@ -1,12 +1,13 @@
-// AdventCalendarRegistrationForm.js
 import { useState } from 'react';
-import { Typography, TextField, Button, Snackbar } from '@mui/material';
+import { Typography, TextField, Button, Snackbar, Checkbox, FormControlLabel } from '@mui/material';
 
 function LoginHint() {
   return (
     <div>
       <Typography className='pageTitle' variant="h4">Advent Calendar Registration</Typography>
-      <Typography sx={{ padding: '10px' }} variant="p">Please log in first to register an advent calendar.</Typography>
+      <Typography sx={{ padding: '10px' }} variant="body1">
+        Please log in first to register an advent calendar.
+      </Typography>
     </div>
   );
 }
@@ -16,10 +17,16 @@ function AdventCalendarRegistrationForm({ calendarAdded, setCalendarAdded, token
   const [message, setMessage] = useState('');
   const [messageOpen, setMessageOpen] = useState(false);
   const [additionalInfo, setAdditionalInfo] = useState(''); 
+  const [consentChecked, setConsentChecked] = useState(false);
 
-  // API request
   const handleSubmit = async (event) => {
     event.preventDefault();
+
+    if (!consentChecked) {
+      setMessage('You must agree to the terms before registering.');
+      setMessageOpen(true);
+      return;
+    }
   
     try {
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/registerAdventCalendar`, {
@@ -50,7 +57,6 @@ function AdventCalendarRegistrationForm({ calendarAdded, setCalendarAdded, token
     }
   };
 
-  // Message display
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
       return;
@@ -59,29 +65,49 @@ function AdventCalendarRegistrationForm({ calendarAdded, setCalendarAdded, token
   };
 
   return (
-    <div> {token ? (
-      <form onSubmit={handleSubmit}>
-        <Typography className='pageTitle' variant="h4">Advent Calendar Registration</Typography>
-        <TextField
-          label="Advent Calendar Name"
-          fullWidth
-          value={adventCalendarId}
-          onChange={(e) => setAdventCalendarId(e.target.value)}
-        />
-        <TextField
+    <div> 
+      {token ? (
+        <form onSubmit={handleSubmit}>
+          <Typography className='pageTitle' variant="h4">Advent Calendar Registration</Typography>
+          <TextField
+            label="Advent Calendar Name"
+            fullWidth
+            value={adventCalendarId}
+            onChange={(e) => setAdventCalendarId(e.target.value)}
+            sx={{ marginBottom: '20px' }}
+          />
+          <TextField
             label="Additional Information"
             fullWidth
             multiline
             rows={4}
             value={additionalInfo}
             onChange={(e) => setAdditionalInfo(e.target.value)}
+            sx={{ marginBottom: '20px' }}
           />
-        <Button type="submit" variant="contained" sx={{ backgroundColor: 'green', marginTop: '10px' }}>
-          Register
-        </Button>
-        <Snackbar open={messageOpen} autoHideDuration={3000} onClose={handleClose} message={message} />
-      </form>)
-      : (<LoginHint />)}
+          
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={consentChecked}
+                onChange={(e) => setConsentChecked(e.target.checked)}
+                name="consentCheckbox"
+                color="primary"
+              />
+            }
+            label="I agree that the creator of the calendar is responsible for ensuring that no unlawful content, such as sexist, racist, religious, or offensive comments or images, is uploaded to this calendar. The creator must actively monitor and remove any problematic content."
+            sx={{ marginBottom: '20px' }}
+          />
+          
+          <Button type="submit" variant="contained" sx={{ backgroundColor: 'green' }}>
+            Register
+          </Button>
+          
+          <Snackbar open={messageOpen} autoHideDuration={3000} onClose={handleClose} message={message} />
+        </form>
+      ) : (
+        <LoginHint />
+      )}
     </div>
   );
 }
