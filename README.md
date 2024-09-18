@@ -14,7 +14,7 @@ and modify accordingly.
 
 ##### 3. DB:
 ```bash
-# 1rd terminal: windowOrganizer %
+# 1st terminal: windowOrganizer %
 cd backend
 docker build -t advent_db .
 # Hit Ctrl-C to stop. Note the `--rm` flag to remove volume on close
@@ -29,6 +29,7 @@ npm install     # install dependencies
 export $(cat .env | xargs) # export env variables
 node index.js   # run
 ```
+
 ```bash
 # instead of export when using Windows
 Get-Content .env | ForEach-Object { [System.Environment]::SetEnvironmentVariable($_.Split('=')[0], $_.Split('=')[1], [System.EnvironmentVariableTarget]::Process) }
@@ -36,7 +37,7 @@ Get-Content .env | ForEach-Object { [System.Environment]::SetEnvironmentVariable
 
 ##### 5. Frontend:
 ```bash
-# 3st terminal: windowOrganizer %
+# 3rd terminal: windowOrganizer %
 cd frontend
 export $(cat .env | xargs) # export env variables
 npm install     # install dependencies
