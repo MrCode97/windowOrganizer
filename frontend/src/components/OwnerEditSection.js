@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Button, TextField, FormControlLabel, Checkbox, Typography } from '@mui/material';
 import { translate } from './GeocodeAddress';
 
-const OwnerEditSection = ({ calendar_id, window_nr, token, locationAdded, setLocationAdded}) => {
+const OwnerEditSection = ({ calendar_id, window_nr, token, locationAdded, setLocationAdded }) => {
   const [addressName, setAddressName] = useState('');
   const [coordinates, setCoordinates] = useState([]);
   const [locationHint, setLocationHint] = useState('');
@@ -51,7 +51,7 @@ const OwnerEditSection = ({ calendar_id, window_nr, token, locationAdded, setLoc
 
       if (response.ok) {
         setMessage('Window details updated successfully!');
-        if (setLocationAdded){ // if rendered from MyWindows, there is no globalMap so no need to reRender and parent doesn't have the property anyways
+        if (setLocationAdded) { // if rendered from MyWindows, there is no globalMap so no need to reRender and parent doesn't have the property anyways
           setLocationAdded(!locationAdded);
         }
       } else {
@@ -60,6 +60,25 @@ const OwnerEditSection = ({ calendar_id, window_nr, token, locationAdded, setLoc
     } catch (error) {
       console.error('Error updating window details:', error);
       setMessage('An error occurred. Please try again.');
+    }
+  };
+
+  const handleDeleteWindow = async () => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/delWindowHosting`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': 'Bearer ' + token,
+        },
+        body: JSON.stringify({ calendar_id, window_nr }),
+      });
+      if (response.ok) {
+        setMessage('Window deleted successfully');
+      } else {
+        setMessage('Failed to delete window');
+      }
+    } catch (error) {
+      setMessage('Error deleting window');
     }
   };
 
@@ -99,6 +118,9 @@ const OwnerEditSection = ({ calendar_id, window_nr, token, locationAdded, setLoc
       />
       <Button type="submit" variant="contained" color="primary">
         Save Changes
+      </Button>
+      <Button onClick={handleDeleteWindow} variant="contained" color="secondary">
+        Delete/Deregister Window
       </Button>
       {message && <Typography variant="body1" color="error">{message}</Typography>}
     </form>

@@ -235,75 +235,47 @@ app.post('/api/registerWindowHosting', async (req, res) => {
 
   try {
     const decodedToken = jwt.verify(token.split(' ')[1], jwt_secret);
-    username = decodedToken.username;
-  } catch (error) {
-    return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
-  }
+    const username = decodedToken.username;
+    const userIdQuery = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
+    const userId = userIdQuery.rows[0].id;
 
-  // Basic validation
-  if (!calendar_id || !window_nr || !addressName || !coords || !time || hasApero === null) {
-    return res.status(400).json({ error: 'Invalid request. Missing required parameters.' });
-  }
+    if (!calendar_id || !window_nr || !addressName || !coords || !time || hasApero === null) {
+      return res.status(400).json({ error: 'Invalid request. Missing required parameters.' });
+    }
 
-  // Check if window is free
-  try {
     const existingWindow = await pool.query(
       'SELECT id FROM adventWindow WHERE window_nr = $2 AND calendar_id = $1',
       [calendar_id, window_nr]
     );
 
     if (existingWindow.rows.length > 0) {
-      console.debug(`Advent calendar: ${calendar_id} already registered`);
-      return res.status(400).json({ error: 'Advent calendar already registered.' });
+      return res.status(400).json({ error: 'Advent window already registered.' });
     }
-  } catch (error) {
-    console.error('Error checking existing calendar', error);
-    return res.status(500).json({ error: 'Internal Server Error' });
-  }
-
-  // Register the window hosting
-  try {
-    const userId = await pool.query(
-      'SELECT id FROM users WHERE username = $1',
-      [username]
-    );
 
     await pool.query(
-      'INSERT INTO adventWindow (id, owner, address_name, address, apero, time, location_hint, window_nr, calendar_id, pictures, comments) VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8, $9, $10)',
-      [userId.rows[0].id, addressName, `(${coords[0]},${coords[1]})`, hasApero, time, locationHint, window_nr, calendar_id, [], []]
+      'INSERT INTO adventWindow (owner, address_name, address, apero, time, location_hint, window_nr, calendar_id) VALUES ($1, $2, POINT($3, $4), $5, $6, $7, $8, $9)',
+      [userId, addressName, coords[0], coords[1], hasApero, time, locationHint, window_nr, calendar_id]
     );
-    console.debug(`Window hosting for calendar ${calendar_id}, window ${window_nr} registered successfully!`);
+
     res.status(200).json({ message: 'Window hosting registered successfully!' });
   } catch (error) {
-    console.error('Error registering window hosting', error);
+    console.error('Error registering window hosting:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
 app.post('/api/updateWindowHosting', async (req, res) => {
-  // Validate token
   if (!await isValidToken(req)) {
     return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
   }
 
   const token = req.headers.authorization;
   const { calendar_id, window_nr, addressName, coords, time, locationHint, hasApero } = req.body;
-  let username;
 
   try {
-    // Decode the token to get the username
     const decodedToken = jwt.verify(token.split(' ')[1], jwt_secret);
-    username = decodedToken.username;
-  } catch (error) {
-    return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
-  }
+    const username = decodedToken.username;
 
-  // Basic validation
-  if (!calendar_id || !window_nr || !addressName || !coords || !time || hasApero === null) {
-    return res.status(400).json({ error: 'Invalid request. Missing required parameters.' });
-  }
-
-  try {
-    // Verify that the user owns the window
     const userQuery = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
     const userId = userQuery.rows[0]?.id;
 
@@ -311,11 +283,8 @@ app.post('/api/updateWindowHosting', async (req, res) => {
       return res.status(404).json({ error: 'User not found.' });
     }
 
-    // Check if the user is the owner of the particular window or the owner of the calendar to which the window belongs
     const ownershipQuery = await pool.query(`
-      SELECT 
-        w.owner AS window_owner, 
-        c.owner AS calendar_owner
+      SELECT w.owner AS window_owner, c.owner AS calendar_owner
       FROM adventWindow w
       JOIN adventCalendars c ON w.calendar_id = c.id
       WHERE w.calendar_id = $1 AND w.window_nr = $2 AND (w.owner = $3 OR c.owner = $3)
@@ -325,24 +294,75 @@ app.post('/api/updateWindowHosting', async (req, res) => {
       return res.status(403).json({ error: 'Forbidden. You do not have permission to edit this window.' });
     }
 
-    // Update the advent window details
     await pool.query(`
       UPDATE adventWindow
-      SET 
-        address_name = $1,
-        address = POINT($2, $3),
-        time = $4,
-        location_hint = $5,
-        apero = $6
+      SET address_name = $1, address = POINT($2, $3), time = $4, location_hint = $5, apero = $6
       WHERE calendar_id = $7 AND window_nr = $8
     `, [addressName, coords[0], coords[1], time, locationHint, hasApero, calendar_id, window_nr]);
 
-    console.debug(`Advent window ${window_nr} for calendar ${calendar_id} updated successfully!`);
     res.status(200).json({ message: 'Advent window updated successfully!' });
 
   } catch (error) {
-    console.error('Error updating advent window', error);
+    console.error('Error updating advent window:', error);
     res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+app.delete('/api/delWindowHosting', async (req, res) => {
+  if (!await isValidToken(req)) {
+    return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
+  }
+
+  const { calendar_id, window_nr } = req.query;
+  const token = req.headers.authorization.split(' ')[1];
+  const decodedToken = jwt.verify(token, jwt_secret);
+  const username = decodedToken.username;
+
+  try {
+    // Lookup the user ID
+    const userResult = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
+    const userId = userResult.rows[0].id;
+
+    // Fetch window owner and calendar owner
+    const windowResult = await pool.query(`
+      SELECT aw.owner AS window_owner, ac.owner AS calendar_owner
+      FROM adventWindow aw
+      JOIN adventCalendars ac ON aw.calendar_id = ac.id
+      WHERE aw.calendar_id = $1 AND aw.window_nr = $2
+    `, [calendar_id, window_nr]);
+
+    if (windowResult.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Window not found.' });
+    }
+
+    const { window_owner, calendar_owner } = windowResult.rows[0];
+
+    // Check if the user is the window owner or the calendar owner
+    if (userId === window_owner || userId === calendar_owner) {
+      // Begin transaction
+      await pool.query('BEGIN');
+
+      // Delete related pictures
+      await pool.query('DELETE FROM pictures WHERE calendar_id = $1 AND window_nr = $2', [calendar_id, window_nr]);
+
+      // Delete related comments
+      await pool.query('DELETE FROM comments WHERE calendar_id = $1 AND window_nr = $2', [calendar_id, window_nr]);
+
+      // Delete the window itself
+      await pool.query('DELETE FROM adventWindow WHERE calendar_id = $1 AND window_nr = $2', [calendar_id, window_nr]);
+
+      // Commit transaction
+      await pool.query('COMMIT');
+
+      res.json({ success: true, message: 'Window hosting and related data deleted successfully.' });
+    } else {
+      return res.status(403).json({ success: false, message: 'Unauthorized to delete this window hosting.' });
+    }
+  } catch (error) {
+    console.error('Error deleting window hosting:', error);
+    // Rollback transaction in case of error
+    await pool.query('ROLLBACK');
+    res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });
 app.post('/api/user/changePassword', async (req, res) => {
@@ -482,6 +502,32 @@ app.get('/api/user/idToUser', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+app.get('/api/user/userToId', async (req, res) => {
+  /*
+    Return the user ID for a given username.
+    Requires authenticated user.
+  */
+  if (!await isValidToken(req)) {
+    return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
+  }
+
+  const { user } = req.query; // Get the username from the query parameters
+
+  try {
+    const selectQuery = `
+      SELECT id FROM users WHERE username = $1`;
+    const result = await pool.query(selectQuery, [user]);
+
+    if (result.rows.length > 0) {
+      res.json({ id: result.rows[0].id });
+    } else {
+      res.status(404).json({ error: 'User not found' });
+    }
+  } catch (error) {
+    console.error('Error retrieving user ID:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
 app.get('/api/calendars', async (req, res) => {
   try {
@@ -528,41 +574,48 @@ app.get('/api/windowTile/owner', async (req, res) => {
     res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 });
+
 app.get('/api/windowTile', async (req, res) => {
+  /* Provide required data to render the windowTiles in the Calender:
+  - whether the window is claimed or free for registration
+  - Thumbnail (currently just 1st picture)
+  
+  The assumption is that 
+    - if a record exists (result.rows.length > 0), the window
+      was claimed / registered => isFree: false
+    - otherwise it is free for registration => isFree: true
+*/
   try {
     const { calendar_id, window_nr } = req.query;
-    /* Provide required data to render the windowTiles in the Calender:
-      - whether the window is claimed or free for registration
-      - Thumbnail (currently just 1st picture)
-      
-      The assumption is that 
-        - if a record exists (result.rows.length > 0), the window
-          was claimed / registered => isFree: false
-        - otherwise it is free for registration => isFree: true
-    */
-    const selectQuery = `
-      SELECT pictures[1] AS picture -- Fetch the first element from the pictures array
-      FROM adventWindow
-      WHERE calendar_id = $1 AND window_nr = $2
-    `;
 
-    const result = await pool.query(selectQuery, [calendar_id, window_nr]);
+    // Check if the window has been registered
+    const windowResult = await pool.query(`
+    SELECT 1 FROM adventWindow
+    WHERE calendar_id = $1 AND window_nr = $2
+  `, [calendar_id, window_nr]);
 
-    if (result.rows.length > 0) {
-      const picture = result.rows[0].picture;
-      if (picture) {
-        res.status(200).json({ success: true, isFree: false, picture: [picture] });
-      } else {
-        res.status(200).json({ success: true, isFree: false, picture: [] });
-      }
-    } else {
-      res.status(200).json({ success: true, isFree: true, picture: [] });
+    // If no registration is found, the window is free
+    if (windowResult.rows.length === 0) {
+      return res.status(200).json({ success: true, isFree: true, picture: null });
     }
+
+    // If the window is registered, check for a picture
+    const pictureResult = await pool.query(`
+    SELECT content AS picture
+    FROM pictures
+    WHERE calendar_id = $1 AND window_nr = $2
+    LIMIT 1
+  `, [calendar_id, window_nr]);
+
+    const picture = pictureResult.rows.length > 0 ? pictureResult.rows[0].picture : null;
+
+    res.status(200).json({ success: true, isFree: false, picture });
   } catch (error) {
-    console.error('Error fetching picture:', error);
+    console.error('Error fetching windowTile data:', error);
     res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 });
+
 app.get('/api/window', async (req, res) => {
   // Window info based on calendar_id and window_nr
   const { calendar_id, window_nr } = req.query;
@@ -583,97 +636,196 @@ app.get('/api/window', async (req, res) => {
   }
 });
 
-app.get('/api/pictures', async (req, res) => {
-  // Retrieve all pictures from the database for the specified calendar and window
+app.get('/api/getPictures', async (req, res) => {
+  const { calendar_id, window_nr } = req.query;
+
   try {
-    const { calendar_id, window_nr } = req.query;
-    const selectQuery = `
-      SELECT pictures
-      FROM adventWindow
+    const result = await pool.query(`
+      SELECT id, author, timestamp, content 
+      FROM pictures 
       WHERE calendar_id = $1 AND window_nr = $2
-    `;
+      ORDER BY timestamp ASC
+    `, [calendar_id, window_nr]);
 
-    const result = await pool.query(selectQuery, [calendar_id, window_nr]);
-
-    if (result.rows.length > 0) {
-      const pictures = result.rows[0].pictures || [];
-      res.status(200).json({ success: true, pictures });
-    } else {
-      res.status(404).json({ success: false, message: 'No pictures found for the specified calendar and window.' });
+    if (result.rows.length === 0) {
+      return res.json({ success: true, pictures: [] });
     }
+
+    res.json({ success: true, pictures: result.rows });
   } catch (error) {
     console.error('Error fetching pictures:', error);
-    res.status(500).json({ success: false, message: 'Internal Server Error' });
-  }
-});
-app.post('/api/pictures', upload.single('image'), async (req, res) => {
-  // TODO: maybe do some preprocessing on the image data before storing it in the database or set a limit
-  // Take uploaded image for a particular window
-  if (! await isValidToken(req)) {
-    return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
-  }
-
-  try {
-    const { calendar_id, window_nr } = req.query;
-    const { buffer } = req.file; // Image data
-
-    const updateQuery = `
-      UPDATE adventWindow
-      SET pictures = array_append(pictures, $2)
-      WHERE calendar_id = $1 AND window_nr = $3
-    `;
-
-    await new Promise((resolve, reject) => {
-      pool.query(updateQuery, [calendar_id, buffer, window_nr], (err, result) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(result.rowCount);
-        }
-      });
-    });
-
-    res.status(200).json({ success: true, message: 'Image submitted successfully.' });
-  } catch (error) {
-    console.error('Error uploading image:', error);
-    res.status(500).json({ success: false, message: 'Internal Server Error' });
-  }
-});
-
-app.get('/api/comments', async (req, res) => {
-  // Return comments for a particular window
-  const { calendar_id, window_nr } = req.query;
-  try {
-    const result = await pool.query(
-      'SELECT comments FROM adventWindow WHERE window_nr = $2 AND calendar_id = $1',
-      [calendar_id, window_nr]
-    );
-    const comments = result.rows.length > 0 ? result.rows[0].comments : [];
-
-    res.json({ success: true, comments: comments });
-  } catch (error) {
-    console.error('Error fetching comments:', error);
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });
-app.post('/api/comments', async (req, res) => {
+app.delete('/api/delPicture', async (req, res) => {
+  if (!await isValidToken(req)) {
+    return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
+  }
+
+  const { picture_id, calendar_id, window_nr } = req.query;
+  const token = req.headers.authorization.split(' ')[1];
+  const decodedToken = jwt.verify(token, jwt_secret);
+  const username = decodedToken.username;
+
+  try {
+    // Lookup the user ID
+    const userResult = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
+    const userId = userResult.rows[0].id;
+
+    // Fetch picture, window owner, and calendar owner
+    const pictureResult = await pool.query(`
+      SELECT p.author, aw.owner AS window_owner, ac.owner AS calendar_owner
+      FROM pictures p
+      JOIN adventWindow aw ON p.window_nr = aw.window_nr AND p.calendar_id = aw.calendar_id
+      JOIN adventCalendars ac ON p.calendar_id = ac.id
+      WHERE p.id = $1 AND p.calendar_id = $2 AND p.window_nr = $3
+    `, [picture_id, calendar_id, window_nr]);
+
+    const { author, window_owner, calendar_owner } = pictureResult.rows[0];
+
+    // Check if user is the picture author, window owner, or calendar owner
+    if (userId === author || userId === window_owner || userId === calendar_owner) {
+      // Delete the picture
+      await pool.query('DELETE FROM pictures WHERE id = $1', [picture_id]);
+      return res.json({ success: true, message: 'Picture deleted successfully.' });
+    } else {
+      return res.status(403).json({ success: false, message: 'Unauthorized to delete this picture.' });
+    }
+  } catch (error) {
+    console.error('Error deleting picture:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
+// TODO: maybe do some preprocessing on the image data before storing it in the database or set a limit
+// Take uploaded image for a particular window
+app.post('/api/pictures', async (req, res) => {
   if (!await isValidToken(req)) {
     return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
   }
 
   const { window_nr, calendar_id } = req.query;
-  const { comment } = req.body;
+  const { picture } = req.body; // Assuming picture is coming as binary data (BYTEA in PostgreSQL)
+  const token = req.headers.authorization.split(' ')[1];
+  const decodedToken = jwt.verify(token, jwt_secret);
+  const username = decodedToken.username;
 
   try {
-    const result = await pool.query(
-      'UPDATE adventWindow SET comments = adventWindow.comments || ARRAY[$3] ' +
-      'WHERE window_nr = $1 AND calendar_id = $2',
-      [window_nr, calendar_id, comment]
-    );
+    // Get user ID from username
+    const userResult = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
+    const userId = userResult.rows[0].id;
 
-    if (result.rowCount === 0) {
-      return res.status(404).json({ success: false, message: 'Window not found.' });
+    // Insert the picture with userId
+    await pool.query(`
+      INSERT INTO pictures (calendar_id, window_nr, author, content, timestamp)
+      VALUES ($1, $2, $3, $4, NOW())
+    `, [calendar_id, window_nr, userId, picture]);
+
+    res.json({ success: true, message: 'Picture added successfully' });
+  } catch (error) {
+    console.error('Error adding picture:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
+
+app.get('/api/getComments', async (req, res) => {
+  const { calendar_id, window_nr } = req.query;
+
+  try {
+    const result = await pool.query(`
+      SELECT id, author, timestamp, content 
+      FROM comments 
+      WHERE calendar_id = $1 AND window_nr = $2 
+      ORDER BY timestamp ASC
+    `, [calendar_id, window_nr]);
+
+    if (result.rows.length === 0) {
+      return res.json({ success: true, comments: [] });
     }
+
+    res.json({ success: true, comments: result.rows });
+  } catch (error) {
+    console.error('Error fetching comments:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
+app.delete('/api/delComment', async (req, res) => {
+  if (!await isValidToken(req)) {
+    return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
+  }
+
+  const { comment_id, calendar_id, window_nr } = req.query;
+  const token = req.headers.authorization.split(' ')[1];
+  const decodedToken = jwt.verify(token, jwt_secret);
+  const username = decodedToken.username;
+
+  try {
+    // Log parameters to debug potential issues
+    console.log('Deleting comment with:', { comment_id, calendar_id, window_nr });
+
+    // Lookup the user ID
+    const userResult = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
+    const userId = userResult.rows[0]?.id;
+
+    if (!userId) {
+      return res.status(400).json({ success: false, message: 'Invalid user' });
+    }
+
+    // Fetch comment, window owner, and calendar owner
+    const commentResult = await pool.query(`
+      SELECT c.author, aw.owner AS window_owner, ac.owner AS calendar_owner 
+      FROM comments c 
+      JOIN adventWindow aw ON c.window_nr = aw.window_nr AND c.calendar_id = aw.calendar_id
+      JOIN adventCalendars ac ON c.calendar_id = ac.id
+      WHERE c.id = $1 AND c.calendar_id = $2 AND c.window_nr = $3
+    `, [comment_id, calendar_id, window_nr]);
+
+    // Check if the query returned any results
+    if (commentResult.rows.length === 0) {
+      return res.status(404).json({ success: false, message: 'Comment not found' });
+    }
+
+    const { author, window_owner, calendar_owner } = commentResult.rows[0];
+
+    // Check if user is the comment author, window owner, or calendar owner
+    if (userId === author || userId === window_owner || userId === calendar_owner) {
+      // Delete the comment
+      await pool.query('DELETE FROM comments WHERE id = $1', [comment_id]);
+      return res.json({ success: true, message: 'Comment deleted successfully.' });
+    } else {
+      return res.status(403).json({ success: false, message: 'Unauthorized to delete this comment.' });
+    }
+  } catch (error) {
+    console.error('Error deleting comment:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
+
+app.post('/api/addComment', async (req, res) => {
+  if (!await isValidToken(req)) {
+    return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
+  }
+
+  const { window_nr, calendar_id, comment } = req.body;
+
+  if (!window_nr || !calendar_id || !comment) {
+    return res.status(400).json({ error: 'Missing required parameters.' });
+  }
+
+  const token = req.headers.authorization.split(' ')[1];
+  const decodedToken = jwt.verify(token, jwt_secret);
+  const username = decodedToken.username;
+
+  try {
+    // Get user ID from username
+    const userResult = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
+    const userId = userResult.rows[0].id;
+
+    console.log(`${userId}: added a comment`);
+    // Insert the comment with userId
+    await pool.query(`
+      INSERT INTO comments (calendar_id, window_nr, author, content, timestamp)
+      VALUES ($1, $2, $3, $4, NOW())
+    `, [calendar_id, window_nr, userId, comment]);
 
     res.json({ success: true, message: 'Comment added successfully' });
   } catch (error) {
@@ -681,6 +833,7 @@ app.post('/api/comments', async (req, res) => {
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });
+
 
 
 app.get('/api/locations', async (req, res) => {

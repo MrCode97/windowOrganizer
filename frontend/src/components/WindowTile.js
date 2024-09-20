@@ -16,12 +16,11 @@ function WindowTile({ window_nr, calendar_id, user, calendarOwner, token, locati
   useEffect(() => {
     const fetchWindowTileData = async () => {
       const getDynamicImagePath = (isFree) => {
-        if (imageUpload) return image; // Return the uploaded image if it exists
         const basePath = isFree ? '/emptyWindow/art' : '/happyWindow';
         const fileName = `${window_nr}.png`; // Generate file name dynamically based on window number
         return `${basePath}/${fileName}`;
       };
-    
+
       try {
         const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/windowTile?calendar_id=${calendar_id}&window_nr=${window_nr}`);
         const data = await response.json();
@@ -29,7 +28,9 @@ function WindowTile({ window_nr, calendar_id, user, calendarOwner, token, locati
         if (data.success) {
           setIsFree(data.isFree);
 
-          if (data.picture.length > 0) {
+          // Check if picture is null or empty
+          if (data.picture && data.picture.length > 0) {
+            // Process the image as you already do
             const arrayBuffer = Uint8Array.from(data.picture[0].data).buffer;
             const blob = new Blob([arrayBuffer], { type: 'image/png' });
             const reader = new FileReader();
@@ -39,13 +40,15 @@ function WindowTile({ window_nr, calendar_id, user, calendarOwner, token, locati
               };
               reader.readAsDataURL(blob);
             });
+
             base64Image.then((img) => {
               setImage(img);
               setImageUpload(true);
             });
           } else {
-            setImage(getDynamicImagePath(isFree));
-            setImageUpload(false);
+            // No picture available, reset the image and use dynamic path
+            setImage(getDynamicImagePath(data.isFree)); // Use the default dynamic image path
+            setImageUpload(false); // Reset image upload flag
           }
         }
       } catch (error) {
@@ -54,7 +57,8 @@ function WindowTile({ window_nr, calendar_id, user, calendarOwner, token, locati
     };
 
     fetchWindowTileData();
-  }, [calendar_id, window_nr, imageUpload, locationAdded, isFree, image]);
+  }, [calendar_id, window_nr, locationAdded, isFree]);
+
 
   const handleCardMediaClick = () => {
     // Open or close the SlidingWindow when the CardMedia is clicked
@@ -112,7 +116,7 @@ function WindowTile({ window_nr, calendar_id, user, calendarOwner, token, locati
               alignItems: 'center',
               justifyContent: 'center',
               backgroundColor: 'rgba(0, 128, 0, 0.8)',
-              color: 'white', 
+              color: 'white',
               borderRadius: '4px',
               visibility: is_free_visiblity,
             }}
