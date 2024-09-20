@@ -4,6 +4,7 @@ const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
+const upload = multer({ storage: multer.memoryStorage() });
 
 const jwt_secret = process.env.JWT_SECRET;
 const dbUser = process.env.DB_USER;
@@ -15,8 +16,6 @@ const dbPort = process.env.DB_PORT;
 const app = express();
 app.use(cors());
 app.use(express.json());
-
-const upload = multer();
 
 const pool = new Pool({
   user: dbUser,
@@ -698,13 +697,12 @@ app.delete('/api/delPicture', async (req, res) => {
 });
 // TODO: maybe do some preprocessing on the image data before storing it in the database or set a limit
 // Take uploaded image for a particular window
-app.post('/api/pictures', async (req, res) => {
+app.post('/api/pictures', upload.single('image'), async (req, res) => {
   if (!await isValidToken(req)) {
     return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
   }
 
   const { window_nr, calendar_id } = req.query;
-  const { picture } = req.body; // Assuming picture is coming as binary data (BYTEA in PostgreSQL)
   const token = req.headers.authorization.split(' ')[1];
   const decodedToken = jwt.verify(token, jwt_secret);
   const username = decodedToken.username;
@@ -714,18 +712,22 @@ app.post('/api/pictures', async (req, res) => {
     const userResult = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
     const userId = userResult.rows[0].id;
 
+    // Get the uploaded image buffer
+    const pictureBuffer = req.file.buffer; // multer stores the file data in req.file
+
     // Insert the picture with userId
     await pool.query(`
       INSERT INTO pictures (calendar_id, window_nr, author, content, timestamp)
       VALUES ($1, $2, $3, $4, NOW())
-    `, [calendar_id, window_nr, userId, picture]);
+    `, [calendar_id, window_nr, userId, pictureBuffer]);
 
     res.json({ success: true, message: 'Picture added successfully' });
   } catch (error) {
     console.error('Error adding picture:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
+    res.status(500).json({ success: false, message: 'Internal Server error' });
   }
 });
+
 
 app.get('/api/getComments', async (req, res) => {
   const { calendar_id, window_nr } = req.query;

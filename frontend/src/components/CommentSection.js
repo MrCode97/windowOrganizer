@@ -21,27 +21,29 @@ function CommentSection({ calendar_id, window_nr, token, calendarOwnerId }) {
     const [isCalendarOwner, setIsCalendarOwner] = useState(false);
 
     useEffect(() => {
-        async function fetchUserId() {
-            try {
-                const username = localStorage.getItem('user');
-                const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/userToId?user=${username}`, {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                    },
-                });
+        if (token) {
+            async function fetchUserId() {
+                try {
+                    const username = localStorage.getItem('user');
+                    const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/userToId?user=${username}`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                        },
+                    });
 
-                const data = await response.json();
-                setUserId(data.id);
-                if(data.id === calendarOwnerId){
-                    setIsCalendarOwner(true);
+                    const data = await response.json();
+                    setUserId(data.id);
+                    if (data.id === calendarOwnerId) {
+                        setIsCalendarOwner(true);
+                    }
+                } catch (error) {
+                    console.error('Error fetching user ID:', error);
                 }
-            } catch (error) {
-                console.error('Error fetching user ID:', error);
             }
-        }
 
-        fetchUserId();
+            fetchUserId();
+        }
     }, [calendarOwnerId, token]);
 
     useEffect(() => {

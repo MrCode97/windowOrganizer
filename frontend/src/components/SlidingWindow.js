@@ -103,6 +103,8 @@ function SlidingWindow({ window_nr, calendar_id, onClose, imageUpload, setImageU
           <Gallery
             calendarId={calendar_id}
             windowNr={window_nr}
+            calendarOwnerId={calendarOwner}
+            token={token}
             onClose={onClose}
           />
         )}
