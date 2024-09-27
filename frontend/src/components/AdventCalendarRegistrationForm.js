@@ -12,7 +12,7 @@ function LoginHint() {
   );
 }
 
-function AdventCalendarRegistrationForm({ calendarAdded, setCalendarAdded, token }) {
+function AdventCalendarRegistrationForm({ calendarAdded, setCalendarAdded, setShowRegistrationCalendar, token }) {
   const [adventCalendarId, setAdventCalendarId] = useState('');
   const [message, setMessage] = useState('');
   const [messageOpen, setMessageOpen] = useState(false);
@@ -45,6 +45,7 @@ function AdventCalendarRegistrationForm({ calendarAdded, setCalendarAdded, token
         setMessage('Advent calendar registered successfully!');
         setMessageOpen(true);
         window.location.href = `/?calendarName=${adventCalendarId}`;
+        setShowRegistrationCalendar(false);
       } else {
         console.error('Failed to register advent calendar');
         setMessage('Failed to register advent calendar');

@@ -320,7 +320,7 @@ function App() {
                   <MyWindows user={user} token={token} />
                 )}
                 {showRegistrationCalendar && (
-                  <AdventCalendarRegistrationForm calendarAdded={calendarAdded} setCalendarAdded={setCalendarAdded} token={token} />
+                  <AdventCalendarRegistrationForm calendarAdded={calendarAdded} setCalendarAdded={setCalendarAdded} setShowRegistrationCalendar={setShowRegistrationCalendar} token={token} />
                 )}
                 {showUserSettings && (
                   <UserSettings user={user} token={token} userAdded={userAdded} setUserAdded={setUserAdded} />
