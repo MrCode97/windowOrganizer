@@ -5,7 +5,7 @@ import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useState, useEffect } from 'react';
 
-const Gallery = ({ calendarId, windowNr, token, calendarOwnerId }) => {
+const Gallery = ({ calendarId, windowNr, imageUpload, setImageUpload, token, calendarOwnerId }) => {
   const [images, setImages] = useState([]);
   const [isCalendarOwner, setIsCalendarOwner] = useState(false);
   const [userId, setUserId] = useState(null);
@@ -77,6 +77,7 @@ const Gallery = ({ calendarId, windowNr, token, calendarOwnerId }) => {
       const data = await response.json();
       if (data.success) {
         setImages(images.filter((image) => image.id !== pictureId));
+        setImageUpload(!imageUpload);
         console.log('Picture deleted successfully.');
       } else {
         console.error('Failed to delete picture:', data.message);

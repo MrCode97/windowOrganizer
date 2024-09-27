@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Button, TextField, FormControlLabel, Checkbox, Typography } from '@mui/material';
 import { translate } from './GeocodeAddress';
 
-const OwnerEditSection = ({ calendar_id, window_nr, token, locationAdded, setLocationAdded }) => {
+const OwnerEditSection = ({ calendar_id, window_nr, onClose, setIsFree, token, locationAdded, setLocationAdded }) => {
   const [addressName, setAddressName] = useState('');
   const [coordinates, setCoordinates] = useState([]);
   const [locationHint, setLocationHint] = useState('');
@@ -65,15 +65,17 @@ const OwnerEditSection = ({ calendar_id, window_nr, token, locationAdded, setLoc
 
   const handleDeleteWindow = async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/delWindowHosting`, {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/delWindowHosting?calendar_id=${calendar_id}&window_nr=${window_nr}`, {
         method: 'DELETE',
         headers: {
           'Authorization': 'Bearer ' + token,
         },
-        body: JSON.stringify({ calendar_id, window_nr }),
       });
       if (response.ok) {
         setMessage('Window deleted successfully');
+        onClose();
+        setLocationAdded(!locationAdded);
+        setIsFree(true);
       } else {
         setMessage('Failed to delete window');
       }

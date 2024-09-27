@@ -8,7 +8,7 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import OwnerEditSection from './OwnerEditSection';
 
-function SlidingWindow({ window_nr, calendar_id, onClose, imageUpload, setImageUpload, locationAdded, setLocationAdded, calendarOwner, user, token }) {
+function SlidingWindow({ window_nr, calendar_id, onClose, setIsFree, imageUpload, setImageUpload, locationAdded, setLocationAdded, calendarOwner, user, token }) {
   const [activeTab, setActiveTab] = useState(0);
   const [ownerUsername, setOwnerUsername] = useState('');
   const [calendarOwnerName, setCalendarOwnerName] = useState('');
@@ -104,6 +104,8 @@ function SlidingWindow({ window_nr, calendar_id, onClose, imageUpload, setImageU
             calendarId={calendar_id}
             windowNr={window_nr}
             calendarOwnerId={calendarOwner}
+            imageUpload={imageUpload}
+            setImageUpload={setImageUpload}
             token={token}
             onClose={onClose}
           />
@@ -124,6 +126,8 @@ function SlidingWindow({ window_nr, calendar_id, onClose, imageUpload, setImageU
           <OwnerEditSection
             calendar_id={calendar_id}
             window_nr={window_nr}
+            onClose={onClose}
+            setIsFree={setIsFree}
             token={token}
             locationAdded={locationAdded}
             setLocationAdded={setLocationAdded}

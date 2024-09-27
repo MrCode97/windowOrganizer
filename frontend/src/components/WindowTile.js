@@ -29,10 +29,10 @@ function WindowTile({ window_nr, calendar_id, user, calendarOwner, token, locati
           setIsFree(data.isFree);
 
           // Check if picture is null or empty
-          if (data.picture && data.picture.length > 0) {
-            // Process the image as you already do
-            const arrayBuffer = Uint8Array.from(data.picture[0].data).buffer;
-            const blob = new Blob([arrayBuffer], { type: 'image/png' });
+          if (data.picture && data.picture.data.length > 0) {
+            const arrayBuffer = Uint8Array.from(data.picture.data).buffer;
+            const blob = new Blob([arrayBuffer], { type: data.picture.type });
+            console.log('blob:', blob);
             const reader = new FileReader();
             const base64Image = new Promise((resolve) => {
               reader.onloadend = () => {
@@ -57,7 +57,7 @@ function WindowTile({ window_nr, calendar_id, user, calendarOwner, token, locati
     };
 
     fetchWindowTileData();
-  }, [calendar_id, window_nr, locationAdded, isFree]);
+  }, [calendar_id, window_nr, locationAdded, imageUpload, isFree]);
 
 
   const handleCardMediaClick = () => {
@@ -155,6 +155,7 @@ function WindowTile({ window_nr, calendar_id, user, calendarOwner, token, locati
           window_nr={window_nr}
           calendar_id={calendar_id}
           onClose={() => setSlidingWindowOpen(false)}
+          setIsFree={setIsFree}
           imageUpload={imageUpload}
           setImageUpload={setImageUpload}
           locationAdded={locationAdded}
