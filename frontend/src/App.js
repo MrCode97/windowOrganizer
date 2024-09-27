@@ -291,7 +291,8 @@ function App() {
                     id={selectedCalendar.id}
                     name={selectedCalendar.name}
                     additionalInfo={selectedCalendar.additional_info}
-                    owner={selectedCalendar.owner}
+                    calendarOwner={selectedCalendar.owner}
+                    locked={selectedCalendar.locked}
                     user={user}
                     token={token}
                   />
@@ -309,12 +310,13 @@ function App() {
                     name={selectedCalendar.name}
                     additionalInfo={selectedCalendar.additional_info}
                     calendarOwner={selectedCalendar.owner}
+                    locked={selectedCalendar.locked}
                     user={user}
                     token={token}
                   />
                 )}
                 {showMyCalendars && (
-                  <MyCalendars calendarAdded={calendarAdded} setCalendarAdded={setCalendarAdded} user={user} token={token} />
+                  <MyCalendars calendarAdded={calendarAdded} setCalendarAdded={setCalendarAdded} setSelectedCalendar={setSelectedCalendar} user={user} token={token} />
                 )}
                 {showMyWindows && (
                   <MyWindows user={user} token={token} />

@@ -25,6 +25,7 @@ const pool = new Pool({
   port: dbPort,
 });
 
+// Access Control Utility Function
 async function isValidToken(req) {
   const token = req.headers.authorization;
   // Check if the token is provided
@@ -60,8 +61,31 @@ async function isValidToken(req) {
   }
   return true;
 }
+async function isLocked(calendar_id) {
+  try {
+    // Query the database to check if the calendar is locked
+    const lockQuery = await pool.query('SELECT locked FROM adventCalendars WHERE id = $1', [calendar_id]);
 
-// Admin
+    if (lockQuery.rows.length === 0) {
+      console.debug(`Calendar with id ${calendar_id} does not exist.`);
+      return false;
+    }
+
+    // Check if the calendar is locked
+    if (lockQuery.rows[0].locked) {
+      console.debug(`Calendar ${calendar_id} is locked.`);
+      return true;
+    } else {
+      console.debug(`Calendar ${calendar_id} is not locked.`);
+      return false;
+    }
+  } catch (error) {
+    console.error('Error checking if calendar is locked:', error);
+    return false;
+  }
+}
+
+// Admin User
 app.post('/api/login', async (req, res) => {
   const { username, password } = req.body;
 
@@ -130,6 +154,57 @@ app.post('/api/registerUser', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+app.post('/api/user/changePassword', async (req, res) => {
+  // Validate token
+  if (!await isValidToken(req)) {
+    return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
+  }
+
+  const { oldPassword, newPassword } = req.body;
+  let username;
+  const token = req.headers.authorization;
+
+  try {
+    // Decode the token to get the username
+    const decodedToken = jwt.verify(token.split(' ')[1], jwt_secret);
+    username = decodedToken.username;
+  } catch (error) {
+    console.error('Error decoding token', error);
+    return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
+  }
+  // Basic validation
+  if (!username || !oldPassword || !newPassword) {
+    return res.status(400).json({ error: 'Invalid request. Missing required parameters.' });
+  }
+  // Check if the user exists
+  try {
+    const result = await pool.query('SELECT username, password FROM users WHERE username = $1', [username]);
+
+    if (result.rows.length === 0) {
+      return res.status(401).json({ error: 'Invalid credentials. User not found.' });
+    }
+
+    const hashedPassword = result.rows[0].password;
+
+    // Check if the provided password matches the stored hashed password
+    const passwordMatch = await bcrypt.compare(oldPassword, hashedPassword);
+
+    if (passwordMatch) {
+      const token = jwt.sign({ username: result.rows[0].username }, jwt_secret, {
+        expiresIn: '6h',
+      });
+      const hashedNewPassword = await bcrypt.hash(newPassword, 12);
+      await pool.query('UPDATE users SET password = $1 WHERE username = $2', [hashedNewPassword, username]);
+      res.status(200).json({ message: 'Password successfully changed!', token });
+    } else {
+      res.status(401).json({ error: 'Invalid credentials. Password does not match.' });
+    }
+  } catch (error) {
+    console.error('Error during login', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+// Admin Calendar
 app.post('/api/registerAdventCalendar', async (req, res) => {
   if (! await isValidToken(req)) {
     return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
@@ -199,6 +274,10 @@ app.post('/api/updateAdventCalendar', async (req, res) => {
     return res.status(400).json({ error: 'Invalid request. Missing required parameters.' });
   }
 
+  if (await isLocked(calendar_id)) {
+    return res.status(403).json({ error: 'Forbidden. The calendar is locked and cannot be modified.' });
+  }
+
   try {
     // Verify that the user owns the calendar
     const userQuery = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
@@ -225,6 +304,108 @@ app.post('/api/updateAdventCalendar', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+app.delete('/api/delAdventCalendar', async (req, res) => {
+  if (!await isValidToken(req)) {
+    return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
+  }
+
+  const { calendar_id } = req.query;
+  const token = req.headers.authorization;
+  let username;
+
+  try {
+    const decodedToken = jwt.verify(token.split(' ')[1], jwt_secret);
+    username = decodedToken.username;
+  } catch (error) {
+    return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
+  }
+
+  // Basic validation
+  if (!calendar_id) {
+    return res.status(400).json({ error: 'Invalid request. Missing calendar ID.' });
+  }
+
+  if (await isLocked(calendar_id)) {
+    return res.status(403).json({ error: 'Forbidden. The calendar is locked and cannot be modified.' });
+  }
+
+  try {
+    // Get the user's ID from the token
+    const userQuery = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
+    const userId = userQuery.rows[0]?.id;
+
+    if (!userId) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    // Check if the user is the owner of the calendar
+    const ownershipQuery = await pool.query('SELECT owner FROM adventCalendars WHERE id = $1 AND owner = $2', [calendar_id, userId]);
+
+    if (ownershipQuery.rows.length === 0) {
+      return res.status(403).json({ error: 'Forbidden. You do not have permission to delete this calendar.' });
+    }
+
+    // Delete the advent calendar and associated data
+    await pool.query('DELETE FROM adventCalendars WHERE id = $1', [calendar_id]);
+    
+    console.debug(`Advent calendar ${calendar_id} and its associated data deleted successfully!`);
+    res.status(200).json({ message: 'Advent calendar deleted successfully!' });
+
+  } catch (error) {
+    console.error('Error deleting advent calendar:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+app.post('/api/lockAdventCalendar', async (req, res) => {
+  if (!await isValidToken(req)) {
+    return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
+  }
+
+  const { calendar_id, lock } = req.body;
+  const token = req.headers.authorization;
+  let username;
+
+  try {
+    const decodedToken = jwt.verify(token.split(' ')[1], jwt_secret);
+    username = decodedToken.username;
+  } catch (error) {
+    return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
+  }
+
+  // Basic validation
+  if (!calendar_id || typeof lock !== 'boolean') {
+    return res.status(400).json({ error: 'Invalid request. Missing required parameters.' });
+  }
+
+  try {
+    // Get the user's ID from the token
+    const userQuery = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
+    const userId = userQuery.rows[0]?.id;
+
+    if (!userId) {
+      return res.status(404).json({ error: 'User not found.' });
+    }
+
+    // Check if the user is the owner of the calendar
+    const ownershipQuery = await pool.query('SELECT owner FROM adventCalendars WHERE id = $1 AND owner = $2', [calendar_id, userId]);
+
+    if (ownershipQuery.rows.length === 0) {
+      return res.status(403).json({ error: 'Forbidden. You do not have permission to lock/unlock this calendar.' });
+    }
+
+    // Lock or unlock the advent calendar
+    await pool.query('UPDATE adventCalendars SET locked = $1 WHERE id = $2', [lock, calendar_id]);
+    
+    const lockStatus = lock ? 'locked' : 'unlocked';
+    console.debug(`Advent calendar ${calendar_id} ${lockStatus} successfully!`);
+    res.status(200).json({ message: `Advent calendar ${lockStatus} successfully!` });
+
+  } catch (error) {
+    console.error('Error locking/unlocking advent calendar:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+// Admin Window
 app.post('/api/registerWindowHosting', async (req, res) => {
   if (! await isValidToken(req)) {
     return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
@@ -240,6 +421,10 @@ app.post('/api/registerWindowHosting', async (req, res) => {
 
     if (!calendar_id || !window_nr || !addressName || !coords || !time || hasApero === null) {
       return res.status(400).json({ error: 'Invalid request. Missing required parameters.' });
+    }
+
+    if (await isLocked(calendar_id)) {
+      return res.status(403).json({ error: 'Forbidden. The calendar is locked and cannot be modified.' });
     }
 
     const existingWindow = await pool.query(
@@ -262,7 +447,6 @@ app.post('/api/registerWindowHosting', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-
 app.post('/api/updateWindowHosting', async (req, res) => {
   if (!await isValidToken(req)) {
     return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
@@ -280,6 +464,10 @@ app.post('/api/updateWindowHosting', async (req, res) => {
 
     if (!userId) {
       return res.status(404).json({ error: 'User not found.' });
+    }
+
+    if (await isLocked(calendar_id)) {
+      return res.status(403).json({ error: 'Forbidden. The calendar is locked and cannot be modified.' });
     }
 
     const ownershipQuery = await pool.query(`
@@ -306,7 +494,6 @@ app.post('/api/updateWindowHosting', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-
 app.delete('/api/delWindowHosting', async (req, res) => {
   if (!await isValidToken(req)) {
     return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
@@ -321,6 +508,10 @@ app.delete('/api/delWindowHosting', async (req, res) => {
     // Lookup the user ID
     const userResult = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
     const userId = userResult.rows[0].id;
+
+    if (await isLocked(calendar_id)) {
+      return res.status(403).json({ error: 'Forbidden. The calendar is locked and cannot be modified.' });
+    }
 
     // Fetch window owner and calendar owner
     const windowResult = await pool.query(`
@@ -364,58 +555,8 @@ app.delete('/api/delWindowHosting', async (req, res) => {
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });
-app.post('/api/user/changePassword', async (req, res) => {
-  // Validate token
-  if (!await isValidToken(req)) {
-    return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
-  }
 
-  const { oldPassword, newPassword } = req.body;
-  let username;
-  const token = req.headers.authorization;
-
-  try {
-    // Decode the token to get the username
-    const decodedToken = jwt.verify(token.split(' ')[1], jwt_secret);
-    username = decodedToken.username;
-  } catch (error) {
-    console.error('Error decoding token', error);
-    return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
-  }
-  // Basic validation
-  if (!username || !oldPassword || !newPassword) {
-    return res.status(400).json({ error: 'Invalid request. Missing required parameters.' });
-  }
-  // Check if the user exists
-  try {
-    const result = await pool.query('SELECT username, password FROM users WHERE username = $1', [username]);
-
-    if (result.rows.length === 0) {
-      return res.status(401).json({ error: 'Invalid credentials. User not found.' });
-    }
-
-    const hashedPassword = result.rows[0].password;
-
-    // Check if the provided password matches the stored hashed password
-    const passwordMatch = await bcrypt.compare(oldPassword, hashedPassword);
-
-    if (passwordMatch) {
-      const token = jwt.sign({ username: result.rows[0].username }, jwt_secret, {
-        expiresIn: '6h',
-      });
-      const hashedNewPassword = await bcrypt.hash(newPassword, 12);
-      await pool.query('UPDATE users SET password = $1 WHERE username = $2', [hashedNewPassword, username]);
-      res.status(200).json({ message: 'Password successfully changed!', token });
-    } else {
-      res.status(401).json({ error: 'Invalid credentials. Password does not match.' });
-    }
-  } catch (error) {
-    console.error('Error during login', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
-
-// Data
+// Data Retrieval - User
 app.get('/api/user/ownedCalendars', async (req, res) => {
   if (!await isValidToken(req)) {
     return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
@@ -429,7 +570,8 @@ app.get('/api/user/ownedCalendars', async (req, res) => {
       SELECT 
         ac.id,
         ac.name,
-        ac.additional_info
+        ac.additional_info,
+        ac.locked
       FROM 
         adventCalendars ac
       JOIN 
@@ -527,17 +669,16 @@ app.get('/api/user/userToId', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-
+// Data Retrieval - Calendar
 app.get('/api/calendars', async (req, res) => {
   try {
-    const result = await pool.query('SELECT id, name, owner, additional_info FROM adventCalendars'); // Fetch additional info
+    const result = await pool.query('SELECT id, name, owner, additional_info, locked FROM adventCalendars'); // Fetch additional info
     res.json(result.rows);
   } catch (error) {
     console.error('Error retrieving calendars', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-
 app.get('/api/calendar', async (req, res) => {
   const { calendar_id } = req.query;
   try {
@@ -548,32 +689,7 @@ app.get('/api/calendar', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-
-app.get('/api/windowTile/owner', async (req, res) => {
-  /* Provide owner-username to authenticated users
-    The assumption is that we call this endpoint only form SlidingWindow.js, where we already established that the window is claimed, hence owner exists
-    */
-  if (! await isValidToken(req)) {
-    return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
-  }
-
-  const { calendar_id, window_nr } = req.query;
-  try {
-    const selectQuery = `
-      SELECT u.username
-      FROM adventWindow aw
-      JOIN users u ON aw.owner = u.id
-      WHERE aw.calendar_id = $1 AND aw.window_nr = $2
-    `;
-
-    const result = await pool.query(selectQuery, [calendar_id, window_nr]);
-    res.status(200).json(result.rows[0]);
-  } catch (error) {
-    console.error('Error fetching finding owner:', error);
-    res.status(500).json({ success: false, message: 'Internal Server Error' });
-  }
-});
-
+// Data Retrieval - Window
 app.get('/api/windowTile', async (req, res) => {
   /* Provide required data to render the windowTiles in the Calender:
   - whether the window is claimed or free for registration
@@ -614,7 +730,30 @@ app.get('/api/windowTile', async (req, res) => {
     res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 });
+app.get('/api/windowTile/owner', async (req, res) => {
+  /* Provide owner-username to authenticated users
+    The assumption is that we call this endpoint only form SlidingWindow.js, where we already established that the window is claimed, hence owner exists
+    */
+  if (! await isValidToken(req)) {
+    return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
+  }
 
+  const { calendar_id, window_nr } = req.query;
+  try {
+    const selectQuery = `
+      SELECT u.username
+      FROM adventWindow aw
+      JOIN users u ON aw.owner = u.id
+      WHERE aw.calendar_id = $1 AND aw.window_nr = $2
+    `;
+
+    const result = await pool.query(selectQuery, [calendar_id, window_nr]);
+    res.status(200).json(result.rows[0]);
+  } catch (error) {
+    console.error('Error fetching finding owner:', error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+});
 app.get('/api/window', async (req, res) => {
   // Window info based on calendar_id and window_nr
   const { calendar_id, window_nr } = req.query;
@@ -634,7 +773,7 @@ app.get('/api/window', async (req, res) => {
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });
-
+// Data Retrieval - Pictures
 app.get('/api/getPictures', async (req, res) => {
   const { calendar_id, window_nr } = req.query;
 
@@ -656,6 +795,94 @@ app.get('/api/getPictures', async (req, res) => {
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });
+// Data Retrieval - Comments
+app.get('/api/getComments', async (req, res) => {
+  const { calendar_id, window_nr } = req.query;
+
+  try {
+    const result = await pool.query(`
+      SELECT id, author, timestamp, content 
+      FROM comments 
+      WHERE calendar_id = $1 AND window_nr = $2 
+      ORDER BY timestamp ASC
+    `, [calendar_id, window_nr]);
+
+    if (result.rows.length === 0) {
+      return res.json({ success: true, comments: [] });
+    }
+
+    res.json({ success: true, comments: result.rows });
+  } catch (error) {
+    console.error('Error fetching comments:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
+// Data Retrieval - Location
+app.get('/api/locations', async (req, res) => {
+  // Fetch all locations for a particular calendar
+  const { calendar_id } = req.query;
+  try {
+    const result = await pool.query(
+      'SELECT window_nr, address_name, address, time FROM adventWindow WHERE calendar_id = $1',
+      [calendar_id]
+    );
+    if (result.rows.length > 0) {
+      const calendarMapInfos = [];
+      for (const row of result.rows) {
+        calendarMapInfos.push({
+          window_nr: row.window_nr,
+          address_name: row.address_name,
+          address: row.address,
+          time: row.time
+        });
+      }
+      res.json({ success: true, calendarMapInfos: calendarMapInfos });
+    } else {
+      res.json({ success: true, calendarMapInfos: [] });
+    }
+  } catch (error) {
+    console.error('Error fetching calendar map infos:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+});
+
+// Data Modifications
+app.post('/api/pictures', upload.single('image'), async (req, res) => {
+  // TODO: maybe do some preprocessing on the image data before storing it in the database or set a limit
+  // Take uploaded image for a particular window
+  if (!await isValidToken(req)) {
+    return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
+  }
+
+  const { window_nr, calendar_id } = req.query;
+  const token = req.headers.authorization.split(' ')[1];
+  const decodedToken = jwt.verify(token, jwt_secret);
+  const username = decodedToken.username;
+
+  if (await isLocked(calendar_id)) {
+    return res.status(403).json({ error: 'Forbidden. The calendar is locked and cannot be modified.' });
+  }
+
+  try {
+    // Get user ID from username
+    const userResult = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
+    const userId = userResult.rows[0].id;
+
+    // Get the uploaded image buffer
+    const pictureBuffer = req.file.buffer; // multer stores the file data in req.file
+
+    // Insert the picture with userId
+    await pool.query(`
+      INSERT INTO pictures (calendar_id, window_nr, author, content, timestamp)
+      VALUES ($1, $2, $3, $4, NOW())
+    `, [calendar_id, window_nr, userId, pictureBuffer]);
+
+    res.json({ success: true, message: 'Picture added successfully' });
+  } catch (error) {
+    console.error('Error adding picture:', error);
+    res.status(500).json({ success: false, message: 'Internal Server error' });
+  }
+});
 app.delete('/api/delPicture', async (req, res) => {
   if (!await isValidToken(req)) {
     return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
@@ -670,6 +897,10 @@ app.delete('/api/delPicture', async (req, res) => {
     // Lookup the user ID
     const userResult = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
     const userId = userResult.rows[0].id;
+
+    if (await isLocked(calendar_id)) {
+      return res.status(403).json({ error: 'Forbidden. The calendar is locked and cannot be modified.' });
+    }
 
     // Fetch picture, window owner, and calendar owner
     const pictureResult = await pool.query(`
@@ -695,58 +926,40 @@ app.delete('/api/delPicture', async (req, res) => {
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });
-// TODO: maybe do some preprocessing on the image data before storing it in the database or set a limit
-// Take uploaded image for a particular window
-app.post('/api/pictures', upload.single('image'), async (req, res) => {
+app.post('/api/addComment', async (req, res) => {
   if (!await isValidToken(req)) {
     return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
   }
 
-  const { window_nr, calendar_id } = req.query;
+  const { window_nr, calendar_id, comment } = req.body;
+
+  if (!window_nr || !calendar_id || !comment) {
+    return res.status(400).json({ error: 'Missing required parameters.' });
+  }
+
   const token = req.headers.authorization.split(' ')[1];
   const decodedToken = jwt.verify(token, jwt_secret);
   const username = decodedToken.username;
+
+  if (await isLocked(calendar_id)) {
+    return res.status(403).json({ error: 'Forbidden. The calendar is locked and cannot be modified.' });
+  }
 
   try {
     // Get user ID from username
     const userResult = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
     const userId = userResult.rows[0].id;
 
-    // Get the uploaded image buffer
-    const pictureBuffer = req.file.buffer; // multer stores the file data in req.file
-
-    // Insert the picture with userId
+    console.log(`${userId}: added a comment`);
+    // Insert the comment with userId
     await pool.query(`
-      INSERT INTO pictures (calendar_id, window_nr, author, content, timestamp)
+      INSERT INTO comments (calendar_id, window_nr, author, content, timestamp)
       VALUES ($1, $2, $3, $4, NOW())
-    `, [calendar_id, window_nr, userId, pictureBuffer]);
+    `, [calendar_id, window_nr, userId, comment]);
 
-    res.json({ success: true, message: 'Picture added successfully' });
+    res.json({ success: true, message: 'Comment added successfully' });
   } catch (error) {
-    console.error('Error adding picture:', error);
-    res.status(500).json({ success: false, message: 'Internal Server error' });
-  }
-});
-
-
-app.get('/api/getComments', async (req, res) => {
-  const { calendar_id, window_nr } = req.query;
-
-  try {
-    const result = await pool.query(`
-      SELECT id, author, timestamp, content 
-      FROM comments 
-      WHERE calendar_id = $1 AND window_nr = $2 
-      ORDER BY timestamp ASC
-    `, [calendar_id, window_nr]);
-
-    if (result.rows.length === 0) {
-      return res.json({ success: true, comments: [] });
-    }
-
-    res.json({ success: true, comments: result.rows });
-  } catch (error) {
-    console.error('Error fetching comments:', error);
+    console.error('Error adding comment:', error);
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });
@@ -759,6 +972,10 @@ app.delete('/api/delComment', async (req, res) => {
   const token = req.headers.authorization.split(' ')[1];
   const decodedToken = jwt.verify(token, jwt_secret);
   const username = decodedToken.username;
+
+  if (await isLocked(calendar_id)) {
+    return res.status(403).json({ error: 'Forbidden. The calendar is locked and cannot be modified.' });
+  }
 
   try {
     // Log parameters to debug potential issues
@@ -798,70 +1015,6 @@ app.delete('/api/delComment', async (req, res) => {
     }
   } catch (error) {
     console.error('Error deleting comment:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
-  }
-});
-
-app.post('/api/addComment', async (req, res) => {
-  if (!await isValidToken(req)) {
-    return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
-  }
-
-  const { window_nr, calendar_id, comment } = req.body;
-
-  if (!window_nr || !calendar_id || !comment) {
-    return res.status(400).json({ error: 'Missing required parameters.' });
-  }
-
-  const token = req.headers.authorization.split(' ')[1];
-  const decodedToken = jwt.verify(token, jwt_secret);
-  const username = decodedToken.username;
-
-  try {
-    // Get user ID from username
-    const userResult = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
-    const userId = userResult.rows[0].id;
-
-    console.log(`${userId}: added a comment`);
-    // Insert the comment with userId
-    await pool.query(`
-      INSERT INTO comments (calendar_id, window_nr, author, content, timestamp)
-      VALUES ($1, $2, $3, $4, NOW())
-    `, [calendar_id, window_nr, userId, comment]);
-
-    res.json({ success: true, message: 'Comment added successfully' });
-  } catch (error) {
-    console.error('Error adding comment:', error);
-    res.status(500).json({ success: false, message: 'Internal server error' });
-  }
-});
-
-
-
-app.get('/api/locations', async (req, res) => {
-  // Fetch all locations for a particular calendar
-  const { calendar_id } = req.query;
-  try {
-    const result = await pool.query(
-      'SELECT window_nr, address_name, address, time FROM adventWindow WHERE calendar_id = $1',
-      [calendar_id]
-    );
-    if (result.rows.length > 0) {
-      const calendarMapInfos = [];
-      for (const row of result.rows) {
-        calendarMapInfos.push({
-          window_nr: row.window_nr,
-          address_name: row.address_name,
-          address: row.address,
-          time: row.time
-        });
-      }
-      res.json({ success: true, calendarMapInfos: calendarMapInfos });
-    } else {
-      res.json({ success: true, calendarMapInfos: [] });
-    }
-  } catch (error) {
-    console.error('Error fetching calendar map infos:', error);
     res.status(500).json({ success: false, message: 'Internal server error' });
   }
 });

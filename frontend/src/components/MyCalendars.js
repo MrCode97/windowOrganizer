@@ -3,7 +3,7 @@ import { Typography, Box, List, ListItem, ListItemText, Button, Snackbar, TextFi
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
-const MyCalendars = ({ calendarAdded, setCalendarAdded, user, token }) => {
+const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, user, token }) => {
   const [calendarData, setCalendarData] = useState([]);
   const [openCalendars, setOpenCalendars] = useState({});
   const [updateData, setUpdateData] = useState({});
@@ -11,6 +11,7 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, user, token }) => {
   const [messageOpen, setMessageOpen] = useState(false);
   const [showShareLink, setShowShareLink] = useState({}); 
   const [copySuccess, setCopySuccess] = useState('');
+  const [lockState, setLockState] = useState(false);
 
   useEffect(() => {
     // Fetch owned calendars by the user
@@ -36,18 +37,20 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, user, token }) => {
           acc[calendar.id] = {
             name: calendar.name || '',
             additionalInfo: calendar.additional_info || '',
+            locked: calendar.locked || false,
           };
           return acc;
         }, {});
 
         setUpdateData(initialUpdateData);
+        setLockState(calendars.locked);
       } catch (error) {
         console.error('Error fetching calendars:', error);
       }
     };
 
     fetchOwnedCalendars();
-  }, [token, user, calendarAdded]);
+  }, [token, user, calendarAdded, lockState]);
 
   // Handle opening/closing of the list items
   const handleToggle = (calendarId) => {
@@ -105,6 +108,62 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, user, token }) => {
       .catch(() => setCopySuccess('Failed to copy link'));
   };
 
+  // Handle locking a calendar
+  const handleLockCalendar = async (calendarId, lockState) => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/lockAdventCalendar`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ calendar_id: calendarId, lock: lockState }),
+      });
+
+      if (response.ok) {
+        setMessage(`Advent calendar ${lockState ? 'locked' : 'unlocked'} successfully!`);
+        setLockState(lockState);
+        setMessageOpen(true);
+      } else {
+        console.error(`Failed to ${lockState ? 'lock' : 'unlock'} advent calendar`);
+        setMessage(`Failed to ${lockState ? 'lock' : 'unlock'} advent calendar`);
+        setMessageOpen(true);
+      }
+    } catch (error) {
+      console.error(`Error during calendar ${lockState ? 'lock' : 'unlock'}:`, error);
+      setMessage(`Error during calendar ${lockState ? 'lock' : 'unlock'}`);
+      setMessageOpen(true);
+    }
+  };
+
+  // Handle deleting a calendar
+  const handleDeleteCalendar = async (calendarId) => {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/delAdventCalendar?calendar_id=${calendarId}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        setSelectedCalendar(null);
+        setCalendarAdded(!calendarAdded);
+        setMessage('Advent calendar deleted successfully!');
+        setMessageOpen(true);
+      } else {
+        console.error('Failed to delete advent calendar');
+        setMessage('Failed to delete advent calendar');
+        setMessageOpen(true);
+      }
+    } catch (error) {
+      console.error('Error during calendar deletion:', error);
+      setMessage('Error during calendar deletion');
+      setMessageOpen(true);
+    }
+  };
+
   // Close message snackbar
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
@@ -121,7 +180,7 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, user, token }) => {
           <div key={calendar.id}>
             <ListItem button onClick={() => handleToggle(calendar.id)}>
               <ListItemText
-                primary={calendar.name || "Loading..."}
+                primary={`${calendar.name} ${calendar.additionalInfo || ""} ${calendar.locked ? "(Locked)" : "(Unlocked)"}`|| "Loading..."}
                 secondary={calendar.additionalInfo || ""} // Display additional info below name
               />
               {openCalendars[calendar.id] ? <ExpandLessIcon /> : <ExpandMoreIcon />}
@@ -158,6 +217,24 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, user, token }) => {
                   onClick={() => setShowShareLink((prev) => ({ ...prev, [calendar.id]: !prev[calendar.id] }))}
                 >
                   Share Calendar
+                </Button>
+
+                <Button
+                  variant="contained"
+                  color="primary"
+                  sx={{ mt: 2 }}
+                  onClick={() => handleLockCalendar(calendar.id, !calendar.locked)}
+                >
+                  {calendar.locked ? "Unlock Calendar" : "Lock Calendar"}
+                </Button>
+
+                <Button
+                  variant="contained"
+                  color="primary"
+                  sx={{ mt: 2 }}
+                  onClick={() => handleDeleteCalendar(calendar.id)}
+                >
+                  Delete Calendar
                 </Button>
 
                 {showShareLink[calendar.id] && (

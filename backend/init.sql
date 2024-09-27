@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS users (
 -- Create AdventCalendars table
 CREATE TABLE IF NOT EXISTS adventCalendars (
     id SERIAL PRIMARY KEY,
+    locked BOOLEAN DEFAULT FALSE,
     owner INT NOT NULL,
     name VARCHAR(255) UNIQUE NOT NULL,
     additional_info TEXT,
@@ -51,9 +52,32 @@ CREATE TABLE IF NOT EXISTS adventWindow (
     window_nr INT NOT NULL,
     calendar_id INT NOT NULL,
     FOREIGN KEY (owner) REFERENCES users(id),
-    FOREIGN KEY (calendar_id) REFERENCES adventCalendars(id),
+    FOREIGN KEY (calendar_id) REFERENCES adventCalendars(id) ON DELETE CASCADE,
     CONSTRAINT unique_window_calendar_key UNIQUE (window_nr, calendar_id)
 );
+
+-- Trigger to prevent updates if a calendar is locked
+CREATE OR REPLACE FUNCTION prevent_updates_if_locked() RETURNS TRIGGER AS $$
+BEGIN
+    IF (SELECT locked FROM adventCalendars WHERE id = NEW.calendar_id) THEN
+        RAISE EXCEPTION 'Calendar is locked and cannot be updated';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Triggers for relevant tables
+CREATE TRIGGER check_calendar_lock
+BEFORE INSERT OR UPDATE ON adventWindow
+FOR EACH ROW EXECUTE FUNCTION prevent_updates_if_locked();
+
+CREATE TRIGGER check_calendar_lock_comments
+BEFORE INSERT OR UPDATE ON comments
+FOR EACH ROW EXECUTE FUNCTION prevent_updates_if_locked();
+
+CREATE TRIGGER check_calendar_lock_pictures
+BEFORE INSERT OR UPDATE ON pictures
+FOR EACH ROW EXECUTE FUNCTION prevent_updates_if_locked();
 
 --Example data
 -- Insert data into users

@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Grid2, Typography, Box, Button, TextField, Tooltip } from '@mui/material';
 import OverviewMap from './OverviewMap';
 import WindowTile from './WindowTile';
 
-function DefaultCalendar({ id, name, additionalInfo, calendarOwner, user, token }) {
+function DefaultCalendar({ id, name, additionalInfo, calendarOwner, locked, user, token }) {
   const window_nrs = Array(24).fill().map((_, index) => index + 1);
   const [locationAdded, setLocationAdded] = useState(false); // Trigger re-rendering of map with all locations
   const [showShareLink, setShowShareLink] = useState(false); // Control visibility of share link
@@ -31,6 +31,22 @@ function DefaultCalendar({ id, name, additionalInfo, calendarOwner, user, token 
       >
         {name}
       </Typography>
+      {locked && (
+        <Typography
+          sx={{
+            padding: '10px',
+            marginBottom: '20px',
+            borderRadius: '10px',
+            fontWeight: 'bold',
+          }}
+          variant="body1"
+          align="center"
+        >
+          🔒 This calendar has been locked by the Calendar Owner.
+          This means you can only view but not modify.
+        </Typography>
+      )}
+      
       {additionalInfo && (
         <Typography
           sx={{
@@ -45,7 +61,7 @@ function DefaultCalendar({ id, name, additionalInfo, calendarOwner, user, token 
           {additionalInfo}
         </Typography>
       )}
-      
+
       <Button
         variant="contained"
         color="primary"
@@ -54,7 +70,7 @@ function DefaultCalendar({ id, name, additionalInfo, calendarOwner, user, token 
       >
         Share Calendar
       </Button>
-      
+
       {showShareLink && (
         <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
           <TextField
