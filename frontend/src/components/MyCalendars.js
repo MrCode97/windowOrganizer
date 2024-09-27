@@ -118,6 +118,7 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, use
       if (response.ok) {
         setMessage(`Advent calendar ${lockState ? 'locked' : 'unlocked'} successfully!`);
         setLockState(lockState);
+        setCalendarAdded(!calendarAdded);
         setMessageOpen(true);
       } else {
         console.error(`Failed to ${lockState ? 'lock' : 'unlock'} advent calendar`);

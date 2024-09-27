@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Grid2, Typography, Box, Button, TextField, Tooltip } from '@mui/material';
 import OverviewMap from './OverviewMap';
 import WindowTile from './WindowTile';
