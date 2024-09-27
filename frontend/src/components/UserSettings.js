@@ -14,7 +14,6 @@ const UserSettings = ({user, token, userAdded, setUserAdded}) => {
     const handlePasswordChange = async (event) => {
         event.preventDefault();
 
-        // Check if new passwords match
         if (newPassword !== confirmNewPassword) {
             setMessage('New passwords do not match!');
             setNewPassword('');
@@ -28,7 +27,7 @@ const UserSettings = ({user, token, userAdded, setUserAdded}) => {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + token,
+                    'Authorization': `Bearer ${token}`,
                 },
                 body: JSON.stringify({ oldPassword, newPassword }),
             });

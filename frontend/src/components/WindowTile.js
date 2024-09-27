@@ -4,24 +4,21 @@ import SlidingWindow from './SlidingWindow';
 import WindowRegisterWindow from './WindowRegisterWindow';
 
 function WindowTile({ window_nr, calendar_id, user, calendarOwner, token, locationAdded, setLocationAdded }) {
-  // variables to get from SQL request based on window number and calendar id
   const [isFree, setIsFree] = useState(false);
   const [imageUpload, setImageUpload] = useState(false);
   const [image, setImage] = useState('/Window.png');
 
-  // State variable to track if SlidingWindow is open or closed
   const [isSlidingWindowOpen, setSlidingWindowOpen] = useState(false);
   const [isWindowRegisterWindowOpen, setWindowRegisterWindowOpen] = useState(false);
 
   useEffect(() => {
     const fetchWindowTileData = async () => {
       const getDynamicImagePath = (isFree) => {
-        if (imageUpload) return image; // Return the uploaded image if it exists
         const basePath = isFree ? '/emptyWindow/art' : '/happyWindow';
-        const fileName = `${window_nr}.png`; // Generate file name dynamically based on window number
+        const fileName = `${window_nr}.png`;
         return `${basePath}/${fileName}`;
       };
-    
+
       try {
         const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/windowTile?calendar_id=${calendar_id}&window_nr=${window_nr}`);
         const data = await response.json();
@@ -29,9 +26,9 @@ function WindowTile({ window_nr, calendar_id, user, calendarOwner, token, locati
         if (data.success) {
           setIsFree(data.isFree);
 
-          if (data.picture.length > 0) {
-            const arrayBuffer = Uint8Array.from(data.picture[0].data).buffer;
-            const blob = new Blob([arrayBuffer], { type: 'image/png' });
+          if (data.picture && data.picture.data.length > 0) {
+            const arrayBuffer = Uint8Array.from(data.picture.data).buffer;
+            const blob = new Blob([arrayBuffer], { type: data.picture.type });
             const reader = new FileReader();
             const base64Image = new Promise((resolve) => {
               reader.onloadend = () => {
@@ -39,12 +36,14 @@ function WindowTile({ window_nr, calendar_id, user, calendarOwner, token, locati
               };
               reader.readAsDataURL(blob);
             });
+
             base64Image.then((img) => {
               setImage(img);
               setImageUpload(true);
             });
           } else {
-            setImage(getDynamicImagePath(isFree));
+            // No picture available, reset the image and use dynamic path
+            setImage(getDynamicImagePath(data.isFree)); 
             setImageUpload(false);
           }
         }
@@ -54,10 +53,10 @@ function WindowTile({ window_nr, calendar_id, user, calendarOwner, token, locati
     };
 
     fetchWindowTileData();
-  }, [calendar_id, window_nr, imageUpload, locationAdded, isFree, image]);
+  }, [calendar_id, window_nr, locationAdded, imageUpload, isFree]);
+
 
   const handleCardMediaClick = () => {
-    // Open or close the SlidingWindow when the CardMedia is clicked
     if (isFree) {
       setWindowRegisterWindowOpen(true);
       setSlidingWindowOpen(false);
@@ -67,13 +66,12 @@ function WindowTile({ window_nr, calendar_id, user, calendarOwner, token, locati
     }
   };
 
-  // other variables
+  
   const is_today = new Date().getDate() === window_nr;
   const is_free_visiblity = isFree ? 'visible' : 'hidden';
   const today_border = is_today ? 5 : 0;
   const today_margin = is_today ? '0px' : '5px';
   const cardSize = 150;
-
   const greyedOutEffect = !isFree && !imageUpload ? 'grayscale(100%)' : 'none';
 
   return (
@@ -112,7 +110,7 @@ function WindowTile({ window_nr, calendar_id, user, calendarOwner, token, locati
               alignItems: 'center',
               justifyContent: 'center',
               backgroundColor: 'rgba(0, 128, 0, 0.8)',
-              color: 'white', 
+              color: 'white',
               borderRadius: '4px',
               visibility: is_free_visiblity,
             }}
@@ -151,6 +149,7 @@ function WindowTile({ window_nr, calendar_id, user, calendarOwner, token, locati
           window_nr={window_nr}
           calendar_id={calendar_id}
           onClose={() => setSlidingWindowOpen(false)}
+          setIsFree={setIsFree}
           imageUpload={imageUpload}
           setImageUpload={setImageUpload}
           locationAdded={locationAdded}

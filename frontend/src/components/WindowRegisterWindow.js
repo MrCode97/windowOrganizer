@@ -11,7 +11,6 @@ function WindowRegisterWindow({ window_nr, calendar_id, onClose, token, location
   const [message, setMessage] = useState('');
   const [messageOpen, setMessageOpen] = useState(false);
 
-  // API request
   const handleSubmit = async (event) => {
     event.preventDefault();
     const coords = await translate(addressName);
@@ -20,7 +19,7 @@ function WindowRegisterWindow({ window_nr, calendar_id, onClose, token, location
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + token,
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({ calendar_id, window_nr, addressName, coords, time, locationHint, hasApero }),
       });
@@ -32,7 +31,6 @@ function WindowRegisterWindow({ window_nr, calendar_id, onClose, token, location
         onClose();
       } else {
         console.error('Failed to register window hosting');
-        console.log('response: ', response);
         setMessage('Failed to register window hosting');
       }
     } catch (error) {

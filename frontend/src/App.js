@@ -41,7 +41,7 @@ const MainBox = styled(Box)({
   marginTop: '64px',
   marginLeft: 0,
   mt: '64px',
-  backgroundImage: `url(${require('./assets/images/blue-snow_colored.png')})`, // Using require to dynamically load the image
+  backgroundImage: `url(${require('./assets/images/blue-snow_colored.png')})`,
   backgroundSize: 'cover',
   backgroundRepeat: 'repeat',
   backgroundColor: '#f0f0f0',
@@ -87,7 +87,7 @@ function App() {
         if (calendarNameParam) {
           const calendar = data.find((c) => c.name === calendarNameParam);
           if (calendar) {
-            setSelectedCalendar(calendar); // Preselect the calendar
+            setSelectedCalendar(calendar);
             setShowCalendar(true);
             setShowWelcome(false);
           }
@@ -100,9 +100,8 @@ function App() {
     fetchCalendars();
   }, [calendarAdded, userAdded, token, calendarNameParam]);
 
-  // Function to toggle search field visibility
   const toggleSearchField = () => {
-    setShowSearch((prevShowSearch) => !prevShowSearch); // Toggle between true and false
+    setShowSearch((prevShowSearch) => !prevShowSearch);
   };
 
   return (
@@ -134,8 +133,8 @@ function App() {
               width: drawerWidth,
               top: '64px',
               backgroundColor: '#2D2923',
-              color: '#FFF4E0', // Light beige text color
-              borderRight: '2px solid #D4AF37', // Golden border for an elegant look
+              color: '#FFF4E0',
+              borderRight: '2px solid #D4AF37',
               display: 'flex',
               flexDirection: 'column',
             },
@@ -178,9 +177,9 @@ function App() {
             </ListItem>
             {selectedCalendar && !showSearch && (
               <ListItem sx={{
-                border: '2px solid orange', // Orange border
-                borderRadius: '4px', // Optional: rounded corners
-                padding: '8px', // Optional: add padding to the item
+                border: '2px solid orange',
+                borderRadius: '4px',
+                padding: '8px',
               }}>
                 <ListItemButton
                   onClick={() => { setShowWelcome(false); setShowCalendar(true); setSearchTerm(''); setShowSearch(false); setShowRegistration(false); setShowMyWindows(false); setShowMyCalendars(false); setShowUserSettings(false); setShowRegistrationCalendar(false); setShowLogin(false); setShowMyWindows(false); setShowUserSettings(false); setShowImpressum(false); }}
@@ -204,7 +203,7 @@ function App() {
                 sx={{ margin: '0 10px', borderRadius: '5px', border: '1px solid #D4AF37' }} /><List>
                 {/* Render calendars conditionally */}
                 {calendars
-                  .filter((calendar) => calendar.name.toLowerCase().includes(searchTerm.toLowerCase())) // Filter calendars based on search term
+                  .filter((calendar) => calendar.name.toLowerCase().includes(searchTerm.toLowerCase()))
                   .map((calendar) => (
                     <ListItemButton
                       onClick={() => { setShowWelcome(false); setShowCalendar(true); setSelectedCalendar(calendar); setSearchTerm(''); setShowSearch(false); setShowRegistration(false); setShowMyWindows(false); setShowMyCalendars(false); setShowUserSettings(false); setShowRegistrationCalendar(false); setShowLogin(false); setShowMyWindows(false); setShowUserSettings(false); setShowImpressum(false); }}
@@ -291,7 +290,8 @@ function App() {
                     id={selectedCalendar.id}
                     name={selectedCalendar.name}
                     additionalInfo={selectedCalendar.additional_info}
-                    owner={selectedCalendar.owner}
+                    calendarOwner={selectedCalendar.owner}
+                    locked={selectedCalendar.locked}
                     user={user}
                     token={token}
                   />
@@ -309,18 +309,19 @@ function App() {
                     name={selectedCalendar.name}
                     additionalInfo={selectedCalendar.additional_info}
                     calendarOwner={selectedCalendar.owner}
+                    locked={selectedCalendar.locked}
                     user={user}
                     token={token}
                   />
                 )}
                 {showMyCalendars && (
-                  <MyCalendars calendarAdded={calendarAdded} setCalendarAdded={setCalendarAdded} user={user} token={token} />
+                  <MyCalendars calendarAdded={calendarAdded} setCalendarAdded={setCalendarAdded} setSelectedCalendar={setSelectedCalendar} user={user} token={token} />
                 )}
                 {showMyWindows && (
                   <MyWindows user={user} token={token} />
                 )}
                 {showRegistrationCalendar && (
-                  <AdventCalendarRegistrationForm calendarAdded={calendarAdded} setCalendarAdded={setCalendarAdded} token={token} />
+                  <AdventCalendarRegistrationForm calendarAdded={calendarAdded} setCalendarAdded={setCalendarAdded} setShowRegistrationCalendar={setShowRegistrationCalendar} token={token} />
                 )}
                 {showUserSettings && (
                   <UserSettings user={user} token={token} userAdded={userAdded} setUserAdded={setUserAdded} />

@@ -3,22 +3,22 @@ import { createTheme } from '@mui/material/styles';
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#122413', // Customize your primary color
+      main: '#122413',
     },
     secondary: {
-      main: '#2D2923', // Customize your secondary color
+      main: '#2D2923',
     },
     background: {
-      default: '#FFF4E0', // Background color
+      default: '#FFF4E0',
     },
     text: {
-      primary: 'rgb(255, 225, 186)', // Default text color
-      secondary: '#666', // Secondary text color
+      primary: 'rgb(255, 225, 186)',
+      secondary: '#666',
     },
   },
   typography: {
     h2: {
-      fontSize: '2.5rem', // Customize title font size
+      fontSize: '2.5rem',
       fontWeight: 'bold',
       textAlign: 'center',
       padding: '8px 0',
@@ -26,12 +26,11 @@ const theme = createTheme({
       backgroundColor: '#515151'
     },
     body1: {
-      fontSize: '1rem', // Default paragraph font size
+      fontSize: '1rem',
       lineHeight: 1.6,
       textAlign: 'left',
       padding: '8px 16px',
-      //backgroundColor: 'rgba(255, 255, 255, 0.8)', // Semi-transparent background
-      borderRadius: '4px', // Rounded corners
+      borderRadius: '4px',
       color: '#ffe1ba',
     },
   },
@@ -48,7 +47,7 @@ const theme = createTheme({
     MuiDialog: {
       styleOverrides: {
         paper: {
-          backgroundColor: '#2D2923', // Light blue background for dialogs
+          backgroundColor: '#2D2923',
           borderRadius: '8px',
           padding: '16px',
         },
@@ -57,11 +56,11 @@ const theme = createTheme({
     MuiTabs: {
       styleOverrides: {
         root: {
-          backgroundColor: '#122413', // Matching the dialog header background
+          backgroundColor: '#122413',
           borderRadius: '8px',
         },
         indicator: {
-          backgroundColor: 'rgb(255, 165, 0)', // Primary color for the tab indicator
+          backgroundColor: 'rgb(255, 165, 0)',
         },
       },
     },
@@ -70,8 +69,8 @@ const theme = createTheme({
         root: {
           color: '#ffe1ba',
           '&.Mui-selected': {
-            color: '#ffe1ba', // Keep the text color the same when selected
-            backgroundColor: 'transparent', // Make selected tab background transparent
+            color: '#ffe1ba',
+            backgroundColor: 'transparent',
           },
         },
       },
@@ -79,10 +78,10 @@ const theme = createTheme({
     MuiButton: {
       styleOverrides: {
         containedPrimary: {
-          color: '#fff', // White text for primary buttons
-          backgroundColor: '#2C5F2D', // Primary button background color
+          color: '#fff',
+          backgroundColor: '#2C5F2D',
           '&:hover': {
-            backgroundColor: '#303f9f', // Darker shade on hover
+            backgroundColor: '#303f9f',
           },
         },
       },
@@ -107,7 +106,6 @@ const theme = createTheme({
     MuiTypography: {
       styleOverrides: {
         root: {
-          //backgroundColor: 'rgba(255, 255, 255, 0.8)', // Semi-transparent background for text
           padding: '4px 8px',
           borderRadius: '4px',
         },
@@ -116,7 +114,7 @@ const theme = createTheme({
     MuiGrid2: {
       styleOverrides: {
         root: {
-          spacing: 2, // Default grid spacing
+          spacing: 2,
           justifyContent: 'center',
         },
       },
@@ -125,20 +123,18 @@ const theme = createTheme({
     MuiList: {
       styleOverrides: {
         root: {
-          //backgroundColor: '#FFF4E0', // Default list background color
-          padding: '8px', // Padding around the list
-          borderRadius: '8px', // Rounded corners for the list
-          marginTop: '20px', // Top margin
-          marginBottom: '20px', // Bottom margin
+          padding: '8px',
+          borderRadius: '8px',
+          marginTop: '20px',
+          marginBottom: '20px',
         },
       },
     },
     MuiListItem: {
       styleOverrides: {
         root: {
-          padding: '8px 16px', // Padding inside list items
+          padding: '8px 16px',
           '&:hover': {
-            //backgroundColor: '#F5CBA7', // Background color on hover
           },
         },
       },
@@ -146,9 +142,9 @@ const theme = createTheme({
     MuiListItemButton: {
       styleOverrides: {
         root: {
-          borderRadius: '5px', // Rounded corners for list item button
+          borderRadius: '5px',
           '&:hover': {
-            backgroundColor: '#122413', // Hover background color for list item button
+            backgroundColor: '#122413',
           },
         },
       },

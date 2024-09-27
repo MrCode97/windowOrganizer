@@ -7,7 +7,6 @@ function UserRegistrationForm({ token, setShowRegistration, setShowLogin }) {
   const [message, setMessage] = useState('');
   const [messageOpen, setMessageOpen] = useState(false);
 
-  // API request
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
@@ -39,7 +38,6 @@ function UserRegistrationForm({ token, setShowRegistration, setShowLogin }) {
     }
   };
 
-  // Message display
   const handleClose = (event, reason) => {
     setMessageOpen(false);
   };
