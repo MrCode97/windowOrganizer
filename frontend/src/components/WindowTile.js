@@ -32,7 +32,6 @@ function WindowTile({ window_nr, calendar_id, user, calendarOwner, token, locati
           if (data.picture && data.picture.data.length > 0) {
             const arrayBuffer = Uint8Array.from(data.picture.data).buffer;
             const blob = new Blob([arrayBuffer], { type: data.picture.type });
-            console.log('blob:', blob);
             const reader = new FileReader();
             const base64Image = new Promise((resolve) => {
               reader.onloadend = () => {
