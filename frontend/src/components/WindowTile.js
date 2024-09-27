@@ -4,12 +4,10 @@ import SlidingWindow from './SlidingWindow';
 import WindowRegisterWindow from './WindowRegisterWindow';
 
 function WindowTile({ window_nr, calendar_id, user, calendarOwner, token, locationAdded, setLocationAdded }) {
-  // variables to get from SQL request based on window number and calendar id
   const [isFree, setIsFree] = useState(false);
   const [imageUpload, setImageUpload] = useState(false);
   const [image, setImage] = useState('/Window.png');
 
-  // State variable to track if SlidingWindow is open or closed
   const [isSlidingWindowOpen, setSlidingWindowOpen] = useState(false);
   const [isWindowRegisterWindowOpen, setWindowRegisterWindowOpen] = useState(false);
 
@@ -17,7 +15,7 @@ function WindowTile({ window_nr, calendar_id, user, calendarOwner, token, locati
     const fetchWindowTileData = async () => {
       const getDynamicImagePath = (isFree) => {
         const basePath = isFree ? '/emptyWindow/art' : '/happyWindow';
-        const fileName = `${window_nr}.png`; // Generate file name dynamically based on window number
+        const fileName = `${window_nr}.png`;
         return `${basePath}/${fileName}`;
       };
 
@@ -28,7 +26,6 @@ function WindowTile({ window_nr, calendar_id, user, calendarOwner, token, locati
         if (data.success) {
           setIsFree(data.isFree);
 
-          // Check if picture is null or empty
           if (data.picture && data.picture.data.length > 0) {
             const arrayBuffer = Uint8Array.from(data.picture.data).buffer;
             const blob = new Blob([arrayBuffer], { type: data.picture.type });
@@ -46,8 +43,8 @@ function WindowTile({ window_nr, calendar_id, user, calendarOwner, token, locati
             });
           } else {
             // No picture available, reset the image and use dynamic path
-            setImage(getDynamicImagePath(data.isFree)); // Use the default dynamic image path
-            setImageUpload(false); // Reset image upload flag
+            setImage(getDynamicImagePath(data.isFree)); 
+            setImageUpload(false);
           }
         }
       } catch (error) {
@@ -60,7 +57,6 @@ function WindowTile({ window_nr, calendar_id, user, calendarOwner, token, locati
 
 
   const handleCardMediaClick = () => {
-    // Open or close the SlidingWindow when the CardMedia is clicked
     if (isFree) {
       setWindowRegisterWindowOpen(true);
       setSlidingWindowOpen(false);
@@ -70,13 +66,12 @@ function WindowTile({ window_nr, calendar_id, user, calendarOwner, token, locati
     }
   };
 
-  // other variables
+  
   const is_today = new Date().getDate() === window_nr;
   const is_free_visiblity = isFree ? 'visible' : 'hidden';
   const today_border = is_today ? 5 : 0;
   const today_margin = is_today ? '0px' : '5px';
   const cardSize = 150;
-
   const greyedOutEffect = !isFree && !imageUpload ? 'grayscale(100%)' : 'none';
 
   return (

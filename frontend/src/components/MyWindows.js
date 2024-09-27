@@ -44,12 +44,12 @@ const MyWindows = ({ user, token }) => {
           }
 
           const calendarData = await calendarResponse.json();
-          return { id: calendarData.id, name: calendarData.name, owner: calendarData.owner, additionalInfo: calendarData.additional_info }; // Fetch additional info
+          return { id: calendarData.id, name: calendarData.name, owner: calendarData.owner, additionalInfo: calendarData.additional_info };
         });
 
         const calendars = await Promise.all(calendarRequests);
         const calendarMap = calendars.reduce((acc, calendar) => {
-          acc[calendar.id] = { name: calendar.name, owner: calendar.owner, additionalInfo: calendar.additionalInfo }; // Store name and additional info
+          acc[calendar.id] = { name: calendar.name, owner: calendar.owner, additionalInfo: calendar.additionalInfo };
           return acc;
         }, {});
 
@@ -62,7 +62,6 @@ const MyWindows = ({ user, token }) => {
     fetchOwnedWindows();
   }, [token, user]);
 
-  // Handle opening/closing of the list items
   const handleToggle = (calendarId) => {
     setOpenCalendars((prevOpenCalendars) => ({
       ...prevOpenCalendars,
@@ -79,7 +78,7 @@ const MyWindows = ({ user, token }) => {
             <ListItem button onClick={() => handleToggle(windowItem.calendar_id)}>
               <ListItemText 
                 primary={calendarDetails[windowItem.calendar_id]?.name || "Loading..."} 
-                secondary={calendarDetails[windowItem.calendar_id]?.additionalInfo || ""} // Display additional info
+                secondary={calendarDetails[windowItem.calendar_id]?.additionalInfo || ""}
               />
               {openCalendars[windowItem.calendar_id] ? <ExpandLessIcon /> : <ExpandMoreIcon />}
             </ListItem>

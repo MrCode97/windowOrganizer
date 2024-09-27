@@ -52,7 +52,6 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, use
     fetchOwnedCalendars();
   }, [token, user, calendarAdded, lockState]);
 
-  // Handle opening/closing of the list items
   const handleToggle = (calendarId) => {
     setOpenCalendars((prevOpenCalendars) => ({
       ...prevOpenCalendars,
@@ -60,7 +59,6 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, use
     }));
   };
 
-  // Handle input changes
   const handleInputChange = (calendarId, field, value) => {
     setUpdateData((prevData) => ({
       ...prevData,
@@ -71,7 +69,6 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, use
     }));
   };
 
-  // Handle updating a calendar
   const handleUpdateCalendar = async (calendarId) => {
     try {
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/updateAdventCalendar`, {
@@ -100,7 +97,6 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, use
     }
   };
 
-  // Handle copy to clipboard
   const handleCopyToClipboard = (calendarName) => {
     const shareableLink = `${window.location.origin}/?calendarName=${encodeURIComponent(calendarName)}`;
     navigator.clipboard.writeText(shareableLink)
@@ -108,7 +104,6 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, use
       .catch(() => setCopySuccess('Failed to copy link'));
   };
 
-  // Handle locking a calendar
   const handleLockCalendar = async (calendarId, lockState) => {
     try {
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/lockAdventCalendar`, {
@@ -136,7 +131,6 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, use
     }
   };
 
-  // Handle deleting a calendar
   const handleDeleteCalendar = async (calendarId) => {
     try {
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/delAdventCalendar?calendar_id=${calendarId}`, {
@@ -164,7 +158,6 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, use
     }
   };
 
-  // Close message snackbar
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
       return;
@@ -181,7 +174,7 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, use
             <ListItem button onClick={() => handleToggle(calendar.id)}>
               <ListItemText
                 primary={`${calendar.name} ${calendar.additionalInfo || ""} ${calendar.locked ? "(Locked)" : "(Unlocked)"}`|| "Loading..."}
-                secondary={calendar.additionalInfo || ""} // Display additional info below name
+                secondary={calendar.additionalInfo || ""}
               />
               {openCalendars[calendar.id] ? <ExpandLessIcon /> : <ExpandMoreIcon />}
             </ListItem>

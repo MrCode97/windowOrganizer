@@ -16,7 +16,6 @@ export async function translate(address) {
 
     const data = await response.json();
 
-    // Check if there is at least one result
     if (data.length > 0) {
       const { lat, lon } = data[0];
       return [lat, lon];

@@ -25,7 +25,6 @@ const Gallery = ({ calendarId, windowNr, imageUpload, setImageUpload, token, cal
           const data = await response.json();
           setUserId(data.id);
           if (data.id !== undefined && data.id === calendarOwnerId) {
-            console.log(data.id);
             setIsCalendarOwner(true);
           }
         } catch (error) {
@@ -50,7 +49,7 @@ const Gallery = ({ calendarId, windowNr, imageUpload, setImageUpload, token, cal
           const imageUrl = `data:image/jpeg;base64,${base64String}`;
           return {
             ...picture,
-            url: imageUrl,  // Adding a url field for the image
+            url: imageUrl,
           };
         });
 
@@ -65,11 +64,10 @@ const Gallery = ({ calendarId, windowNr, imageUpload, setImageUpload, token, cal
 
   const handleDeleteImage = async (pictureId) => {
     try {
-      console.log(calendarId, windowNr);
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/delPicture?picture_id=${pictureId}&calendar_id=${calendarId}&window_nr=${windowNr}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': 'Bearer ' + token,
+          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
       });
@@ -78,7 +76,6 @@ const Gallery = ({ calendarId, windowNr, imageUpload, setImageUpload, token, cal
       if (data.success) {
         setImages(images.filter((image) => image.id !== pictureId));
         setImageUpload(!imageUpload);
-        console.log('Picture deleted successfully.');
       } else {
         console.error('Failed to delete picture:', data.message);
       }

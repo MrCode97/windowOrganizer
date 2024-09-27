@@ -44,7 +44,7 @@ const OwnerEditSection = ({ calendar_id, window_nr, onClose, setIsFree, token, l
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + token,
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify({ calendar_id, window_nr, addressName, coords: newCoords, time, locationHint, hasApero }),
       });
@@ -68,7 +68,7 @@ const OwnerEditSection = ({ calendar_id, window_nr, onClose, setIsFree, token, l
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/delWindowHosting?calendar_id=${calendar_id}&window_nr=${window_nr}`, {
         method: 'DELETE',
         headers: {
-          'Authorization': 'Bearer ' + token,
+          'Authorization': `Bearer ${token}`,
         },
       });
       if (response.ok) {

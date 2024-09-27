@@ -6,8 +6,8 @@ import WindowTile from './WindowTile';
 function DefaultCalendar({ id, name, additionalInfo, calendarOwner, locked, user, token }) {
   const window_nrs = Array(24).fill().map((_, index) => index + 1);
   const [locationAdded, setLocationAdded] = useState(false); // Trigger re-rendering of map with all locations
-  const [showShareLink, setShowShareLink] = useState(false); // Control visibility of share link
-  const [copySuccess, setCopySuccess] = useState(''); // Track copy to clipboard success message
+  const [showShareLink, setShowShareLink] = useState(false);
+  const [copySuccess, setCopySuccess] = useState('');
 
   const handleCopyToClipboard = () => {
     const shareableLink = `${window.location.origin}/?calendarName=${encodeURIComponent(name)}`;

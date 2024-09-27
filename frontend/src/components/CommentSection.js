@@ -69,7 +69,7 @@ function CommentSection({ calendar_id, window_nr, token, calendarOwnerId }) {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + token,
+                    'Authorization': `Bearer ${token}`,
                 },
                 body: JSON.stringify({ comment: newComment, calendar_id, window_nr }),
             });
@@ -87,7 +87,7 @@ function CommentSection({ calendar_id, window_nr, token, calendarOwnerId }) {
             await fetch(url, {
                 method: 'DELETE',
                 headers: {
-                    'Authorization': 'Bearer ' + token,
+                    'Authorization': `Bearer ${token}`,
                 }
             });
 
@@ -109,7 +109,6 @@ function CommentSection({ calendar_id, window_nr, token, calendarOwnerId }) {
                     {comments.map((pers_comment) => (
                         <ListItem key={pers_comment.id} alignItems="flex-start">
                             <ListItemText primary={pers_comment.content} />
-                            {console.log(isCalendarOwner)}
                             {(userId === pers_comment.author || isCalendarOwner) && (
                                 <IconButton edge="end" onClick={() => handleDeleteComment(pers_comment.id)}>
                                     <DeleteIcon />
