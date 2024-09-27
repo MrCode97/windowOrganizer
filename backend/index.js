@@ -541,7 +541,7 @@ app.get('/api/calendars', async (req, res) => {
 app.get('/api/calendar', async (req, res) => {
   const { calendar_id } = req.query;
   try {
-    const result = await pool.query('SELECT id, name, additional_info FROM adventCalendars WHERE id = $1', [calendar_id]);
+    const result = await pool.query('SELECT id, name, owner, additional_info FROM adventCalendars WHERE id = $1', [calendar_id]);
     res.json(result.rows[0]);
   } catch (error) {
     console.error('Error retrieving calendars', error);

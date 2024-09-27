@@ -44,12 +44,12 @@ const MyWindows = ({ user, token }) => {
           }
 
           const calendarData = await calendarResponse.json();
-          return { id: calendarData.id, name: calendarData.name, additionalInfo: calendarData.additional_info }; // Fetch additional info
+          return { id: calendarData.id, name: calendarData.name, owner: calendarData.owner, additionalInfo: calendarData.additional_info }; // Fetch additional info
         });
 
         const calendars = await Promise.all(calendarRequests);
         const calendarMap = calendars.reduce((acc, calendar) => {
-          acc[calendar.id] = { name: calendar.name, additionalInfo: calendar.additionalInfo }; // Store name and additional info
+          acc[calendar.id] = { name: calendar.name, owner: calendar.owner, additionalInfo: calendar.additionalInfo }; // Store name and additional info
           return acc;
         }, {});
 
@@ -86,7 +86,7 @@ const MyWindows = ({ user, token }) => {
             <Collapse in={openCalendars[windowItem.calendar_id]} timeout="auto" unmountOnExit>
               <Grid2 container spacing={2}>
                 {windowItem.windows.map((windowNr) => (
-                  <WindowTile key={windowNr} window_nr={windowNr} calendar_id={windowItem.calendar_id} user={user} token={token} />
+                  <WindowTile window_nr={windowNr} calendar_id={windowItem.calendar_id} user={user} calendarOwner={calendarDetails[windowItem.calendar_id]?.owner || null} token={token} />
                 ))}
               </Grid2>
             </Collapse>
