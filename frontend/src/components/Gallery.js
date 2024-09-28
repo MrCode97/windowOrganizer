@@ -43,15 +43,25 @@ const Gallery = ({ calendarId, windowNr, imageUpload, setImageUpload, token, cal
         const data = await response.json();
 
         // Convert each image content (Buffer-like) to base64
-        const picturesWithUrls = data.pictures.map((picture) => {
-          const uint8Array = new Uint8Array(picture.content.data);
-          const base64String = btoa(String.fromCharCode(...uint8Array));
-          const imageUrl = `data:image/jpeg;base64,${base64String}`;
-          return {
-            ...picture,
-            url: imageUrl,
-          };
-        });
+        const picturesWithUrls = await Promise.all(
+          data.pictures.map((picture) => {
+            return new Promise((resolve) => {
+              const uint8Array = new Uint8Array(picture.content.data);
+              const arrayBuffer = uint8Array.buffer;
+              const blob = new Blob([arrayBuffer], { type: 'image/jpeg' });
+
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                const imageUrl = reader.result;
+                resolve({
+                  ...picture,
+                  url: imageUrl,
+                });
+              };
+              reader.readAsDataURL(blob);
+            });
+          })
+        );
 
         setImages(picturesWithUrls);
       } catch (error) {
@@ -61,6 +71,7 @@ const Gallery = ({ calendarId, windowNr, imageUpload, setImageUpload, token, cal
 
     fetchImages();
   }, [calendarId, windowNr]);
+
 
   const handleDeleteImage = async (pictureId) => {
     try {
