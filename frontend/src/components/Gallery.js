@@ -4,11 +4,15 @@ import CardMedia from '@mui/material/CardMedia';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useState, useEffect } from 'react';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
 
 const Gallery = ({ calendarId, windowNr, imageUpload, setImageUpload, token, calendarOwnerId }) => {
   const [images, setImages] = useState([]);
   const [isCalendarOwner, setIsCalendarOwner] = useState(false);
   const [userId, setUserId] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
 
   useEffect(() => {
     if (token) {
@@ -96,6 +100,16 @@ const Gallery = ({ calendarId, windowNr, imageUpload, setImageUpload, token, cal
   };
 
 
+  const handleOpenDialog = (imageUrl) => {
+    setSelectedImage(imageUrl);
+    setOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpen(false);
+    setSelectedImage(null);
+  };
+
   return (
     <div>
       <p>Here you can see all the images that have been uploaded for this window.</p>
@@ -103,7 +117,21 @@ const Gallery = ({ calendarId, windowNr, imageUpload, setImageUpload, token, cal
         {images.map((image, index) => (
           <Grid2 item key={index} xs={12} sm={6} md={4}>
             <Card>
-              <CardMedia component="img" alt={`Image ${index}`} height="140" image={image.url} />
+              <CardMedia
+                component="img"
+                alt={`Image ${index}`}
+                height="140"
+                image={image.url}
+                onClick={() => handleOpenDialog(image.url)}
+                style={{ cursor: 'pointer' }}
+              />
+                  <Dialog open={open} onClose={handleCloseDialog} maxWidth="lg"
+                  sx={{ zIndex: 9999 }}>
+                    <DialogContent>
+                      <img src={selectedImage} alt="Enlarged" style={{ width: '100%' }} />
+                    </DialogContent>
+                  </Dialog>
+              
               {(userId === image.author || isCalendarOwner) && (
                 <IconButton onClick={() => handleDeleteImage(image.id)}>
                   <DeleteIcon />
