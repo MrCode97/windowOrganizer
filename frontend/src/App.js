@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { styled } from '@mui/system';
 import Button from '@mui/material/Button';
@@ -27,6 +27,7 @@ import theme from './CreateTheme';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import ImpressumPage from './components/Impressum';
+import { AggregateTextProvider, LangBadge } from './contexts/text';
 
 const drawerWidth = 240;
 
@@ -47,12 +48,21 @@ const MainBox = styled(Box)({
   backgroundColor: '#f0f0f0',
 });
 
+const locale = navigator.language;
+let defaultlang;
+if (locale.startsWith("de")) {
+  defaultlang = "de-DE";
+} else {
+  defaultlang = "en-US";
+}
+
 function useQuery() {
   return new URLSearchParams(useLocation().search);
 }
 
 function App() {
   const { user, token, logout } = useAuth();
+  const [lang, setLang] = useState(defaultlang);
   const [calendars, setCalendars] = useState([]);
   const [selectedCalendar, setSelectedCalendar] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -108,6 +118,7 @@ function App() {
     <ThemeProvider theme={theme}>
 
       <Root>
+        <AggregateTextProvider lang={lang}>
         <AppBar position="fixed">
           <Toolbar className='toolbar'>
             <Typography variant="h6" noWrap>
@@ -337,6 +348,8 @@ function App() {
           </Container>
           <br />
         </MainBox>
+        </AggregateTextProvider>
+
       </Root>
 
     </ThemeProvider>
