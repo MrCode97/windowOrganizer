@@ -4,11 +4,15 @@ import CardMedia from '@mui/material/CardMedia';
 import IconButton from '@mui/material/IconButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useState, useEffect } from 'react';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
 
 const Gallery = ({ calendarId, windowNr, imageUpload, setImageUpload, token, calendarOwnerId }) => {
   const [images, setImages] = useState([]);
   const [isCalendarOwner, setIsCalendarOwner] = useState(false);
   const [userId, setUserId] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
 
   useEffect(() => {
     if (token) {
@@ -43,15 +47,25 @@ const Gallery = ({ calendarId, windowNr, imageUpload, setImageUpload, token, cal
         const data = await response.json();
 
         // Convert each image content (Buffer-like) to base64
-        const picturesWithUrls = data.pictures.map((picture) => {
-          const uint8Array = new Uint8Array(picture.content.data);
-          const base64String = btoa(String.fromCharCode(...uint8Array));
-          const imageUrl = `data:image/jpeg;base64,${base64String}`;
-          return {
-            ...picture,
-            url: imageUrl,
-          };
-        });
+        const picturesWithUrls = await Promise.all(
+          data.pictures.map((picture) => {
+            return new Promise((resolve) => {
+              const uint8Array = new Uint8Array(picture.content.data);
+              const arrayBuffer = uint8Array.buffer;
+              const blob = new Blob([arrayBuffer], { type: 'image/jpeg' });
+
+              const reader = new FileReader();
+              reader.onloadend = () => {
+                const imageUrl = reader.result;
+                resolve({
+                  ...picture,
+                  url: imageUrl,
+                });
+              };
+              reader.readAsDataURL(blob);
+            });
+          })
+        );
 
         setImages(picturesWithUrls);
       } catch (error) {
@@ -61,6 +75,7 @@ const Gallery = ({ calendarId, windowNr, imageUpload, setImageUpload, token, cal
 
     fetchImages();
   }, [calendarId, windowNr]);
+
 
   const handleDeleteImage = async (pictureId) => {
     try {
@@ -85,6 +100,16 @@ const Gallery = ({ calendarId, windowNr, imageUpload, setImageUpload, token, cal
   };
 
 
+  const handleOpenDialog = (imageUrl) => {
+    setSelectedImage(imageUrl);
+    setOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpen(false);
+    setSelectedImage(null);
+  };
+
   return (
     <div>
       <p>Here you can see all the images that have been uploaded for this window.</p>
@@ -92,7 +117,21 @@ const Gallery = ({ calendarId, windowNr, imageUpload, setImageUpload, token, cal
         {images.map((image, index) => (
           <Grid2 item key={index} xs={12} sm={6} md={4}>
             <Card>
-              <CardMedia component="img" alt={`Image ${index}`} height="140" image={image.url} />
+              <CardMedia
+                component="img"
+                alt={`Image ${index}`}
+                height="140"
+                image={image.url}
+                onClick={() => handleOpenDialog(image.url)}
+                style={{ cursor: 'pointer' }}
+              />
+                  <Dialog open={open} onClose={handleCloseDialog} maxWidth="lg"
+                  sx={{ zIndex: 9999 }}>
+                    <DialogContent>
+                      <img src={selectedImage} alt="Enlarged" style={{ width: '100%' }} />
+                    </DialogContent>
+                  </Dialog>
+              
               {(userId === image.author || isCalendarOwner) && (
                 <IconButton onClick={() => handleDeleteImage(image.id)}>
                   <DeleteIcon />
