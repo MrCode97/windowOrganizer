@@ -10,7 +10,7 @@ function UserRegistrationForm({ token, setShowRegistration, setShowLogin }) {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/registerUser`, {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/registerUser`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

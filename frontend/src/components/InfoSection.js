@@ -20,7 +20,7 @@ const InfoSection = ({
 
   useEffect(() => {
     const fetchData = async () => {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/window?calendar_id=${calendar_id}&window_nr=${window_nr}`);
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/window?calendar_id=${calendar_id}&window_nr=${window_nr}`);
       const { windowData } = await response.json();
       const { address_name, address, apero, time, location_hint } = windowData;
       setHint(location_hint);

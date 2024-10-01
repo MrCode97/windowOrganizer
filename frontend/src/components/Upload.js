@@ -24,7 +24,7 @@ const UploadImage = ({ calendarId, windowNr, onClose, imageUpload, setImageUploa
       formData.append('image', selectedFile);
 
       try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/pictures?calendar_id=${calendarId}&window_nr=${windowNr}`, {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/pictures?calendar_id=${calendarId}&window_nr=${windowNr}`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${token}`, },
           body: formData,

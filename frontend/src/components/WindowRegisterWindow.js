@@ -15,7 +15,7 @@ function WindowRegisterWindow({ window_nr, calendar_id, onClose, token, location
     event.preventDefault();
     const coords = await translate(addressName);
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/registerWindowHosting`, {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/registerWindowHosting`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

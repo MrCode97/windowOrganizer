@@ -13,7 +13,7 @@ function Login({ userAdded, setUserAdded, token }) {
         event.preventDefault();
 
         try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/login`, {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

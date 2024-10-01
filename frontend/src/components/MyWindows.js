@@ -13,7 +13,7 @@ const MyWindows = ({ user, token }) => {
     // Fetch windows owned by the user
     const fetchOwnedWindows = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/ownedWindows?user=${user}`, {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/user/ownedWindows?user=${user}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -31,7 +31,7 @@ const MyWindows = ({ user, token }) => {
         // Fetch calendar details for each unique calendar_id
         const calendarRequests = windows.map(async (windowItem) => {
           const { calendar_id } = windowItem;
-          const calendarResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/calendar?calendar_id=${calendar_id}`, {
+          const calendarResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/calendar?calendar_id=${calendar_id}`, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
