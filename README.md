@@ -16,9 +16,9 @@ and modify accordingly.
 ```bash
 # 1st terminal: windowOrganizer %
 cd backend
-docker build -t advent_db .
+docker build -t advent_db -f ./Dockerfile.db .
 # Hit Ctrl-C to stop. Note the `--rm` flag to remove volume on close
-docker run --rm -p 5432:5432 --name adventCal advent_db
+docker run --rm -p 5432:5432 -v $(pwd)/init-with-examples.sql:/docker-entrypoint-initdb.d/init.sql --name adventCal advent_db
 ```
 
 ##### 4. Backend:
@@ -45,3 +45,13 @@ npm start       # run
 ```
 
 ![Alt text](image.png)
+
+
+##### 6. Docker Compose
+As a final test before deploying to production Docker-Runtime, start all services as
+Docker-Compose installation:
+
+```bash
+cd compose
+docker compose up -d
+```
