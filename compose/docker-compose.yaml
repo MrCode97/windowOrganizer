@@ -1,0 +1,110 @@
+version: '3.7'
+
+services:
+  frontend:
+    #image: adventscalendar-frontend:latest
+    build:
+      context: ../frontend/
+      dockerfile: ../frontend/Dockerfile
+    healthcheck:
+      test: ["CMD", "curl" , "-f", "http://localhost:3000/"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+    restart: always
+    environment:
+      - REACT_APP_BACKEND_URL=http://localhost:7007
+    depends_on:
+      - backend
+    links:
+      - "backend:backend"
+    ports:
+      - "3000:3000"
+    # mem_limit: 1G
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 128M
+        reservations:
+          memory: 64M
+    volumes:
+      - type: bind
+        source: ../frontend/public/lang
+        target: /adventscalendar/lang
+    networks:
+      - intern
+      - intern-prod
+
+  backend:
+    #image: adventscalendar-backend:latest
+    build:
+      context: ../backend/
+      dockerfile: ../backend/Dockerfile
+    healthcheck:
+      test: ["CMD", "curl" , "-f", "http://localhost:7007/"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+    restart: always
+    environment:
+      - JWT_SECRET=jwt_secret_sign_key
+      - DB_USER=fwe
+      - DB_HOST=db
+      - DB=adventcalendar
+      - DB_PASSWORD=VerySecureAdventsklaenderPW
+      - DB_PORT=5432
+    depends_on:
+      - db
+    links:
+      - "db:db"
+    ports:
+      - "7007:7007"
+    # mem_limit: 1G
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 128M
+        reservations:
+          memory: 64M
+    networks:
+      - intern
+
+  db:
+    image: postgres:latest
+    restart: always
+    ports:
+      - '5432:5432'
+    deploy:
+      resources:
+        limits:
+          cpus: '1.50'
+          memory: 512M
+        reservations:
+          memory: 128M
+    environment:
+      - POSTGRES_PASSWORD=VerySecureAdventsklaenderPW
+      - POSTGRES_USER=fwe
+      - POSTGRES_DB=adventcalendar
+      - PGDATA=/var/lib/pgsql/data
+    volumes:
+      - type: bind
+        source: ../backend/init.sql
+        target: /docker-entrypoint-initdb.d/init.sql
+      - db-data:/var/lib/pgsql/
+    networks:
+      - intern
+
+volumes:
+  lang:
+  # external: true
+  db-init:
+  db-data:
+    # external: true
+    name: db-data
+
+networks:
+  intern:
+  intern-prod:
+    driver: bridge
