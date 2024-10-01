@@ -23,7 +23,7 @@ const UserSettings = ({user, token, userAdded, setUserAdded}) => {
         }
 
         try {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/changePassword`, {
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/user/changePassword`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

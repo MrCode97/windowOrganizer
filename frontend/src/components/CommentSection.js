@@ -25,7 +25,7 @@ function CommentSection({ calendar_id, window_nr, token, calendarOwnerId }) {
             async function fetchUserId() {
                 try {
                     const username = localStorage.getItem('user');
-                    const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/userToId?user=${username}`, {
+                    const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/user/userToId?user=${username}`, {
                         method: 'GET',
                         headers: {
                             'Authorization': `Bearer ${token}`,
@@ -48,7 +48,7 @@ function CommentSection({ calendar_id, window_nr, token, calendarOwnerId }) {
 
     useEffect(() => {
         const fetchData = async () => {
-            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/getComments?calendar_id=${calendar_id}&window_nr=${window_nr}`);
+            const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/getComments?calendar_id=${calendar_id}&window_nr=${window_nr}`);
             const data = await response.json();
             setComments(data.comments);
         };
@@ -65,7 +65,7 @@ function CommentSection({ calendar_id, window_nr, token, calendarOwnerId }) {
         }
 
         try {
-            await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/addComment`, {
+            await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/addComment`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -82,7 +82,7 @@ function CommentSection({ calendar_id, window_nr, token, calendarOwnerId }) {
 
     const handleDeleteComment = async (comment_id) => {
         try {
-            const url = `${process.env.REACT_APP_BACKEND_URL}/api/delComment?comment_id=${comment_id}&calendar_id=${calendar_id}&window_nr=${window_nr}`;
+            const url = `${process.env.REACT_APP_BACKEND_URL || ''}/api/delComment?comment_id=${comment_id}&calendar_id=${calendar_id}&window_nr=${window_nr}`;
 
             await fetch(url, {
                 method: 'DELETE',

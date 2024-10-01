@@ -15,7 +15,7 @@ function SlidingWindow({ window_nr, calendar_id, onClose, setIsFree, imageUpload
   if (user) {
     try {
       const fetchData = async () => {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/windowTile/owner?calendar_id=${calendar_id}&window_nr=${window_nr}`, {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/windowTile/owner?calendar_id=${calendar_id}&window_nr=${window_nr}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -28,7 +28,7 @@ function SlidingWindow({ window_nr, calendar_id, onClose, setIsFree, imageUpload
           setOwnerUsername(result.username);
         }
 
-        const responseOwnerName = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/idToUser?id=${calendarOwner}`, {
+        const responseOwnerName = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/user/idToUser?id=${calendarOwner}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',

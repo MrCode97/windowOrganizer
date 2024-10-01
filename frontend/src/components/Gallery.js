@@ -19,7 +19,7 @@ const Gallery = ({ calendarId, windowNr, imageUpload, setImageUpload, token, cal
       async function fetchUserId() {
         try {
           const username = localStorage.getItem('user');
-          const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/userToId?user=${username}`, {
+          const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/user/userToId?user=${username}`, {
             method: 'GET',
             headers: {
               'Authorization': `Bearer ${token}`,
@@ -43,7 +43,7 @@ const Gallery = ({ calendarId, windowNr, imageUpload, setImageUpload, token, cal
   useEffect(() => {
     const fetchImages = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/getPictures?calendar_id=${calendarId}&window_nr=${windowNr}`);
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/getPictures?calendar_id=${calendarId}&window_nr=${windowNr}`);
         const data = await response.json();
 
         // Convert each image content (Buffer-like) to base64
@@ -79,7 +79,7 @@ const Gallery = ({ calendarId, windowNr, imageUpload, setImageUpload, token, cal
 
   const handleDeleteImage = async (pictureId) => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/delPicture?picture_id=${pictureId}&calendar_id=${calendarId}&window_nr=${windowNr}`, {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/delPicture?picture_id=${pictureId}&calendar_id=${calendarId}&window_nr=${windowNr}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,

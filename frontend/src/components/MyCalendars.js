@@ -17,7 +17,7 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, use
     // Fetch owned calendars by the user
     const fetchOwnedCalendars = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/user/ownedCalendars?user=${user}`, {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/user/ownedCalendars?user=${user}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -71,7 +71,7 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, use
 
   const handleUpdateCalendar = async (calendarId) => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/updateAdventCalendar`, {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/updateAdventCalendar`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -106,7 +106,7 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, use
 
   const handleLockCalendar = async (calendarId, lockState) => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/lockAdventCalendar`, {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/lockAdventCalendar`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -134,7 +134,7 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, use
 
   const handleDeleteCalendar = async (calendarId) => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/delAdventCalendar?calendar_id=${calendarId}`, {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/delAdventCalendar?calendar_id=${calendarId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

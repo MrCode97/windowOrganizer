@@ -75,7 +75,7 @@ function App() {
   useEffect(() => {
     const fetchCalendars = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/calendars`);
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/calendars`);
         if (!response.ok) {
           throw new Error('Failed to fetch calendars');
         }
