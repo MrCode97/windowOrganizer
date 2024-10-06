@@ -29,7 +29,7 @@ function AdventCalendarRegistrationForm({ calendarAdded, setCalendarAdded, setSh
     }
   
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/registerAdventCalendar`, {
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/registerAdventCalendar`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

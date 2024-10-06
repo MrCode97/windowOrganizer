@@ -10,7 +10,7 @@ function OverviewMap({ calendar_id, locationAdded }) {
   useEffect(() => {
     const fetchCalendarMapInfo = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/locations?calendar_id=${calendar_id}`);
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/locations?calendar_id=${calendar_id}`);
         const data = await response.json();
         setCalendarMapInfos(data.calendarMapInfos);
       } catch (error) {
