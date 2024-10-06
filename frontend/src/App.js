@@ -27,7 +27,7 @@ import theme from './CreateTheme';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import ImpressumPage from './components/Impressum';
-import { AggregateTextProvider, LangBadge } from './contexts/text';
+import { AggregateTextProvider } from './contexts/text';
 
 const drawerWidth = 240;
 
@@ -62,7 +62,7 @@ function useQuery() {
 
 function App() {
   const { user, token, logout } = useAuth();
-  const [lang, setLang] = useState(defaultlang);
+  const [lang] = useState(defaultlang);
   const [calendars, setCalendars] = useState([]);
   const [selectedCalendar, setSelectedCalendar] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
