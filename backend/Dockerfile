@@ -1,11 +1,19 @@
-FROM postgres:latest
+FROM node:20-alpine
 
-ENV POSTGRES_USER=fwe
-ENV POSTGRES_PASSWORD=VerySecureAdventsklaenderPW
-ENV POSTGRES_DB=adventcalendar
+WORKDIR /adventscalendar/
+COPY package.json /adventscalendar/package.json
+COPY package-lock.json /adventscalendar/package-lock.json
+COPY index.js /adventscalendar/index.js
 
-COPY init.sql /docker-entrypoint-initdb.d/
+RUN npm i
 
-EXPOSE 5432
+ENV JWT_SECRET=jwt_secret_sign_key
+ENV DB_USER=fwe
+ENV DB_HOST=db
+ENV DB=adventcalendar
+ENV DB_PASSWORD=VerySecureAdventsklaenderPW
+ENV DB_PORT=5432
 
-VOLUME ["/var/lib/postgresql/data"]
+EXPOSE 7007
+
+CMD ["node", "index.js"]
