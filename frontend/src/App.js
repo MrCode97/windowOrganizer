@@ -182,7 +182,7 @@ function App() {
                 </Typography>
               </ListItemText>
               {/* Search Icon */}
-              <IconButton onClick={toggleSearchField}>
+              <IconButton onClick={() => { setCalendarAdded(!calendarAdded); toggleSearchField(); }}>
                 <SearchIcon sx={{ color: '#FFF4E0' }} />
               </IconButton>
             </ListItem>
