@@ -27,7 +27,7 @@ import theme from './CreateTheme';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import ImpressumPage from './components/Impressum';
-import { AggregateTextProvider } from './contexts/text';
+import { AggregateTextProvider, useAppStrings, LangBadge } from './contexts/text';
 
 const drawerWidth = 240;
 
@@ -50,7 +50,9 @@ const MainBox = styled(Box)({
 
 const locale = navigator.language;
 let defaultlang;
-if (locale.startsWith("de")) {
+if(localStorage.getItem('lang')) {
+  defaultlang = localStorage.getItem('lang');
+} else if (locale.startsWith("de")) {
   defaultlang = "de-DE";
 } else {
   defaultlang = "en-US";
@@ -62,7 +64,7 @@ function useQuery() {
 
 function App() {
   const { user, token, logout } = useAuth();
-  const [lang] = useState(defaultlang);
+  const [lang, setLang] = useState(defaultlang);
   const [calendars, setCalendars] = useState([]);
   const [selectedCalendar, setSelectedCalendar] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -78,6 +80,25 @@ function App() {
   const [showCalendar, setShowCalendar] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
   const [showImpressum, setShowImpressum] = useState(false);
+
+  const {
+    welcome,
+    logoutText,
+    info,
+    welcomePage,
+    impressum,
+    calendarsText,
+    search,
+    administration,
+    login,
+    registerUser,
+    myCalendars,
+    myWindows,
+    registerCalendar,
+    userSettings,
+    hello,
+    noCalendarsFound,
+  } = useAppStrings();
 
   const query = useQuery();
   const calendarNameParam = query.get('calendarName');
@@ -116,242 +137,250 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
-
       <Root>
         <AggregateTextProvider lang={lang}>
-        <AppBar position="fixed">
-          <Toolbar className='toolbar'>
-            <Typography variant="h6" noWrap>
-              {selectedCalendar ? selectedCalendar.name : 'Welcome to the Advent Calendar'}
-            </Typography>
-            {user && (
-              <Typography variant="h6" noWrap sx={{ marginLeft: 'auto' }}>
-                Hello {user}
+          <AppBar position="fixed">
+            <Toolbar className='toolbar'>
+              <Typography variant="h6" noWrap>
+                {selectedCalendar ? selectedCalendar.name : `${welcome}` }
               </Typography>
-            )}
-            {user && (
-              <Button sx={{ paddingLeft: '20px', color: '#FFF4E0' }} onClick={() => { logout(); setShowLogin(false); }}>
-                Logout
-              </Button>
-            )}
-          </Toolbar>
-        </AppBar>
-        <Drawer
-          sx={{
-            width: drawerWidth,
-            flexShrink: 0,
-            '& .MuiDrawer-paper': {
+              {user && (
+                <Typography variant="h6" noWrap sx={{ marginLeft: 'auto' }}>
+                  {hello} {user}
+                </Typography>
+              )}
+              {user && (
+                <Button sx={{ paddingLeft: '20px', color: '#FFF4E0' }} onClick={() => { logout(); setShowLogin(false); }}>
+                  {logoutText}
+                </Button>
+              )}
+              <LangBadge lang={lang} setLang={setLang} />
+            </Toolbar>
+          </AppBar>
+          <Drawer
+            sx={{
               width: drawerWidth,
-              top: '64px',
-              backgroundColor: '#2D2923',
-              color: '#FFF4E0',
-              borderRight: '2px solid #D4AF37',
-              display: 'flex',
-              flexDirection: 'column',
-            },
-          }}
-          variant="permanent"
-          anchor="left"
-          className='sidebar'
-        >
-          <List>
-            <ListItem>
-              <ListItemText>
-                <Typography variant="p" style={{ fontWeight: 'bold' }}>
-                  Info
-                </Typography>
-              </ListItemText>
-            </ListItem>
-            <ListItemButton onClick={() => {
-              setShowWelcome(true); setShowCalendar(false); setShowLogin(false); setShowRegistration(false); setShowRegistrationCalendar(false); setShowMyCalendars(false); setShowMyWindows(false); setShowUserSettings(false); setSearchTerm(''); setShowSearch(false); setShowImpressum(false);
-            }}>
-              <ListItemText primary="Welcome" />
-            </ListItemButton>
-            <ListItemButton onClick={() => {
-              setShowImpressum(true); setShowWelcome(false); setShowCalendar(false); setShowLogin(false); setShowRegistration(false); setShowRegistrationCalendar(false); setShowMyCalendars(false); setShowMyWindows(false); setShowUserSettings(false); setSearchTerm(''); setShowSearch(false);
-            }}>
-              <ListItemText primary="Impressum" />
-            </ListItemButton>
-          </List>
-
-          <List>
-            <ListItem>
-              <ListItemText>
-                <Typography variant="p" style={{ fontWeight: 'bold' }}>
-                  Calendars
-                </Typography>
-              </ListItemText>
-              {/* Search Icon */}
-              <IconButton onClick={() => { setCalendarAdded(!calendarAdded); toggleSearchField(); }}>
-                <SearchIcon sx={{ color: '#FFF4E0' }} />
-              </IconButton>
-            </ListItem>
-            {selectedCalendar && !showSearch && (
-              <ListItem sx={{
-                border: '2px solid orange',
-                borderRadius: '4px',
-                padding: '8px',
-              }}>
-                <ListItemButton
-                  onClick={() => { setShowWelcome(false); setShowCalendar(true); setSearchTerm(''); setShowSearch(false); setShowRegistration(false); setShowMyWindows(false); setShowMyCalendars(false); setShowUserSettings(false); setShowRegistrationCalendar(false); setShowLogin(false); setShowMyWindows(false); setShowUserSettings(false); setShowImpressum(false); }}
-                  key={selectedCalendar.name}
-                >
-                  <ListItemText primary={selectedCalendar.name} />
-                </ListItemButton>
+              flexShrink: 0,
+              '& .MuiDrawer-paper': {
+                width: drawerWidth,
+                top: '64px',
+                backgroundColor: '#2D2923',
+                color: '#FFF4E0',
+                borderRight: '2px solid #D4AF37',
+                display: 'flex',
+                flexDirection: 'column',
+              },
+            }}
+            variant="permanent"
+            anchor="left"
+            className='sidebar'
+          >
+            <List>
+              <ListItem>
+                <ListItemText>
+                  <Typography variant="p" style={{ fontWeight: 'bold' }}>
+                    {info}
+                  </Typography>
+                </ListItemText>
               </ListItem>
-            )}
-          </List>
+              <ListItemButton onClick={() => {
+                setShowWelcome(true); setShowCalendar(false); setShowLogin(false); setShowRegistration(false); setShowRegistrationCalendar(false); setShowMyCalendars(false); setShowMyWindows(false); setShowUserSettings(false); setSearchTerm(''); setShowSearch(false); setShowImpressum(false);
+              }}>
+                <ListItemText primary={welcomePage} />
+              </ListItemButton>
+              <ListItemButton onClick={() => {
+                setShowImpressum(true); setShowWelcome(false); setShowCalendar(false); setShowLogin(false); setShowRegistration(false); setShowRegistrationCalendar(false); setShowMyCalendars(false); setShowMyWindows(false); setShowUserSettings(false); setSearchTerm(''); setShowSearch(false);
+              }}>
+                <ListItemText primary={impressum} />
+              </ListItemButton>
+            </List>
+
+            <List>
+              <ListItem>
+                <ListItemText>
+                  <Typography variant="p" style={{ fontWeight: 'bold' }}>
+                    {calendarsText}
+                  </Typography>
+                </ListItemText>
+                {/* Search Icon */}
+                <IconButton onClick={() => { setCalendarAdded(!calendarAdded); toggleSearchField(); }}>
+                  <SearchIcon sx={{ color: '#FFF4E0' }} />
+                </IconButton>
+              </ListItem>
+              {selectedCalendar && !showSearch && (
+                <ListItem sx={{
+                  border: '2px solid orange',
+                  borderRadius: '4px',
+                  padding: '8px',
+                }}>
+                  <ListItemButton
+                    onClick={() => { setShowWelcome(false); setShowCalendar(true); setSearchTerm(''); setShowSearch(false); setShowRegistration(false); setShowMyWindows(false); setShowMyCalendars(false); setShowUserSettings(false); setShowRegistrationCalendar(false); setShowLogin(false); setShowMyWindows(false); setShowUserSettings(false); setShowImpressum(false); }}
+                    key={selectedCalendar.name}
+                  >
+                    <ListItemText primary={selectedCalendar.name} />
+                  </ListItemButton>
+                </ListItem>
+              )}
+            </List>
 
 
-          {/* Conditionally Render Search Field */}
-          {showSearch && (
-            <>
-              <TextField
-                label="Search"
-                variant="outlined"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                sx={{ margin: '0 10px', borderRadius: '5px', border: '1px solid #D4AF37' }} /><List>
-                {/* Render calendars conditionally */}
-                {calendars
-                  .filter((calendar) => calendar.name.toLowerCase().includes(searchTerm.toLowerCase()))
-                  .map((calendar) => (
-                    <ListItemButton
-                      onClick={() => { setShowWelcome(false); setShowCalendar(true); setSelectedCalendar(calendar); setSearchTerm(''); setShowSearch(false); setShowRegistration(false); setShowMyWindows(false); setShowMyCalendars(false); setShowUserSettings(false); setShowRegistrationCalendar(false); setShowLogin(false); setShowMyWindows(false); setShowUserSettings(false); setShowImpressum(false); }}
-                      key={calendar.name}
-                    >
-                      <ListItemText primary={calendar.name} />
-                    </ListItemButton>
-                  ))}
-              </List>
-            </>
-          )}
-
-          <List>
-            <ListItem>
-              <ListItemText>
-                <Typography variant="p" style={{ fontWeight: 'bold' }}>
-                  Administration
-                </Typography>
-              </ListItemText>
-            </ListItem>
-            {!user && (
-              <ListItemButton onClick={() => {
-                setShowLogin(true);
-                setShowWelcome(false); setShowCalendar(false); setShowRegistration(false); setShowRegistrationCalendar(false); setShowMyCalendars(false); setShowUserSettings(false); setShowMyWindows(false); setSearchTerm(''); setShowSearch(false); setShowImpressum(false);
-              }}>
-                <ListItemText primary="Login" />
-              </ListItemButton>
-            )}
-            {!user && (
-              <ListItemButton onClick={() => {
-                setShowRegistration(true);
-                setShowWelcome(false); setShowCalendar(false); setShowLogin(false); setShowRegistrationCalendar(false); setShowMyCalendars(false); setShowUserSettings(false); setShowMyWindows(false); setSearchTerm(''); setShowSearch(false); setShowImpressum(false);
-              }}>
-                <ListItemText primary="Register a User" />
-              </ListItemButton>
-            )}
-            {user && (
-              <ListItemButton onClick={() => {
-                setShowMyCalendars(true);
-                setShowWelcome(false); setShowCalendar(false); setShowRegistrationCalendar(false); setShowLogin(false); setShowRegistration(false); setShowUserSettings(false); setShowMyWindows(false); setSearchTerm(''); setShowSearch(false); setShowImpressum(false);
-              }}>
-                <ListItemText primary="My Calendars" />
-              </ListItemButton>
-            )}
-            {user && (
-              <ListItemButton onClick={() => {
-                setShowMyWindows(true);
-                setShowWelcome(false); setShowCalendar(false); setShowMyCalendars(false); setShowUserSettings(false); setShowRegistrationCalendar(false); setShowLogin(false); setShowRegistration(false); setSearchTerm(''); setShowSearch(false); setShowImpressum(false);
-              }}>
-                <ListItemText primary="My Windows" />
-              </ListItemButton>
-            )}
-            {user && (
-              <ListItemButton onClick={() => {
-                setShowRegistrationCalendar(true);
-                setShowWelcome(false); setShowCalendar(false); setShowLogin(false); setShowRegistration(false); setShowMyCalendars(false); setShowMyWindows(false); setShowUserSettings(false); setSearchTerm(''); setShowSearch(false); setShowImpressum(false);
-              }}>
-                <ListItemText primary="Register a Calender" />
-              </ListItemButton>
-            )}
-            {user && (
-              <ListItemButton onClick={() => {
-                setShowUserSettings(true);
-                setShowWelcome(false); setShowCalendar(false); setShowRegistrationCalendar(false); setShowLogin(false); setShowRegistration(false); setShowMyCalendars(false); setShowMyWindows(false); setSearchTerm(''); setShowSearch(false); setShowImpressum(false);
-              }}>
-                <ListItemText primary="User Settings" />
-              </ListItemButton>
-            )}
-          </List>
-
-        </Drawer>
-        <MainBox component="main" className='mainBox' sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px' }} >
-          <Container className='mainContainer' >
-            {!user && (
+            {/* Conditionally Render Search Field */}
+            {showSearch && (
               <>
-                {showLogin && (
-                  <Login userAdded={userAdded} setUserAdded={setUserAdded} />
-                )}
-                {showRegistration && (
-                  <UserRegistrationForm setShowRegistration={setShowRegistration} setShowLogin={setShowLogin} />
-                )}
-                {showCalendar && calendars.length > 0 && selectedCalendar && (
-                  <DefaultCalendar
-                    id={selectedCalendar.id}
-                    name={selectedCalendar.name}
-                    additionalInfo={selectedCalendar.additional_info}
-                    calendarOwner={selectedCalendar.owner}
-                    locked={selectedCalendar.locked}
-                    user={user}
-                    token={token}
-                  />
-                )}
+                <TextField
+                  label={search}
+                  variant="outlined"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  sx={{ margin: '0 10px', borderRadius: '5px', border: '1px solid #D4AF37' }} /><List>
+                  {/* Render calendars conditionally */}
+                  {calendars
+                    .filter((calendar) => calendar.name.toLowerCase().includes(searchTerm.toLowerCase()))
+                    .map((calendar) => (
+                      <ListItemButton
+                        onClick={() => { setShowWelcome(false); setShowCalendar(true); setSelectedCalendar(calendar); setSearchTerm(''); setShowSearch(false); setShowRegistration(false); setShowMyWindows(false); setShowMyCalendars(false); setShowUserSettings(false); setShowRegistrationCalendar(false); setShowLogin(false); setShowMyWindows(false); setShowUserSettings(false); setShowImpressum(false); }}
+                        key={calendar.name}
+                      >
+                        <ListItemText primary={calendar.name} />
+                      </ListItemButton>
+                    ))}
+                </List>
               </>
             )}
-            {user && (
-              <>
-                {showRegistration && (
-                  <UserRegistrationForm token={token} />
-                )}
-                {showCalendar && calendars.length > 0 && selectedCalendar && (
-                  <DefaultCalendar
-                    id={selectedCalendar.id}
-                    name={selectedCalendar.name}
-                    additionalInfo={selectedCalendar.additional_info}
-                    calendarOwner={selectedCalendar.owner}
-                    locked={selectedCalendar.locked}
-                    user={user}
-                    token={token}
-                  />
-                )}
-                {showMyCalendars && (
-                  <MyCalendars calendarAdded={calendarAdded} setCalendarAdded={setCalendarAdded} setSelectedCalendar={setSelectedCalendar} user={user} token={token} />
-                )}
-                {showMyWindows && (
-                  <MyWindows user={user} token={token} />
-                )}
-                {showRegistrationCalendar && (
-                  <AdventCalendarRegistrationForm calendarAdded={calendarAdded} setCalendarAdded={setCalendarAdded} setShowRegistrationCalendar={setShowRegistrationCalendar} token={token} />
-                )}
-                {showUserSettings && (
-                  <UserSettings user={user} token={token} userAdded={userAdded} setUserAdded={setUserAdded} />
-                )}
-              </>
-            )}
-            {showWelcome && (
-                  <WelcomePage />
-                )}
-            {showImpressum && (
-                  <ImpressumPage />
-                )}
-          </Container>
-          <br />
-        </MainBox>
+
+            <List>
+              <ListItem>
+                <ListItemText>
+                  <Typography variant="p" style={{ fontWeight: 'bold' }}>
+                    {administration}
+                  </Typography>
+                </ListItemText>
+              </ListItem>
+              {!user && (
+                <ListItemButton onClick={() => {
+                  setShowLogin(true);
+                  setShowWelcome(false); setShowCalendar(false); setShowRegistration(false); setShowRegistrationCalendar(false); setShowMyCalendars(false); setShowUserSettings(false); setShowMyWindows(false); setSearchTerm(''); setShowSearch(false); setShowImpressum(false);
+                }}>
+                  <ListItemText primary={login} />
+                </ListItemButton>
+              )}
+              {!user && (
+                <ListItemButton onClick={() => {
+                  setShowRegistration(true);
+                  setShowWelcome(false); setShowCalendar(false); setShowLogin(false); setShowRegistrationCalendar(false); setShowMyCalendars(false); setShowUserSettings(false); setShowMyWindows(false); setSearchTerm(''); setShowSearch(false); setShowImpressum(false);
+                }}>
+                  <ListItemText primary={registerUser} />
+                </ListItemButton>
+              )}
+              {user && (
+                <ListItemButton onClick={() => {
+                  setShowMyCalendars(true);
+                  setShowWelcome(false); setShowCalendar(false); setShowRegistrationCalendar(false); setShowLogin(false); setShowRegistration(false); setShowUserSettings(false); setShowMyWindows(false); setSearchTerm(''); setShowSearch(false); setShowImpressum(false);
+                }}>
+                  <ListItemText primary={myCalendars} />
+                </ListItemButton>
+              )}
+              {user && (
+                <ListItemButton onClick={() => {
+                  setShowMyWindows(true);
+                  setShowWelcome(false); setShowCalendar(false); setShowMyCalendars(false); setShowUserSettings(false); setShowRegistrationCalendar(false); setShowLogin(false); setShowRegistration(false); setSearchTerm(''); setShowSearch(false); setShowImpressum(false);
+                }}>
+                  <ListItemText primary={myWindows} />
+                </ListItemButton>
+              )}
+              {user && (
+                <ListItemButton onClick={() => {
+                  setShowRegistrationCalendar(true);
+                  setShowWelcome(false); setShowCalendar(false); setShowLogin(false); setShowRegistration(false); setShowMyCalendars(false); setShowMyWindows(false); setShowUserSettings(false); setSearchTerm(''); setShowSearch(false); setShowImpressum(false);
+                }}>
+                  <ListItemText primary={registerCalendar} />
+                </ListItemButton>
+              )}
+              {user && (
+                <ListItemButton onClick={() => {
+                  setShowUserSettings(true);
+                  setShowWelcome(false); setShowCalendar(false); setShowRegistrationCalendar(false); setShowLogin(false); setShowRegistration(false); setShowMyCalendars(false); setShowMyWindows(false); setSearchTerm(''); setShowSearch(false); setShowImpressum(false);
+                }}>
+                  <ListItemText primary={userSettings} />
+                </ListItemButton>
+              )}
+            </List>
+
+          </Drawer>
+          <MainBox component="main" className='mainBox' sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px' }} >
+            <Container className='mainContainer' >
+              {!user && (
+                <>
+                  {showLogin && (
+                    <Login userAdded={userAdded} setUserAdded={setUserAdded} />
+                  )}
+                  {showRegistration && (
+                    <UserRegistrationForm setShowRegistration={setShowRegistration} setShowLogin={setShowLogin} />
+                  )}
+                  {showCalendar && calendars.length > 0 && selectedCalendar && (
+                    <DefaultCalendar
+                      id={selectedCalendar.id}
+                      name={selectedCalendar.name}
+                      additionalInfo={selectedCalendar.additional_info}
+                      calendarOwner={selectedCalendar.owner}
+                      locked={selectedCalendar.locked}
+                      user={user}
+                      token={token}
+                    />
+                  )}
+                  {calendars.length === 0 && (
+                    <ListItem>
+                      <ListItemText primary={noCalendarsFound} />
+                    </ListItem>
+                  )}
+                </>
+              )}
+              {user && (
+                <>
+                  {showRegistration && (
+                    <UserRegistrationForm token={token} />
+                  )}
+                  {showCalendar && calendars.length > 0 && selectedCalendar && (
+                    <DefaultCalendar
+                      id={selectedCalendar.id}
+                      name={selectedCalendar.name}
+                      additionalInfo={selectedCalendar.additional_info}
+                      calendarOwner={selectedCalendar.owner}
+                      locked={selectedCalendar.locked}
+                      user={user}
+                      token={token}
+                    />
+                  )}
+                  {calendars.length === 0 && (
+                    <ListItem>
+                      <ListItemText primary={noCalendarsFound} />
+                    </ListItem>
+                  )}
+                  {showMyCalendars && (
+                    <MyCalendars calendarAdded={calendarAdded} setCalendarAdded={setCalendarAdded} setSelectedCalendar={setSelectedCalendar} user={user} token={token} />
+                  )}
+                  {showMyWindows && (
+                    <MyWindows user={user} token={token} />
+                  )}
+                  {showRegistrationCalendar && (
+                    <AdventCalendarRegistrationForm calendarAdded={calendarAdded} setCalendarAdded={setCalendarAdded} setShowRegistrationCalendar={setShowRegistrationCalendar} token={token} />
+                  )}
+                  {showUserSettings && (
+                    <UserSettings user={user} token={token} userAdded={userAdded} setUserAdded={setUserAdded} />
+                  )}
+                </>
+              )}
+              {showWelcome && (
+                <WelcomePage />
+              )}
+              {showImpressum && (
+                <ImpressumPage />
+              )}
+            </Container>
+            <br />
+          </MainBox>
         </AggregateTextProvider>
-
       </Root>
-
     </ThemeProvider>
   );
 }

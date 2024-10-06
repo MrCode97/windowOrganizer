@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { Typography, TextField, Button, Snackbar, Checkbox, FormControlLabel } from '@mui/material';
+import { useAdventCalendarRegistrationFormStrings } from '../contexts/text';
 
-function LoginHint() {
+function LoginHint(hint) {
   return (
     <div>
       <Typography className='pageTitle' variant="h4">Advent Calendar Registration</Typography>
       <Typography sx={{ padding: '10px' }} variant="body1">
-        Please log in first to register an advent calendar.
+        {hint}
       </Typography>
     </div>
   );
@@ -19,11 +20,23 @@ function AdventCalendarRegistrationForm({ calendarAdded, setCalendarAdded, setSh
   const [additionalInfo, setAdditionalInfo] = useState(''); 
   const [consentChecked, setConsentChecked] = useState(false);
 
+  const {
+    title,
+    name,
+    description,
+    consent,
+    register,
+    hintSuccess,
+    hintError,
+    hintConsent,
+    hintLogin,
+  } = useAdventCalendarRegistrationFormStrings();
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     if (!consentChecked) {
-      setMessage('You must agree to the terms before registering.');
+      setMessage({hintConsent});
       setMessageOpen(true);
       return;
     }
@@ -42,18 +55,17 @@ function AdventCalendarRegistrationForm({ calendarAdded, setCalendarAdded, setSh
         setCalendarAdded(!calendarAdded);
         setAdventCalendarId('');
         setAdditionalInfo('');
-        setMessage('Advent calendar registered successfully!');
+        setMessage({hintSuccess});
         setMessageOpen(true);
         window.location.href = `/?calendarName=${adventCalendarId}`;
         setShowRegistrationCalendar(false);
       } else {
         console.error('Failed to register advent calendar');
-        setMessage('Failed to register advent calendar');
+        setMessage({hintError});
         setMessageOpen(true);
       }
     } catch (error) {
       console.error('Error during form submission', error);
-      setMessage('Error during form submission');
       setMessageOpen(true);
     }
   };
@@ -69,16 +81,16 @@ function AdventCalendarRegistrationForm({ calendarAdded, setCalendarAdded, setSh
     <div> 
       {token ? (
         <form onSubmit={handleSubmit}>
-          <Typography className='pageTitle' variant="h4">Advent Calendar Registration</Typography>
+          <Typography className='pageTitle' variant="h4">{title}</Typography>
           <TextField
-            label="Advent Calendar Name"
+            label={name}
             fullWidth
             value={adventCalendarId}
             onChange={(e) => setAdventCalendarId(e.target.value)}
             sx={{ marginBottom: '20px' }}
           />
           <TextField
-            label="Additional Information"
+            label={description}
             fullWidth
             multiline
             rows={4}
@@ -96,18 +108,18 @@ function AdventCalendarRegistrationForm({ calendarAdded, setCalendarAdded, setSh
                 color="primary"
               />
             }
-            label="I agree that the creator of the calendar is responsible for ensuring that no unlawful content, such as sexist, racist, religious, or offensive comments or images, is uploaded to this calendar. The creator must actively monitor and remove any problematic content."
+            label={consent}
             sx={{ marginBottom: '20px' }}
           />
           
           <Button type="submit" variant="contained" sx={{ backgroundColor: 'green' }}>
-            Register
+            {register}
           </Button>
           
           <Snackbar open={messageOpen} autoHideDuration={3000} onClose={handleClose} message={message} />
         </form>
       ) : (
-        <LoginHint />
+        <LoginHint hint={hintLogin} />
       )}
     </div>
   );

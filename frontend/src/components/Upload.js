@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { Button, Snackbar, Checkbox, FormControlLabel } from '@mui/material';
+import { useUploadStrings } from '../contexts/text';
 
 const UploadImage = ({ calendarId, windowNr, onClose, imageUpload, setImageUpload, token }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [message, setMessage] = useState('');
   const [messageOpen, setMessageOpen] = useState(false);
   const [consentChecked, setConsentChecked] = useState(false);
+  const { hintLogin, hintImgShrink, hintUpload, hintUploadError, hintConsent, title, consent, submit } = useUploadStrings();
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -55,7 +57,7 @@ const UploadImage = ({ calendarId, windowNr, onClose, imageUpload, setImageUploa
             if (blob.size <= 2 * 1024 * 1024) {
               resolve(new File([blob], file.name, { type: file.type }));
             } else {
-              setMessage('The image size cannot be reduced below 2MB.');
+              setMessage({hintImgShrink});
               setMessageOpen(true);
               resolve(null);
             }
@@ -69,7 +71,7 @@ const UploadImage = ({ calendarId, windowNr, onClose, imageUpload, setImageUploa
 
   const handleSubmit = async () => {
     if (!consentChecked) {
-      setMessage('You must agree to the terms before uploading an image.');
+      setMessage({hintConsent});
       setMessageOpen(true);
       return;
     }
@@ -90,14 +92,14 @@ const UploadImage = ({ calendarId, windowNr, onClose, imageUpload, setImageUploa
         if (data.success) {
           setImageUpload(!imageUpload);
           setSelectedFile(null);
-          setMessage('Image uploaded successfully!');
+          setMessage({hintUpload});
           setMessageOpen(true);
         } else {
-          setMessage('Image upload failed!');
+          setMessage({hintUploadError});
           setMessageOpen(true);
         }
       } catch (error) {
-        setMessage('Image upload failed!');
+        setMessage({hintUploadError});
         setMessageOpen(true);
       }
     }
@@ -115,23 +117,23 @@ const UploadImage = ({ calendarId, windowNr, onClose, imageUpload, setImageUploa
       {token ? (
         <>
           <input type="file" onChange={handleFileChange} />
-          <p>Share your memories with us! Upload your photos and images.</p>
+          <p>{title}</p>
           <FormControlLabel
             control={<Checkbox checked={consentChecked} onChange={(e) => setConsentChecked(e.target.checked)} />}
-            label="I agree that no problematic content will be tolerated, and I have the rights to the image."
+            label={consent}
             sx={{ marginBottom: '10px' }}
           />
           <Button variant="contained" sx={{ backgroundColor: 'green' }} onClick={handleSubmit}>
-            Submit Image
+            {submit}
           </Button>
           <Snackbar open={messageOpen} autoHideDuration={3000} onClose={handleClose} message={message} />
         </>
       ) : (
         <>
           <input disabled type="file" onChange={handleFileChange} />
-          <p>Share your memories with us! Upload your photos and images.</p>
+          <p>{title}</p>
           <Button disabled variant="contained" style={{ backgroundColor: 'gray' }}>
-            Login to upload pictures
+            {hintLogin}
           </Button>
           <Snackbar open={messageOpen} autoHideDuration={3000} onClose={handleClose} message={message} />
         </>
