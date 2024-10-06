@@ -1,7 +1,7 @@
 // src/contexts/text/index.tsx
 
 import React, { createContext, useContext } from 'react';
-import baseLangStrings from './default.json';
+import baseLangStrings from './en-US.json';
 
 type LangKey = "en-US" | "de-DE";
 type JsonLocalizedStrings = typeof baseLangStrings;
@@ -89,13 +89,38 @@ export function useWindowRegistrationWindowStrings() {
     return useContext(baseTextContext).public.pages.windowRegistrationWindow;
 }
 
+function isObject(item: any): boolean {
+    return item !== null && typeof item === 'object' && !Array.isArray(item);
+}
+
+function deepMergeWithMap(target: any, source: any, visited = new Map<any, any>()) {
+    if (isObject(target) && isObject(source)) {
+        for (const key in source) {
+            if (isObject(source[key])) {
+                if (!target[key]) {
+                    target[key] = {};
+                }
+                // Check if the source object has already been visited
+                if (!visited.has(source[key])) {
+                    visited.set(source[key], {});
+                    deepMergeWithMap(target[key], source[key], visited);
+                } else {
+                    target[key] = visited.get(source[key]);
+                }
+            } else {
+                target[key] = source[key];
+            }
+        }
+    }
+    return target;
+}
 
 export function LangBadge(props: { lang: LangKey, setLang: React.Dispatch<React.SetStateAction<any>> }){
     const { title, enUS, deDE } = useContext(baseTextContext).public.pages.lang;
     return (
         <div id="lang-badge">
               <span>{ title }</span>&nbsp;<select value={props.lang} onChange={(evt) => { 
-                props.setLang(evt.target.value); console.log(evt.target.value); localStorage.setItem('lang', evt.target.value); }}>
+                 props.setLang(evt.target.value); console.log(evt.target.value); localStorage.setItem('lang', evt.target.value); }}>
                  <option value='en-US'>{ enUS }</option>
                  <option value='de-DE'>{ deDE }</option>
                </select>
@@ -107,11 +132,25 @@ export function AggregateTextProvider(props: any){
     const [langStrings, setLangStrings] = React.useState<JsonLocalizedStrings>(baseLangStrings);
     React.useEffect(() => {
         (async () => {
+            var varsStrings = {} as any;
             try {
-                const response = await fetch(`/lang/${props.lang}.json`);
-                const jsonStrings = await response.json();
-                setLangStrings(jsonStrings);
-                console.log("lang changed to " + props.lang);
+                 const vars = await fetch(`/lang/vars.json`);
+                 varsStrings = await vars.json();
+            } catch (error) {
+                console.log("error loading lang/vars.json " + error);
+            }
+            try {
+                const jsonStrings = await import(`./${props.lang}.json`) as JsonLocalizedStrings;
+                if (jsonStrings.public) {
+                    var completeData = jsonStrings;
+                    if (varsStrings.public) {
+                        completeData = deepMergeWithMap(jsonStrings, varsStrings);
+                    }
+                    setLangStrings(completeData);
+                    console.log("lang changed to " + props.lang);
+                } else {
+                    console.log("empty lang-file: " + props.lang);
+                }
             } catch (error) {
                 console.log("lang changed to " + error);
             }

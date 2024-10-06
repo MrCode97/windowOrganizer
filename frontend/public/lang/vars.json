@@ -1,0 +1,21 @@
+{
+  "public": {
+    "pages": {
+      "impressum": {
+        "company": "[Firma]",
+        "street": "[Straße]",
+        "postalcode": "[PLZ, Stadt]",
+        "country": "[Land]",
+        "providername": "[Anbietername]",
+        "provideraddress": "[Adresse des Anbieters]",
+        "providercontact": "[Kontakt Telefon oder E-Mail]",
+        "lawtext": "Diese Website unterliegt dem Schweizer Recht. Streitigkeiten, die sich aus der Nutzung dieser Website ergeben, unterliegen der Gerichtsbarkeit der Gerichte in [Stadt, Land]."
+      }
+    },
+    "assets": {
+      "impressum": {
+        "link": "tel:+41 00 000 00 00"
+      }
+    }
+  }
+}

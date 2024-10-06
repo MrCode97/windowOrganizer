@@ -164,7 +164,25 @@
         "title": "Willkommen beim Adventskalender",
         "p1": "Egal, ob Sie ein Künstler sind, der sein Fenster schmücken möchte, oder ein fröhlicher Spaziergänger, der die leuchtende Pracht Ihrer Gemeinde erkunden möchte – unsere Website ist Ihr Tor zu diesem festlichen Erlebnis. Als lokaler Organisator oder Benutzer können Sie Ihren eigenen Adventskalender erstellen und gestalten.",
         "p2": "Jeder Tag vom 1. bis 24. Dezember zeigt ein neues festlich dekoriertes Fenster und erzählt eine einzigartige Geschichte. Schließen Sie sich der Freude an und erfahren Sie mehr darüber, wie Sie teilnehmen können!",
+        "p3": "",
+        "p4": "",
         "registerCalendar": "Erstellen Sie Ihren Kalender"
+      },
+      "windowRegistrationWindow": {
+        "hintSuccess": "Fenster erfolgreich reserviert!",
+        "hintError": "Das Fenster konnte wegen einem Fehler nicht reserviert werden.",
+        "title": "Fenster reservieren",
+        "address": "Adresse",
+        "timeText": "Zeit (hh:mm)",
+        "description": "Zusätzliche Information",
+        "apero": "Apéro",
+        "host": "Fenster reservieren",
+        "hintLogin": "Bitte zuerst anmelden, um ein Fenster zu reservieren."
+      }
+    },
+    "assets": {
+      "impressum": {
+        "link": "tel:+41 00 000 00 00"
       }
     }
   }

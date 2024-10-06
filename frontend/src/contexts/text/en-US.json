@@ -181,7 +181,7 @@
     },
     "assets": {
       "impressum": {
-        "link": "mailto:email@example.com"
+        "link": "tel:+41 00 000 00 00"
       }
     }
   }
