@@ -9,7 +9,62 @@ const UploadImage = ({ calendarId, windowNr, onClose, imageUpload, setImageUploa
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
-    setSelectedFile(file);
+    if (file && file.size > 2 * 1024 * 1024) { // Server limit 2MB
+      resizeImage(file).then((resizedFile) => {
+        setSelectedFile(resizedFile);
+      });
+    } else {
+      setSelectedFile(file);
+    }
+  };
+
+  const resizeImage = (file) => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        img.src = e.target.result;
+
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+
+          const MAX_WIDTH = 1920;
+          const MAX_HEIGHT = 1080;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          ctx.drawImage(img, 0, 0, width, height);
+
+          canvas.toBlob((blob) => {
+            if (blob.size <= 2 * 1024 * 1024) {
+              resolve(new File([blob], file.name, { type: file.type }));
+            } else {
+              setMessage('The image size cannot be reduced below 2MB.');
+              setMessageOpen(true);
+              resolve(null);
+            }
+          }, file.type, 0.8);
+        };
+      };
+
+      reader.readAsDataURL(file);
+    });
   };
 
   const handleSubmit = async () => {
