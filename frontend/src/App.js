@@ -119,6 +119,8 @@ function App() {
             <AdventToolbar selectedCalendar={selectedCalendar} user={user} logout={logout} setShowLogin={setShowLogin} lang={lang} setLang={setLang}/>
           
             <NavigationBar
+              lang={lang}
+              setLang={setLang}
               drawerWidth={drawerWidth}
               info="Info"
               welcomePage="Welcome Page"

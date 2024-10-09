@@ -3,7 +3,8 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { LangBadge, useAppStrings } from './../contexts/text';
 import Button from '@mui/material/Button';
-import { AppBar } from '@mui/material/';
+import { AppBar, ListItem } from '@mui/material/';
+import { LangFlag } from './LangFlag';
 
 type LangKey = "en-US" | "de-DE";
 
@@ -29,28 +30,34 @@ export default function AdventToolbar({
 
     return (
         <AppBar position="fixed">
-        <Toolbar className="toolbar">
-            <Typography variant="h6" noWrap>
-                {selectedCalendar ? selectedCalendar.name : welcome}
-            </Typography>
-            {user && (
-                <Typography variant="h6" noWrap sx={{ marginLeft: 'auto' }}>
-                    {hello} {user}
+            <Toolbar
+                className="toolbar"
+                sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+            >
+                <Typography variant="h6" noWrap>
+                    {selectedCalendar ? selectedCalendar.name : welcome}
                 </Typography>
-            )}
-            {user && (
-                <Button
-                    sx={{ paddingLeft: '20px', color: '#FFF4E0' }}
-                    onClick={() => {
-                        logout();
-                        setShowLogin(false);
-                    }}
-                >
-                    {logoutText}
-                </Button>
-            )}
-            <LangBadge lang={lang} setLang={setLang} />
-        </Toolbar>
+
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                    {user && (
+                        <>
+                            <Typography variant="h6" noWrap sx={{ marginRight: '20px' }}>
+                                {hello} {user}
+                            </Typography>
+                            <Button
+                                sx={{ color: '#FFF4E0', marginRight: '20px' }}
+                                onClick={() => {
+                                    logout();
+                                    setShowLogin(false);
+                                }}
+                            >
+                                {logoutText}
+                            </Button>
+                        </>
+                    )}
+                    <LangFlag lang={lang} setLang={setLang} />
+                </div>
+            </Toolbar>
         </AppBar>
     );
 }

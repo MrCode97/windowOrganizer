@@ -29,6 +29,7 @@ function UserRegistrationForm({ token, setShowRegistration, setShowLogin }) {
         setShowRegistration(false);
       } else {
         console.error({hintError});
+        setMessage({hintError});
         setMessageOpen(true);
         setUsername('');
         setPassword('');

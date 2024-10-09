@@ -1,9 +1,14 @@
 import React from 'react';
 import { Drawer, List, ListItem, ListItemButton, ListItemText, Typography, IconButton, TextField } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import { useAppStrings } from './../contexts/text';
+import { LangBadge, useAppStrings } from './../contexts/text';
+import { LangFlag } from './LangFlag';
+
+type LangKey = "en-US" | "de-DE";
 
 interface NavigationBarProps {
+    lang: LangKey;
+    setLang: (arg0: LangKey) => void;
     drawerWidth: number;
     info: string;
     welcomePage: string;
@@ -38,6 +43,8 @@ interface NavigationBarProps {
 }
 
 const NavigationBar: React.FC<NavigationBarProps> = ({
+    lang,
+    setLang,
     drawerWidth,
     info,
     user,
@@ -93,6 +100,13 @@ const NavigationBar: React.FC<NavigationBarProps> = ({
             variant="permanent"
             anchor="left"
         >
+            <List>
+                <ListItem>
+                    <LangBadge lang={lang} setLang={setLang} />
+                    {/*<LangFlag lang={lang} setLang={setLang} />*/}
+                </ListItem>
+            </List>
+            
             <List>
                 <ListItem>
                     <ListItemText>
