@@ -28,6 +28,7 @@ import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import ImpressumPage from './components/Impressum';
 import { AggregateTextProvider, useAppStrings, LangBadge } from './contexts/text';
+import AdventToolbar from './components/AdventToolbar';
 
 const drawerWidth = 240;
 
@@ -139,24 +140,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <Root>
         <AggregateTextProvider lang={lang}>
-          <AppBar position="fixed">
-            <Toolbar className='toolbar'>
-              <Typography variant="h6" noWrap>
-                {selectedCalendar ? selectedCalendar.name : `${welcome}` }
-              </Typography>
-              {user && (
-                <Typography variant="h6" noWrap sx={{ marginLeft: 'auto' }}>
-                  {hello} {user}
-                </Typography>
-              )}
-              {user && (
-                <Button sx={{ paddingLeft: '20px', color: '#FFF4E0' }} onClick={() => { logout(); setShowLogin(false); }}>
-                  {logoutText}
-                </Button>
-              )}
-              <LangBadge lang={lang} setLang={setLang} />
-            </Toolbar>
-          </AppBar>
+            <AdventToolbar selectedCalendar={selectedCalendar} user={user} logout={logout} setShowLogin={setShowLogin} lang={lang} setLang={setLang}/>
           <Drawer
             sx={{
               width: drawerWidth,
