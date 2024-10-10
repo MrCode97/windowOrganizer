@@ -1,9 +1,9 @@
 import React from 'react';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { LangBadge, useAppStrings } from './../contexts/text';
+import { useAppStrings } from './../contexts/text';
 import Button from '@mui/material/Button';
-import { AppBar, ListItem } from '@mui/material/';
+import { AppBar } from '@mui/material/';
 import { LangFlag } from './LangFlag';
 
 type LangKey = "en-US" | "de-DE";

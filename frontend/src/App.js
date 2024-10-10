@@ -63,7 +63,7 @@ function App() {
   const [showLogin, setShowLogin] = useState(false);
   const [showRegistration, setShowRegistration] = useState(false);
   const [showRegistrationCalendar, setShowRegistrationCalendar] = useState(false);
-  const [showMyCalendars, setShowMyCalendars] = useState(false);
+  const [showMyCalendars] = useState(false);
   const [showMyWindows, setShowMyWindows] = useState(false);
   const [showUserSettings, setShowUserSettings] = useState(false);
   const [calendarAdded, setCalendarAdded] = useState(false);

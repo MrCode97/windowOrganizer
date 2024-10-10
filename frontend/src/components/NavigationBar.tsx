@@ -2,7 +2,6 @@ import React from 'react';
 import { Drawer, List, ListItem, ListItemButton, ListItemText, Typography, IconButton, TextField } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import { LangBadge, useAppStrings } from './../contexts/text';
-import { LangFlag } from './LangFlag';
 
 type LangKey = "en-US" | "de-DE";
 
