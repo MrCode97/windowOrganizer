@@ -22,7 +22,7 @@
         "iptitle": "Urheberrecht",
         "iptext": "Alle Inhalte auf dieser Website, einschließlich Texte, Bilder und Code, sind urheberrechtlich geschützt. Eine unerlaubte Verwendung oder Vervielfältigung ist verboten.",
         "dptitle": "Datenschutz",
-        "dptext": "Wir verpflichten uns, Ihre Privatsphäre zu schützen. Da der Inhalt dieser App sich auf Adventsfenster konzentriert, gehen wir davon aus, dass keine sensiblen oder persönlichen Daten erfasst werden. Ein Kalenderersteller ist verpflichtet, rechtswidrige Inhalte zu löschen. Ein Fensterpräsentator ist verpflichtet, nur eigene Bilder zu verwenden, und bei Kommentaren gelten die Regeln des Anstands. Sollte es dennoch zu Verstößen kommen, muss der Website-Betreiber kontaktiert werden (siehe oben).",
+        "dptext": "Wir verpflichten uns, Ihre Privatsphäre zu schützen. Da der Inhalt dieser App sich auf Adventsfenster konzentriert, gehen wir davon aus, dass keine sensiblen oder persönlichen Daten erfasst werden. Ein Kalenderersteller resp. eine Kalendererstellerin ist verpflichtet, rechtswidrige Inhalte zu löschen. Es dürfen nur eigene Bilder in die Galerie hochgeladen werden, und bei Kommentaren gelten die Regeln des Anstands. Sollte es dennoch zu Verstößen kommen, muss der Website-Betreiber kontaktiert werden (siehe oben).",
         "lawtitle": "Anwendbares Recht",
         "lawtext": "Diese Website unterliegt dem Schweizer Recht. Streitigkeiten, die sich aus der Nutzung dieser Website ergeben, unterliegen der Gerichtsbarkeit der Gerichte in [Stadt, Land]."
       },
@@ -50,7 +50,7 @@
         "name": "Adventskalender-Name",
         "description": "Zusätzliche Informationen",
         "submit": "Absenden",
-        "consent": "Ich stimme zu, dass der Ersteller des Kalenders dafür verantwortlich ist, dass keine rechtswidrigen Inhalte wie sexistische, rassistische, religiöse oder beleidigende Kommentare oder Bilder hochgeladen werden. Der Ersteller muss problematische Inhalte aktiv überwachen und entfernen.",
+        "consent": "Ich stimme zu, dass ich als Ersteller oder Erstellerin eines Kalenders dafür verantwortlich bin, dass keine rechtswidrigen Inhalte wie sexistische, rassistische, religiöse oder beleidigende Kommentare oder Bilder hochgeladen werden. Ich muss die Beiträge aktiv überwachen und problematische Inhalte entfernen.",
         "register": "Registrieren",
         "hintSuccess": "Adventskalender erfolgreich registriert!",
         "hintError": "Bei der Registrierung des Adventskalenders ist ein Fehler aufgetreten.",
@@ -162,10 +162,10 @@
       },
       "welcomePage": {
         "title": "Willkommen beim Adventskalender",
-        "p1": "Egal, ob Sie ein Künstler sind, der sein Fenster schmücken möchte, oder ein fröhlicher Spaziergänger, der die leuchtende Pracht Ihrer Gemeinde erkunden möchte – unsere Website ist Ihr Tor zu diesem festlichen Erlebnis. Als lokaler Organisator oder Benutzer können Sie Ihren eigenen Adventskalender erstellen und gestalten.",
-        "p2": "Jeder Tag vom 1. bis 24. Dezember zeigt ein neues festlich dekoriertes Fenster und erzählt eine einzigartige Geschichte. Schließen Sie sich der Freude an und erfahren Sie mehr darüber, wie Sie teilnehmen können!",
-        "p3": "",
-        "p4": "",
+        "p1": "Egal, ob Sie Ihr Fenster kreativ gestalten möchten oder als vorbeigehende Person die erleuchtende Pracht Ihrer Gemeinde erkunden wollen - unsere Website ist Ihr Tor zu diesem festlichen Erlebnis.",
+        "p2": "Als lokaler Organisator oder Benutzer können Sie Ihren eigenen Adventskalender erstellen und gestalten.",
+        "p3": "Jeder Tag vom 1. bis zum 24. Dezember zeigt ein neues festlich dekoriertes Fenster und erzählt eine einzigartige Geschichte.",
+        "p4": "Schliessen Sie sich der Freude an und erfahren Sie mehr darüber, wie Sie teilnehmen können!",
         "registerCalendar": "Erstellen Sie Ihren Kalender"
       },
       "windowRegistrationWindow": {
