@@ -6,6 +6,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useState, useEffect } from 'react';
 import Dialog from '@mui/material/Dialog';
 import DialogContent from '@mui/material/DialogContent';
+import { useGalleryStrings } from '../contexts/text';
 
 const Gallery = ({ calendarId, windowNr, imageUpload, setImageUpload, token, calendarOwnerId }) => {
   const [images, setImages] = useState([]);
@@ -14,6 +15,8 @@ const Gallery = ({ calendarId, windowNr, imageUpload, setImageUpload, token, cal
   const [open, setOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
 
+  const { title, altText } = useGalleryStrings();
+  
   useEffect(() => {
     if (token) {
       async function fetchUserId() {
@@ -112,14 +115,14 @@ const Gallery = ({ calendarId, windowNr, imageUpload, setImageUpload, token, cal
 
   return (
     <div>
-      <p>Here you can see all the images that have been uploaded for this window.</p>
+      <p>{title}</p>
       <Grid2 container spacing={2}>
         {images.map((image, index) => (
           <Grid2 item key={index} xs={12} sm={6} md={4}>
             <Card>
               <CardMedia
                 component="img"
-                alt={`Image ${index}`}
+                alt={`${altText} ${index}`}
                 height="140"
                 image={image.url}
                 onClick={() => handleOpenDialog(image.url)}

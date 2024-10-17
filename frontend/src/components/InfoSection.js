@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Typography from '@mui/material/Typography';
 import DrawMap from './DrawMap';
 import CommentSection from './CommentSection';
+import { useInfoSectionStrings } from '../contexts/text';
 
 const InfoSection = ({
   calendar_id,
@@ -17,6 +18,12 @@ const InfoSection = ({
   const [startTime, setStartTime] = useState('');
   const [addressName, setAddressName] = useState('');
   const [coordinates, setCoordinates] = useState([]);
+  const {
+    title,
+    apero,
+    starting,
+  } = useInfoSectionStrings();
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,10 +43,10 @@ const InfoSection = ({
   return (
     <>
 
-      <Typography variant="h4">{window_nr}. Advent Window</Typography><Typography variant="body1">Apéro: {hasApero ?
+      <Typography variant="h4">{window_nr}. {title}</Typography><Typography variant="body1">{apero}: {hasApero ?
         <span style={{ fontSize: '24px', color: 'black' }}>✓</span> :
         <span style={{ fontSize: '24px', color: 'red' }}>✗</span>}</Typography>
-      <Typography variant="body1">{addressName}, starting: {startTime}</Typography>
+      <Typography variant="body1">{addressName}, {starting}: {startTime}</Typography>
       {location_hint && <Typography variant="body1">{location_hint}</Typography>}
       <div style={{ display: 'flex', justifyContent: 'center' }}>
         <DrawMap coordinates={coordinates} />

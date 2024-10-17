@@ -30,7 +30,7 @@ services:
           memory: 64M
     volumes:
       - type: bind
-        source: ../frontend/public/lang
+        source: ./lang
         target: /adventscalendar/lang
     networks:
       - intern

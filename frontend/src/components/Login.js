@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Typography, TextField, Button, Box, Snackbar } from '@mui/material';
 import { useAuth } from '../AuthProvider';
+import { useLoginStrings } from '../contexts/text';
 
 function Login({ userAdded, setUserAdded, token }) {
     const { login } = useAuth();
@@ -8,6 +9,8 @@ function Login({ userAdded, setUserAdded, token }) {
     const [password, setPassword] = useState('');
     const [message, setMessage] = useState('');
     const [messageOpen, setMessageOpen] = useState(false);
+
+    const { title, usernameText, passwordText, hintError, hintLoggedin } = useLoginStrings();
 
     const handleLogin = async (event) => {
         event.preventDefault();
@@ -29,7 +32,7 @@ function Login({ userAdded, setUserAdded, token }) {
                 console.error('Login failed');
                 setPassword('');
                 setMessageOpen(true);
-                setMessage('Login failed!')
+                setMessage({hintError})
             }
         } catch (error) {
             console.error('Error during login', error);
@@ -43,28 +46,28 @@ function Login({ userAdded, setUserAdded, token }) {
     return (
         <div> {!token ? (
             <form onSubmit={handleLogin}>
-                <Typography className='pageTitle' variant="h4">Login</Typography>
+                <Typography className='pageTitle' variant="h4">{title}</Typography>
                 <TextField
-                    label="Username"
+                    label={usernameText}
                     fullWidth
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                 />
                 <TextField
-                    label="Password"
+                    label={passwordText}
                     type="password"
                     fullWidth
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                 />
                 <Button type="submit" variant="contained" sx={{ backgroundColor: 'green', marginTop: '10px' }}>
-                    Login
+                    {title}
                 </Button>
                 <Snackbar open={messageOpen} autoHideDuration={3000} onClose={handleClose} message={message} />
             </form>
         ) : (
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <Typography className='welcomeParagraph' align='center'>You are already logged in!</Typography>
+                <Typography className='welcomeParagraph' align='center'>{hintLoggedin}</Typography>
             </Box>
         )}
         </div>

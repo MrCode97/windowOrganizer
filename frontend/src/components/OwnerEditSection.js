@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Button, TextField, FormControlLabel, Checkbox, Typography } from '@mui/material';
 import { translate } from './GeocodeAddress';
+import { useOwnerEditSectionStrings } from '../contexts/text';
 
 const OwnerEditSection = ({ calendar_id, window_nr, onClose, setIsFree, token, locationAdded, setLocationAdded }) => {
   const [addressName, setAddressName] = useState('');
@@ -9,6 +10,18 @@ const OwnerEditSection = ({ calendar_id, window_nr, onClose, setIsFree, token, l
   const [hasApero, setHasApero] = useState(false);
   const [time, setTime] = useState('');
   const [message, setMessage] = useState('');
+  const {
+    hintUpdate,
+    hintUpdateError,
+    hintDelete,
+    hintDeleteError,
+    addressNameText,
+    timeText,
+    descriptionText,
+    aperoText,
+    saveText,
+    deleteText
+  } = useOwnerEditSectionStrings();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -50,16 +63,16 @@ const OwnerEditSection = ({ calendar_id, window_nr, onClose, setIsFree, token, l
       });
 
       if (response.ok) {
-        setMessage('Window details updated successfully!');
+        setMessage({hintUpdate});
         if (setLocationAdded) { // if rendered from MyWindows, there is no globalMap so no need to reRender and parent doesn't have the property anyways
           setLocationAdded(!locationAdded);
         }
       } else {
-        setMessage('Failed to update window details.');
+        setMessage({});
       }
     } catch (error) {
       console.error('Error updating window details:', error);
-      setMessage('An error occurred. Please try again.');
+      setMessage({hintUpdateError});
     }
   };
 
@@ -72,15 +85,15 @@ const OwnerEditSection = ({ calendar_id, window_nr, onClose, setIsFree, token, l
         },
       });
       if (response.ok) {
-        setMessage('Window deleted successfully');
+        setMessage({hintDelete});
         onClose();
         setLocationAdded(!locationAdded);
         setIsFree(true);
       } else {
-        setMessage('Failed to delete window');
+        setMessage({hintDeleteError});
       }
     } catch (error) {
-      setMessage('Error deleting window');
+      setMessage({hintDeleteError});
     }
   };
 
@@ -88,14 +101,14 @@ const OwnerEditSection = ({ calendar_id, window_nr, onClose, setIsFree, token, l
     <form onSubmit={handleSubmit}>
       <Typography variant="h4">{window_nr}. Advent Window - Edit Mode</Typography>
       <TextField
-        label="Address Name"
+        label={addressNameText}
         value={addressName}
         onChange={(e) => setAddressName(e.target.value)}
         fullWidth
         margin="normal"
       />
       <TextField
-        label="Time"
+        label={timeText}
         type="time"
         value={time}
         onChange={(e) => setTime(e.target.value)}
@@ -103,7 +116,7 @@ const OwnerEditSection = ({ calendar_id, window_nr, onClose, setIsFree, token, l
         margin="normal"
       />
       <TextField
-        label="Location Hint"
+        label={descriptionText}
         value={locationHint}
         onChange={(e) => setLocationHint(e.target.value)}
         fullWidth
@@ -116,13 +129,13 @@ const OwnerEditSection = ({ calendar_id, window_nr, onClose, setIsFree, token, l
             onChange={(e) => setHasApero(e.target.checked)}
           />
         }
-        label="Has Apéro"
+        label={aperoText}
       />
       <Button type="submit" variant="contained" color="primary">
-        Save Changes
+        {saveText}
       </Button>
       <Button onClick={handleDeleteWindow} variant="contained" color="secondary">
-        Delete/Deregister Window
+        {deleteText}
       </Button>
       {message && <Typography variant="body1" color="error">{message}</Typography>}
     </form>

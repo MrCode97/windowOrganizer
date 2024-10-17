@@ -9,6 +9,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Snackbar from '@mui/material/Snackbar';
+import { useCommentSectionStrings } from "../contexts/text";
 
 function CommentSection({ calendar_id, window_nr, token, calendarOwnerId }) {
     const [comments, setComments] = useState([]);
@@ -19,6 +20,13 @@ function CommentSection({ calendar_id, window_nr, token, calendarOwnerId }) {
     const [messageOpen, setMessageOpen] = useState(false);
     const [userId, setUserId] = useState(null);
     const [isCalendarOwner, setIsCalendarOwner] = useState(false);
+
+    const {
+        commentSuggestion,
+        consent,
+        hintConsent,
+        comment,
+    } = useCommentSectionStrings();
 
     useEffect(() => {
         if (token) {
@@ -59,7 +67,7 @@ function CommentSection({ calendar_id, window_nr, token, calendarOwnerId }) {
         event.preventDefault();
 
         if (!consentChecked) {
-            setMessage('You must agree to the terms before adding a comment.');
+            setMessage({hintConsent});
             setMessageOpen(true);
             return;
         }
@@ -123,7 +131,7 @@ function CommentSection({ calendar_id, window_nr, token, calendarOwnerId }) {
                 <form onSubmit={handleNewComment}>
                     <TextField
                         sx={{ marginTop: '5px', border: '1px solid black', backgroundColor: '#3e3c36', borderRadius: '5px' }}
-                        label="Comment"
+                        label={commentSuggestion}
                         variant="outlined"
                         fullWidth
                         value={newComment}
@@ -131,11 +139,11 @@ function CommentSection({ calendar_id, window_nr, token, calendarOwnerId }) {
                     />
                     <FormControlLabel
                         control={<Checkbox checked={consentChecked} onChange={(e) => setConsentChecked(e.target.checked)} />}
-                        label="I agree that no problematic content will be tolerated, and my comment is respectful."
+                        label={consent}
                         sx={{ marginTop: '10px' }}
                     />
                     <Button type="submit" variant="contained" style={{ backgroundColor: 'green' }} sx={{ marginTop: '10px' }}>
-                        Add Comment
+                        {comment}
                     </Button>
                 </form>
             ) : (

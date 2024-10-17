@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Typography, Box, List, ListItem, ListItemText, Button, Snackbar, TextField, Tooltip } from '@mui/material';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { useMyCalendarsStrings } from '../contexts/text';
 
 const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, user, token }) => {
   const [calendarData, setCalendarData] = useState([]);
@@ -12,6 +13,8 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, use
   const [showShareLink, setShowShareLink] = useState({}); 
   const [copySuccess, setCopySuccess] = useState('');
   const [lockState, setLockState] = useState(false);
+
+  const { title, calendarName, description, share, lockCalendar, unlockCalendar, deleteCalendar, hintCopy, hintCopyError, updatedSuccessfully, updatedUnsuccessfully, adventcalendar, lock, unlocked, successfully, failed, deleteSuccess, deleteError, copy } = useMyCalendarsStrings();
 
   useEffect(() => {
     // Fetch owned calendars by the user
@@ -83,16 +86,16 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, use
       if (response.ok) {
         setCalendarAdded(!calendarAdded);
         updateData[calendarId] = '';
-        setMessage('Advent calendar updated successfully!');
+        setMessage({updatedSuccessfully});
         setMessageOpen(true);
       } else {
         console.error('Failed to update advent calendar');
-        setMessage('Failed to update advent calendar');
+        setMessage(updatedUnsuccessfully);
         setMessageOpen(true);
       }
     } catch (error) {
       console.error('Error during calendar update:', error);
-      setMessage('Error during calendar update');
+      setMessage({updatedUnsuccessfully});
       setMessageOpen(true);
     }
   };
@@ -100,8 +103,8 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, use
   const handleCopyToClipboard = (calendarName) => {
     const shareableLink = `${window.location.origin}/?calendarName=${encodeURIComponent(calendarName)}`;
     navigator.clipboard.writeText(shareableLink)
-      .then(() => setCopySuccess('Link copied to clipboard!'))
-      .catch(() => setCopySuccess('Failed to copy link'));
+      .then(() => setCopySuccess({hintCopy}))
+      .catch(() => setCopySuccess({hintCopyError}));
   };
 
   const handleLockCalendar = async (calendarId, lockState) => {
@@ -116,12 +119,13 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, use
       });
 
       if (response.ok) {
-        setMessage(`Advent calendar ${lockState ? 'locked' : 'unlocked'} successfully!`);
+        setMessage(`${adventcalendar} ${lockState ? ({lock}) : ({unlocked})} ${successfully}!`);
+
         setLockState(lockState);
         setCalendarAdded(!calendarAdded);
         setMessageOpen(true);
       } else {
-        console.error(`Failed to ${lockState ? 'lock' : 'unlock'} advent calendar`);
+        console.error(`${failed} ${lockState ? ({lock}) : ({unlocked})} ${adventcalendar}`);
         setMessage(`Failed to ${lockState ? 'lock' : 'unlock'} advent calendar`);
         setMessageOpen(true);
       }
@@ -145,11 +149,11 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, use
       if (response.ok) {
         setSelectedCalendar(null);
         setCalendarAdded(!calendarAdded);
-        setMessage('Advent calendar deleted successfully!');
+        setMessage({deleteSuccess});
         setMessageOpen(true);
       } else {
         console.error('Failed to delete advent calendar');
-        setMessage('Failed to delete advent calendar');
+        setMessage({deleteError});
         setMessageOpen(true);
       }
     } catch (error) {
@@ -168,7 +172,7 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, use
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <Typography className='pageTitle' variant="h2" align="center">My Calendars</Typography>
+      <Typography className='pageTitle' variant="h2" align="center">{title}</Typography>
       <List>
         {calendarData.map((calendar) => (
           <div key={calendar.id}>
@@ -182,13 +186,13 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, use
             {openCalendars[calendar.id] && (
               <Box sx={{ p: 2 }}>
                 <TextField
-                  label="Calendar Name"
+                  label={calendarName}
                   fullWidth
                   value={updateData[calendar.id]?.name || ''}
                   onChange={(e) => handleInputChange(calendar.id, 'name', e.target.value)}
                 />
                 <TextField
-                  label="Additional Information"
+                  label={description}
                   fullWidth
                   multiline
                   rows={4}
@@ -210,7 +214,7 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, use
                   sx={{ mt: 2 }}
                   onClick={() => setShowShareLink((prev) => ({ ...prev, [calendar.id]: !prev[calendar.id] }))}
                 >
-                  Share Calendar
+                  {share}
                 </Button>
 
                 <Button
@@ -219,7 +223,7 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, use
                   sx={{ mt: 2 }}
                   onClick={() => handleLockCalendar(calendar.id, !calendar.locked)}
                 >
-                  {calendar.locked ? "Unlock Calendar" : "Lock Calendar"}
+                  {calendar.locked ? `${unlockCalendar}` : `${lockCalendar}` }
                 </Button>
 
                 <Button
@@ -228,7 +232,7 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, use
                   sx={{ mt: 2 }}
                   onClick={() => handleDeleteCalendar(calendar.id)}
                 >
-                  Delete Calendar
+                  {deleteCalendar}
                 </Button>
 
                 {showShareLink[calendar.id] && (
@@ -244,7 +248,7 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, use
                     />
                     <Tooltip title="Copy to Clipboard">
                       <Button onClick={() => handleCopyToClipboard(calendar.name)} variant="contained">
-                        Copy
+                        {copy}
                       </Button>
                     </Tooltip>
                   </Box>
