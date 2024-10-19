@@ -46,6 +46,20 @@ const theme = createTheme({
     },
   },
   components: {
+    MuiFormHelperText: {
+      styleOverrides: {
+        root: {
+          color: 'orange',
+        },
+      },
+    },
+    MuiLink: {
+      styleOverrides: {
+        root: {
+          color: '#ffe1ba',
+        },
+      },
+    },
     MuiBox: {
       styleOverrides: {
         root: {
@@ -61,6 +75,7 @@ const theme = createTheme({
           backgroundColor: '#2D2923',
           borderRadius: '8px',
           padding: '16px',
+          maxWidth: '800px',
         },
       },
     },
