@@ -83,11 +83,12 @@ function SlidingWindow({ window_nr, calendar_id, onClose, setIsFree, imageUpload
 
       <DialogContent sx={{ padding: '20px', borderRadius: '10px' }}>
         {/* Tab Content */}
-        {user && user !== ownerUsername && (
+
+        {false && user && user !== ownerUsername && (
           <h3>Host: {ownerUsername}</h3>
         )}
 
-        {user && user === ownerUsername && (
+        {false && user && user === ownerUsername && (
           <h3>Owner: {ownerUsername}</h3>
         )}
 
