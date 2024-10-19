@@ -12,8 +12,22 @@ export const AuthProvider = ({ children }) => {
     const storedUser = localStorage.getItem('user');
     const storedToken = localStorage.getItem('token');
     if (storedToken) {
-      setUser(storedUser);
-      setToken(storedToken);
+      const base64Url = storedToken.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+      const exp = JSON.parse(jsonPayload).exp;
+      if (Date.now() >= exp * 1000) {
+        setUser(null);
+        setToken(null);
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+        console.log("user login has expired");
+      } else {
+        setUser(storedUser);
+        setToken(storedToken);
+      }
     }
   }, []);
 
