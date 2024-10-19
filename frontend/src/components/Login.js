@@ -30,9 +30,10 @@ function Login({ userAdded, setUserAdded, token }) {
                 setUserAdded(!userAdded);
             } else {
                 console.error('Login failed');
-                setPassword('');
+                const body = await response.json()
+                setMessage(hintError + ' (' + JSON.stringify(body.error) + ')');
                 setMessageOpen(true);
-                setMessage(hintError)
+                setPassword('');
             }
         } catch (error) {
             console.error('Error during login', error);

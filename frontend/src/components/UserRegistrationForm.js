@@ -28,15 +28,15 @@ function UserRegistrationForm({ token, setShowRegistration, setShowLogin }) {
         setShowLogin(true);
         setShowRegistration(false);
       } else {
-        console.error(hintError);
-        setMessage(hintError);
+        const body = await response.json()
+        setMessage(hintError + ' (' + JSON.stringify(body.error) + ')');
         setMessageOpen(true);
         setUsername('');
         setPassword('');
       }
     } catch (error) {
       console.error('Error during user registration', error);
-      setMessage(hintError)
+      setMessage(hintError + ' (' + error + ')')
       setMessageOpen(true);
     }
   };
