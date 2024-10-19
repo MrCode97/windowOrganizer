@@ -44,8 +44,8 @@ const InfoSection = ({
     <>
 
       <Typography variant="h4">{window_nr}. {title}</Typography><Typography variant="body1">{apero}: {hasApero ?
-        <span style={{ fontSize: '24px', color: 'black' }}>✓</span> :
-        <span style={{ fontSize: '24px', color: 'red' }}>✗</span>}</Typography>
+        <span style={{ fontSize: '24px', color: 'green' }}>✓</span> :
+        <span style={{ fontSize: '24px', color: 'brown' }}>✗</span>}</Typography>
       <Typography variant="body1">{addressName}, {starting}: {startTime}</Typography>
       {location_hint && <Typography variant="body1">{location_hint}</Typography>}
       <div style={{ display: 'flex', justifyContent: 'center' }}>

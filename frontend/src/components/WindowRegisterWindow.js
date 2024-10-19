@@ -92,6 +92,9 @@ function WindowRegisterWindow({ window_nr, calendar_id, onClose, token, location
                       checked={hasApero}
                       onChange={(e) => setHasApero(e.target.checked)}
                       name="hasApero"
+                      style ={{
+                        color: "rgb(255, 225, 186)",
+                      }}
                     />
                   }
                   label={apero}

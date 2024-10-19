@@ -138,7 +138,14 @@ function CommentSection({ calendar_id, window_nr, token, calendarOwnerId }) {
                         onChange={(e) => setNewComment(e.target.value)}
                     />
                     <FormControlLabel
-                        control={<Checkbox checked={consentChecked} onChange={(e) => setConsentChecked(e.target.checked)} />}
+                        control={<Checkbox
+                          checked={consentChecked}
+                          onChange={(e) => setConsentChecked(e.target.checked)}
+                          style ={{
+                            color: "rgb(255, 225, 186)",
+                          }}
+                          />
+                        }
                         label={consent}
                         sx={{ marginTop: '10px' }}
                     />

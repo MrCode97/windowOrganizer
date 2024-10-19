@@ -119,7 +119,14 @@ const UploadImage = ({ calendarId, windowNr, onClose, imageUpload, setImageUploa
           <input type="file" onChange={handleFileChange} />
           <p>{title}</p>
           <FormControlLabel
-            control={<Checkbox checked={consentChecked} onChange={(e) => setConsentChecked(e.target.checked)} />}
+            control={<Checkbox
+              checked={consentChecked}
+              onChange={(e) => setConsentChecked(e.target.checked)}
+              style ={{
+                color: "rgb(255, 225, 186)",
+              }}
+              />
+            }
             label={consent}
             sx={{ marginBottom: '10px' }}
           />

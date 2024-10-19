@@ -131,6 +131,9 @@ const OwnerEditSection = ({ calendar_id, window_nr, onClose, setIsFree, token, l
           <Checkbox
             checked={hasApero}
             onChange={(e) => setHasApero(e.target.checked)}
+            style ={{
+              color: "rgb(255, 225, 186)",
+            }}
           />
         }
         label={aperoText}
