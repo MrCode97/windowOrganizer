@@ -23,7 +23,18 @@ const theme = createTheme({
       textAlign: 'center',
       padding: '8px 0',
       color: '#ffe1ba',
-      backgroundColor: '#515151'
+    },
+    h4: {
+      fontWeight: 'bold',
+      textAlign: 'center',
+      padding: '8px 0',
+      color: '#ffe1ba',
+    },
+    h6: {
+      fontWeight: 'bold',
+      textAlign: 'center',
+      padding: '8px 0',
+      color: '#ffe1ba',
     },
     body1: {
       fontSize: '1rem',

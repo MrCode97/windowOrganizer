@@ -27,7 +27,7 @@ function ImpressumPage() {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: 4, padding: 2 }}>
-      <Typography className='pageTitle' variant="h4" align="center">
+      <Typography className='pageTitle' variant="h2" align="center">
         { title }
       </Typography>
 
