@@ -69,9 +69,7 @@
         "hintCopyError": "An error occurred while copying the link to the clipboard.",
         "hintLocked": "🔒 This calendar has been locked by the Calendar Owner. \nThis means you can only view but not modify.",
         "share": "Share Calendar",
-        "copy": "Copy",
-        "gotocalendar":  "Go to calendar",
-        "updatecalendar": "Update calendar"
+        "copy": "Copy"
       },
       "gallery": {
         "title": "Here you can see all the images that have been uploaded for this window.",
@@ -110,7 +108,9 @@
         "failed": "Failed to",
         "share": "Share Calendar",
         "copy": "Copy",
-        "hintName": "Please enter calendar name with the 4 trailing year digits e.g. 'Mycalendar 2024'"
+        "gotocalendar":  "Go to calendar",
+        "updatecalendar": "Update calendar",
+        "hintName": "Please enter calendar name with the 4 trailing year digits (e.g. 'Mycalendar 2024')"
       },
       "myWindows": {
         "title": "My Windows"
@@ -170,7 +170,8 @@
         "p1": "Whether you’re an artist at heart wishing to adorn your window, or a cheerful wanderer         eager to explore the glowing tapestry of your community, our website is your gateway        to this festive experience. As a local organizer, you can create a calendar for your        village or district, and residents can volunteer to decorate their windows on specific        days, turning their homes into a part of a larger, communal celebration.",
         "p2": "Visitors can use our platform to find decorated windows, plan their holiday strolls        with our interactive map, and afterwards, share their experiences and photos. It's a        wonderful way to connect, celebrate, and spread joy during the holiday season.",        
         "p3": "If you only want to visit decorated windows, simply search for the calendar of your        community in the sidebar and click on the window of the current day. If your community        has no calendar yet or you want to organize a window yourself, please register first as        a user and then either create a new calendar by choosing the option in the sidebar or        click on a window, which is still marked as \"free\".",
-        "p4": "Join us in lighting up neighborhoods with warmth, creativity, and community spirit.        Let the holiday cheer begin!"
+        "p4": "Join us in lighting up neighborhoods with warmth, creativity, and community spirit.        Let the holiday cheer begin!",
+        "registerCalendar": "Create Your calendar"
       },
       "windowRegistrationWindow": {
         "hintSuccess": "Window registered successfully!",
