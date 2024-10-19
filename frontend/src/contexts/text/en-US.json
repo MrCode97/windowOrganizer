@@ -119,6 +119,7 @@
         "december": "December"
       },
       "ownerEditSection": {
+        "title": "Advent Window",
         "hintUpdate": "Window details updated successfully!",
         "hintUpdateError": "An error occurred while updating the window details.",
         "hintDelete": "Window deleted successfully!",

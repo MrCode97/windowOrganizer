@@ -123,6 +123,9 @@ function AdventCalendarRegistrationForm({ calendarAdded, setCalendarAdded, setSh
                 onChange={(e) => setConsentChecked(e.target.checked)}
                 name="consentCheckbox"
                 color="primary"
+                style ={{
+                  color: "rgb(255, 225, 186)",
+                }}
               />
             }
             label={consent}

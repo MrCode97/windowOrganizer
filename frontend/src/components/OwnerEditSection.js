@@ -13,6 +13,7 @@ const OwnerEditSection = ({ calendar_id, window_nr, onClose, setIsFree, token, l
   const [message, setMessage] = useState('');
   const [messageOpen, setMessageOpen] = useState(false);
   const {
+    title,
     hintUpdate,
     hintUpdateError,
     hintDelete,
@@ -69,10 +70,10 @@ const OwnerEditSection = ({ calendar_id, window_nr, onClose, setIsFree, token, l
       setMessage(hintAddress);
       setMessageOpen(true);
     } else {
-      const newCoords = await translate(addressName);
-      setCoordinates(newCoords);
-
       try {
+        const newCoords = await translate(addressName);
+        setCoordinates(newCoords);
+
         const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/updateWindowHosting`, {
           method: 'POST',
           headers: {
@@ -93,7 +94,7 @@ const OwnerEditSection = ({ calendar_id, window_nr, onClose, setIsFree, token, l
         }
       } catch (error) {
         console.error('Error updating window details:', error);
-        setMessage(hintUpdateError);
+        setMessage(hintUpdateError + ' (' + error + ')');
         setMessageOpen(true);
       }
     }
@@ -122,7 +123,7 @@ const OwnerEditSection = ({ calendar_id, window_nr, onClose, setIsFree, token, l
 
   return (
     <form onSubmit={handleSubmit}>
-      <Typography variant="h4">{window_nr}. Advent Window - Edit Mode</Typography>
+      <Typography variant="h4">{window_nr}. {title} - Edit Mode</Typography>
       <TextField required
         label={addressNameText}
         value={addressName}

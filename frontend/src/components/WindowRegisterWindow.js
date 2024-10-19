@@ -41,8 +41,8 @@ function WindowRegisterWindow({ window_nr, calendar_id, onClose, token, location
       setMessage(hintAddress);
       setMessageOpen(true);
     } else {
-      const coords = await translate(addressName);
       try {
+        const coords = await translate(addressName);
         const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/registerWindowHosting`, {
           method: 'POST',
           headers: {
@@ -60,10 +60,11 @@ function WindowRegisterWindow({ window_nr, calendar_id, onClose, token, location
         } else {
           console.error('Failed to register window hosting');
           setMessage(hintError);
+          setMessageOpen(true);
         }
       } catch (error) {
         console.error('Error during window hosting registration', error);
-        setMessage(hintError);
+        setMessage(hintError + ' (' + error + ')');
         setMessageOpen(true);
       }
     }

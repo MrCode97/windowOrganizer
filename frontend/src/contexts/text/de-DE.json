@@ -119,6 +119,7 @@
         "december": "Dezember"
       },
       "ownerEditSection": {
+        "title": "Advent Fenster",
         "hintUpdate": "Fensterdetails erfolgreich aktualisiert!",
         "hintUpdateError": "Beim Aktualisieren der Fensterdetails ist ein Fehler aufgetreten.",
         "hintDelete": "Fenster erfolgreich gelöscht!",

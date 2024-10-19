@@ -19,10 +19,11 @@ export async function translate(address) {
     if (data.length > 0) {
       const { lat, lon } = data[0];
       return [lat, lon];
+    } else {
+      throw new Error(`Invalid Address`);
     }
   } catch (error) {
     console.error("Error:", error.message);
     throw new Error(`Error: Unable to fetch data. Status ${error.message}`);
   }
-  return [];
 }
