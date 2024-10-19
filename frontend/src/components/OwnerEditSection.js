@@ -5,6 +5,7 @@ import { useOwnerEditSectionStrings } from '../contexts/text';
 
 const OwnerEditSection = ({ calendar_id, window_nr, onClose, setIsFree, token, locationAdded, setLocationAdded }) => {
   const [addressName, setAddressName] = useState('');
+  const [addressValidation, setAddressValidation] = useState('');
   const [coordinates, setCoordinates] = useState([]);
   const [locationHint, setLocationHint] = useState('');
   const [hasApero, setHasApero] = useState(false);
@@ -21,7 +22,8 @@ const OwnerEditSection = ({ calendar_id, window_nr, onClose, setIsFree, token, l
     descriptionText,
     aperoText,
     saveText,
-    deleteText
+    deleteText,
+    hintAddress
   } = useOwnerEditSectionStrings();
 
   useEffect(() => {
@@ -45,23 +47,40 @@ const OwnerEditSection = ({ calendar_id, window_nr, onClose, setIsFree, token, l
   }, [calendar_id, window_nr]);
 
   useEffect(() => {
-  }, [coordinates]);
+      const pattern = /^([\S]+)\W([\d]+[\w]*)[,\W]+([\d]+)\W([\S]+)$/giu;
+      if (!pattern.test(addressName)) {
+         setAddressValidation(hintAddress);
+      } else {
+        setAddressValidation('');
+      }
+  }, [coordinates, addressName, hintAddress]);
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setMessageOpen(false);
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    const pattern = /^([\S]+)\W([\d]+[\w]*)[,\W]+([\d]+)\W([\S]+)$/giu;
+    if (!pattern.test(addressName)) {
+      setMessage(hintAddress);
+      setMessageOpen(true);
+    } else {
+      const newCoords = await translate(addressName);
+      setCoordinates(newCoords);
 
-    const newCoords = await translate(addressName);
-    setCoordinates(newCoords);
-
-    try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/updateWindowHosting`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ calendar_id, window_nr, addressName, coords: newCoords, time, locationHint, hasApero }),
-      });
+      try {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/updateWindowHosting`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify({ calendar_id, window_nr, addressName, coords: newCoords, time, locationHint, hasApero }),
+        });
 
         if (response.ok) {
           setMessage(hintUpdate);
@@ -104,14 +123,15 @@ const OwnerEditSection = ({ calendar_id, window_nr, onClose, setIsFree, token, l
   return (
     <form onSubmit={handleSubmit}>
       <Typography variant="h4">{window_nr}. Advent Window - Edit Mode</Typography>
-      <TextField
+      <TextField required
         label={addressNameText}
         value={addressName}
+        helperText={addressValidation}
         onChange={(e) => setAddressName(e.target.value)}
         fullWidth
         margin="normal"
       />
-      <TextField
+      <TextField required
         label={timeText}
         type="time"
         value={time}

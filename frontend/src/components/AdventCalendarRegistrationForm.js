@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Typography, TextField, Button, Snackbar, Checkbox, FormControlLabel } from '@mui/material';
 import { useAdventCalendarRegistrationFormStrings } from '../contexts/text';
 
@@ -15,6 +15,7 @@ function LoginHint(hint) {
 
 function AdventCalendarRegistrationForm({ calendarAdded, setCalendarAdded, setShowRegistrationCalendar, token }) {
   const [adventCalendarId, setAdventCalendarId] = useState('');
+  const [nameError, setNameError] = useState('');
   const [message, setMessage] = useState('');
   const [messageOpen, setMessageOpen] = useState(false);
   const [additionalInfo, setAdditionalInfo] = useState(''); 
@@ -30,7 +31,17 @@ function AdventCalendarRegistrationForm({ calendarAdded, setCalendarAdded, setSh
     hintError,
     hintConsent,
     hintLogin,
+    hintName
   } = useAdventCalendarRegistrationFormStrings();
+
+  useEffect(() => {
+      const pattern = /^[\S\W]+\W20[\d]{2}$/giu;
+      if (!pattern.test(adventCalendarId)) {
+         setNameError(hintName);
+      } else {
+        setNameError('');
+      }
+  }, [adventCalendarId, hintName]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -40,7 +51,12 @@ function AdventCalendarRegistrationForm({ calendarAdded, setCalendarAdded, setSh
       setMessageOpen(true);
       return;
     }
-  
+    if (!event.target.checkValidity()) {
+      setNameError(true);
+    } else {
+      setNameError(false);
+    }
+
     try {
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/registerAdventCalendar`, {
         method: 'POST',
@@ -82,8 +98,9 @@ function AdventCalendarRegistrationForm({ calendarAdded, setCalendarAdded, setSh
       {token ? (
         <form onSubmit={handleSubmit}>
           <Typography className='pageTitle' variant="h4">{title}</Typography>
-          <TextField
+          <TextField required
             label={name}
+            helperText={nameError}
             fullWidth
             value={adventCalendarId}
             onChange={(e) => setAdventCalendarId(e.target.value)}

@@ -55,10 +55,11 @@
         "hintSuccess": "Adventskalender erfolgreich registriert!",
         "hintError": "Bei der Registrierung des Adventskalenders ist ein Fehler aufgetreten.",
         "hintConsent": "Bitte stimmen Sie den Bedingungen zu.",
-        "hintLogin": "Bitte melden Sie sich zuerst an, um einen Adventskalender zu registrieren."
+        "hintLogin": "Bitte melden Sie sich zuerst an, um einen Adventskalender zu registrieren.",
+        "hintName": "Bitte erfassen Sie einen Kalendernamen, gefolgt vom 4-Stelligen Jahr (z.B. 'Mein Kalender 2024')"
       },
       "commentSection": {
-        "comment": "Kommentar",
+        "comment": "Kommentar speichern",
         "commentSuggestion": "Schreibe einen Kommentar...",
         "consent": "Ich stimme zu, dass keine problematischen Inhalte toleriert werden und mein Kommentar respektvoll ist.",
         "hintConsent": "Bitte stimmen Sie den Bedingungen zu."
@@ -106,7 +107,10 @@
         "successfully": "erfolgreich",
         "failed": "Fehler beim",
         "share": "Kalender teilen",
-        "copy": "Kopieren"
+        "copy": "Kopieren",
+        "gotocalendar":  "Kalender anzeigen",
+        "updatecalendar": "Kalender speichern",
+        "hintName": "Bitte erfassen Sie einen Kalendernamen, gefolgt vom 4-Stelligen Jahr (z.B. 'Mein Kalender 2024')"
       },
       "myWindows": {
         "title": "Meine Fenster"
@@ -124,7 +128,8 @@
         "descriptionText": "Zusätzliche Informationen",
         "aperoText": "Apéro",
         "saveText": "Änderungen speichern",
-        "deleteText": "Fenster löschen"
+        "deleteText": "Fenster löschen",
+        "hintAddress": "Bitte formal vollständige Adresse angeben: Strasse Hausnummer, PLZ Ort"
       },
       "slidingWindow": {
         "information": "Fensterinformationen",
@@ -177,7 +182,8 @@
         "description": "Zusätzliche Information",
         "apero": "Apéro",
         "host": "Fenster reservieren",
-        "hintLogin": "Bitte zuerst anmelden, um ein Fenster zu reservieren."
+        "hintLogin": "Bitte zuerst anmelden, um ein Fenster zu reservieren.",
+        "hintAddress": "Bitte formal vollständige Adresse angeben: Strasse Hausnummer, PLZ Ort"
       }
     },
     "assets": {

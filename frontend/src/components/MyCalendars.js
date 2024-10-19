@@ -6,6 +6,7 @@ import { useMyCalendarsStrings } from '../contexts/text';
 
 const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, setShowCalendar, user, token }) => {
   const [calendarData, setCalendarData] = useState([]);
+  const [calendarDataValid, setCalendarDataValid] = useState('');
   const [openCalendars, setOpenCalendars] = useState({});
   const [updateData, setUpdateData] = useState({});
   const [message, setMessage] = useState('');
@@ -190,11 +191,24 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, set
             </ListItem>
             {openCalendars[calendar.id] && (
               <Box sx={{ p: 2 }}>
-                <TextField
+                <TextField required
                   label={calendarName}
+                  inputProps={{
+                    pattern: "^[\\S\\W]+\\W20[\\d]{2}$/giu",
+                  }}
+                  helperText={calendarDataValid}
                   fullWidth
                   value={updateData[calendar.id]?.name || ''}
-                  onChange={(e) => handleInputChange(calendar.id, 'name', e.target.value)}
+                  onChange={(e) => {
+                      handleInputChange(calendar.id, 'name', e.target.value);
+                      const pattern = /^[\S\W]+\W20[\d]{2}$/giu;
+                      if (!pattern.test(e.target.value)) {
+                         setCalendarDataValid(hintName);
+                      } else {
+                        setCalendarDataValid('');
+                      }
+                    }
+                  }
                 />
                 <TextField
                   label={description}
@@ -207,10 +221,19 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, set
                 />
                 <Button
                   variant="contained"
+                  color="primary"
                   sx={{ mt: 2, backgroundColor: 'green' }}
                   onClick={() => handleUpdateCalendar(calendar.id)}
                 >
-                  Update Calendar
+                  {updatecalendar}
+                </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  sx={{ mt: 2 }}
+                  onClick={() => handleGoTO(updateData[calendar.id]?.name || '')}
+                >
+                  {gotocalendar}
                 </Button>
 
                 <Button

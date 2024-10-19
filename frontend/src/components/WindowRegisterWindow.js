@@ -1,11 +1,12 @@
 // WindowRegisterWindow.js
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, Typography, TextField, Button, FormControlLabel, Checkbox, Snackbar } from '@mui/material';
 import { translate } from './GeocodeAddress';
 import { useWindowRegistrationWindowStrings } from '../contexts/text';
 
 function WindowRegisterWindow({ window_nr, calendar_id, onClose, token, locationAdded, setLocationAdded }) {
   const [addressName, setAddressName] = useState('');
+  const [addressValidation, setAddressValidation] = useState('');
   const [time, setTime] = useState('');
   const [locationHint, setLocationHint] = useState('');
   const [hasApero, setHasApero] = useState(false);
@@ -20,21 +21,36 @@ function WindowRegisterWindow({ window_nr, calendar_id, onClose, token, location
     description,
     apero,
     host,
-    hintLogin
+    hintLogin,
+    hintAddress
   } = useWindowRegistrationWindowStrings();
+
+  useEffect(() => {
+      const pattern = /^([\S]+)\W([\d]+[\w]*)[,\W]+([\d]+)\W([\S]+)$/giu;
+      if (!pattern.test(addressName)) {
+         setAddressValidation(hintAddress);
+      } else {
+        setAddressValidation('');
+      }
+  }, [addressName, hintAddress]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const coords = await translate(addressName);
-    try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/registerWindowHosting`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ calendar_id, window_nr, addressName, coords, time, locationHint, hasApero }),
-      });
+    const pattern = /^([\S]+)\W([\d]+[\w]*)[,\W]+([\d]+)\W([\S]+)$/giu;
+    if (!pattern.test(addressName)) {
+      setMessage(hintAddress);
+      setMessageOpen(true);
+    } else {
+      const coords = await translate(addressName);
+      try {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/registerWindowHosting`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify({ calendar_id, window_nr, addressName, coords, time, locationHint, hasApero }),
+        });
 
         if (response.ok) {
           setMessage(hintSuccess);
@@ -67,13 +83,14 @@ function WindowRegisterWindow({ window_nr, calendar_id, onClose, token, location
           <DialogContent sx={{ width: '400px', height: '700px', }}>
             <form onSubmit={handleSubmit}>
               <Typography variant="h4">{title}</Typography>
-              <TextField
+              <TextField required
                 label={address}
-                fullWidth
                 value={addressName}
+                helperText={addressValidation}
+                fullWidth
                 onChange={(e) => setAddressName(e.target.value)}
               />
-              <TextField
+              <TextField required
                 label={timeText}
                 fullWidth
                 value={time}

@@ -55,10 +55,11 @@
         "hintSuccess": "Advent calendar registered successfully!",
         "hintError": "An error occurred while registering the advent calendar.",
         "hintConsent": "Please agree to the terms and conditions.",
-        "hintLogin": "Please log in first to register an advent calendar."
+        "hintLogin": "Please log in first to register an advent calendar.",
+        "hintName": "Please enter calendar name with the 4 trailing year digits e.g. 'Mycalendar 2024'"
       },
       "commentSection": {
-        "comment": "Comment",
+        "comment": "Save comment",
         "commentSuggestion": "Write a comment...",
         "consent": "I agree that no problematic content will be tolerated, and my comment is respectful.",
         "hintConsent": "Please agree to the terms and conditions."
@@ -68,7 +69,9 @@
         "hintCopyError": "An error occurred while copying the link to the clipboard.",
         "hintLocked": "🔒 This calendar has been locked by the Calendar Owner. \nThis means you can only view but not modify.",
         "share": "Share Calendar",
-        "copy": "Copy"
+        "copy": "Copy",
+        "gotocalendar":  "Go to calendar",
+        "updatecalendar": "Update calendar"
       },
       "gallery": {
         "title": "Here you can see all the images that have been uploaded for this window.",
@@ -106,7 +109,8 @@
         "successfully": "successfully",
         "failed": "Failed to",
         "share": "Share Calendar",
-        "copy": "Copy"
+        "copy": "Copy",
+        "hintName": "Please enter calendar name with the 4 trailing year digits e.g. 'Mycalendar 2024'"
       },
       "myWindows": {
         "title": "My Windows"
@@ -124,7 +128,8 @@
         "descriptionText": "Additional Information",
         "aperoText": "Apéro",
         "saveText": "Save Changes",
-        "deleteText": "Delete Window"
+        "deleteText": "Delete Window",
+        "hintAddress": "Please state your full formal address: Street, house number, zip code, town/city"
       },
       "slidingWindow": {
         "information": "Window Information",
@@ -176,7 +181,8 @@
         "description": "Additional Information",
         "apero": "Apéro",
         "host": "Host a Window",
-        "hintLogin": "Please log in first to register a window."
+        "hintLogin": "Please log in first to register a window.",
+        "hintAddress": "Please state your full formal address: Street, house number, zip code, town/city"
       }
     },
     "assets": {
