@@ -32,7 +32,7 @@ function Login({ userAdded, setUserAdded, token }) {
                 console.error('Login failed');
                 setPassword('');
                 setMessageOpen(true);
-                setMessage({hintError})
+                setMessage(hintError)
             }
         } catch (error) {
             console.error('Error during login', error);

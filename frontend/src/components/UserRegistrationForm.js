@@ -22,21 +22,21 @@ function UserRegistrationForm({ token, setShowRegistration, setShowLogin }) {
 
       if (response.ok) {
         setMessageOpen(true);
-        setMessage({hintSuccess})
+        setMessage(hintSuccess)
         setUsername('');
         setPassword('');
         setShowLogin(true);
         setShowRegistration(false);
       } else {
-        console.error({hintError});
-        setMessage({hintError});
+        console.error(hintError);
+        setMessage(hintError);
         setMessageOpen(true);
         setUsername('');
         setPassword('');
       }
     } catch (error) {
       console.error('Error during user registration', error);
-      setMessage({hintError})
+      setMessage(hintError)
       setMessageOpen(true);
     }
   };

@@ -22,6 +22,7 @@ export async function translate(address) {
     }
   } catch (error) {
     console.error("Error:", error.message);
+    throw new Error(`Error: Unable to fetch data. Status ${error.message}`);
   }
   return [];
 }

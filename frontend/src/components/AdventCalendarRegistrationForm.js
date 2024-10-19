@@ -36,7 +36,7 @@ function AdventCalendarRegistrationForm({ calendarAdded, setCalendarAdded, setSh
     event.preventDefault();
 
     if (!consentChecked) {
-      setMessage({hintConsent});
+      setMessage(hintConsent);
       setMessageOpen(true);
       return;
     }
@@ -55,13 +55,13 @@ function AdventCalendarRegistrationForm({ calendarAdded, setCalendarAdded, setSh
         setCalendarAdded(!calendarAdded);
         setAdventCalendarId('');
         setAdditionalInfo('');
-        setMessage({hintSuccess});
+        setMessage(hintSuccess);
         setMessageOpen(true);
         window.location.href = `/?calendarName=${adventCalendarId}`;
         setShowRegistrationCalendar(false);
       } else {
         console.error('Failed to register advent calendar');
-        setMessage({hintError});
+        setMessage(hintError);
         setMessageOpen(true);
       }
     } catch (error) {

@@ -4,17 +4,16 @@ import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useMyCalendarsStrings } from '../contexts/text';
 
-const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, user, token }) => {
+const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, setShowCalendar, user, token }) => {
   const [calendarData, setCalendarData] = useState([]);
   const [openCalendars, setOpenCalendars] = useState({});
   const [updateData, setUpdateData] = useState({});
   const [message, setMessage] = useState('');
   const [messageOpen, setMessageOpen] = useState(false);
   const [showShareLink, setShowShareLink] = useState({}); 
-  const [copySuccess, setCopySuccess] = useState('');
   const [lockState, setLockState] = useState(false);
 
-  const { title, calendarName, description, share, lockCalendar, unlockCalendar, deleteCalendar, hintCopy, hintCopyError, updatedSuccessfully, updatedUnsuccessfully, adventcalendar, lock, unlocked, successfully, failed, deleteSuccess, deleteError, copy } = useMyCalendarsStrings();
+  const { title, calendarName, description, share, lockCalendar, unlockCalendar, deleteCalendar, hintCopy, hintCopyError, updatedSuccessfully, updatedUnsuccessfully, adventcalendar, lock, unlock, successfully, failed, deleteSuccess, deleteError, copy, gotocalendar, updatecalendar, hintName } = useMyCalendarsStrings();
 
   useEffect(() => {
     // Fetch owned calendars by the user
@@ -86,7 +85,7 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, use
       if (response.ok) {
         setCalendarAdded(!calendarAdded);
         updateData[calendarId] = '';
-        setMessage({updatedSuccessfully});
+        setMessage(updatedSuccessfully);
         setMessageOpen(true);
       } else {
         console.error('Failed to update advent calendar');
@@ -95,7 +94,7 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, use
       }
     } catch (error) {
       console.error('Error during calendar update:', error);
-      setMessage({updatedUnsuccessfully});
+      setMessage(updatedUnsuccessfully);
       setMessageOpen(true);
     }
   };
@@ -103,11 +102,17 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, use
   const handleCopyToClipboard = (calendarName) => {
     const shareableLink = `${window.location.origin}/?calendarName=${encodeURIComponent(calendarName)}`;
     navigator.clipboard.writeText(shareableLink)
-      .then(() => setCopySuccess({hintCopy}))
-      .catch(() => setCopySuccess({hintCopyError}));
+      .then(() => {setMessage(hintCopy); setMessageOpen(true);})
+      .catch(() => {setMessage(hintCopyError); setMessageOpen(true);});
+  };
+
+  const handleGoTO = (calendarName) => {
+    const shareableLink = `${window.location.origin}/?calendarName=${encodeURIComponent(calendarName)}`;
+    window.location = shareableLink;
   };
 
   const handleLockCalendar = async (calendarId, lockState) => {
+    const locktext = lockState ? `(${lock})` : `(${unlock})`;
     try {
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/lockAdventCalendar`, {
         method: 'POST',
@@ -119,19 +124,19 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, use
       });
 
       if (response.ok) {
-        setMessage(`${adventcalendar} ${lockState ? ({lock}) : ({unlocked})} ${successfully}!`);
+        setMessage(`${adventcalendar} ${locktext} ${successfully}!`);
 
         setLockState(lockState);
         setCalendarAdded(!calendarAdded);
         setMessageOpen(true);
       } else {
-        console.error(`${failed} ${lockState ? ({lock}) : ({unlocked})} ${adventcalendar}`);
-        setMessage(`Failed to ${lockState ? 'lock' : 'unlock'} advent calendar`);
+        console.error(`${failed} ${locktext} ${adventcalendar}`);
+        setMessage(`Failed to ${locktext} advent calendar`);
         setMessageOpen(true);
       }
     } catch (error) {
-      console.error(`Error during calendar ${lockState ? 'lock' : 'unlock'}:`, error);
-      setMessage(`Error during calendar ${lockState ? 'lock' : 'unlock'}`);
+      console.error(`Error during calendar ${locktext}:`, error);
+      setMessage(`Error during calendar ${locktext}`);
       setMessageOpen(true);
     }
   };
@@ -149,11 +154,11 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, use
       if (response.ok) {
         setSelectedCalendar(null);
         setCalendarAdded(!calendarAdded);
-        setMessage({deleteSuccess});
+        setMessage(deleteSuccess);
         setMessageOpen(true);
       } else {
         console.error('Failed to delete advent calendar');
-        setMessage({deleteError});
+        setMessage(deleteError);
         setMessageOpen(true);
       }
     } catch (error) {
@@ -259,7 +264,6 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, use
         ))}
       </List>
       <Snackbar open={messageOpen} autoHideDuration={3000} onClose={handleClose} message={message} />
-      {copySuccess && <Typography color="success.main">{copySuccess}</Typography>}
     </Box>
   );
 }

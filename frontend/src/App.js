@@ -144,7 +144,7 @@ function App() {
               setShowLogin={setShowLogin}
               setShowRegistration={setShowRegistration}
               setShowRegistrationCalendar={setShowRegistrationCalendar}
-              setShowMyCalendars={setShowCalendar}
+              setShowMyCalendars={setShowMyCalendars}
               setShowMyWindows={setShowMyWindows}
               setShowUserSettings={setShowUserSettings}
               setShowImpressum={setShowImpressum}
@@ -166,7 +166,7 @@ function App() {
                   )}
                   {showCalendar && calendars.length > 0 && selectedCalendar && (
                     <DefaultCalendar
-                      id={selectedCalendar.id}
+                      id={selectedCalendar.id || ''}
                       name={selectedCalendar.name}
                       additionalInfo={selectedCalendar.additional_info}
                       calendarOwner={selectedCalendar.owner}
@@ -189,7 +189,7 @@ function App() {
                   )}
                   {showCalendar && calendars.length > 0 && selectedCalendar && (
                     <DefaultCalendar
-                      id={selectedCalendar.id}
+                      id={selectedCalendar.id || ''}
                       name={selectedCalendar.name}
                       additionalInfo={selectedCalendar.additional_info}
                       calendarOwner={selectedCalendar.owner}
@@ -203,14 +203,14 @@ function App() {
                       <ListItemText primary={noCalendarsFound} />
                     </ListItem>
                   )}
-                  {showMyCalendars && (
-                    <MyCalendars calendarAdded={calendarAdded} setCalendarAdded={setCalendarAdded} setSelectedCalendar={setSelectedCalendar} user={user} token={token} />
+                  {showMyCalendars && user && (
+                    <MyCalendars calendarAdded={calendarAdded || false} setCalendarAdded={setCalendarAdded} setSelectedCalendar={setSelectedCalendar} setShowCalendar={setShowCalendar} user={user} token={token} />
                   )}
-                  {showMyWindows && (
+                  {showMyWindows && user && (
                     <MyWindows user={user} token={token} />
                   )}
                   {showRegistrationCalendar && (
-                    <AdventCalendarRegistrationForm calendarAdded={calendarAdded} setCalendarAdded={setCalendarAdded} setShowRegistrationCalendar={setShowRegistrationCalendar} token={token} />
+                    <AdventCalendarRegistrationForm calendarAdded={calendarAdded || false} setCalendarAdded={setCalendarAdded} setShowRegistrationCalendar={setShowRegistrationCalendar} token={token} />
                   )}
                   {showUserSettings && (
                     <UserSettings user={user} token={token} userAdded={userAdded} setUserAdded={setUserAdded} />

@@ -57,7 +57,7 @@ const UploadImage = ({ calendarId, windowNr, onClose, imageUpload, setImageUploa
             if (blob.size <= 2 * 1024 * 1024) {
               resolve(new File([blob], file.name, { type: file.type }));
             } else {
-              setMessage({hintImgShrink});
+              setMessage(hintImgShrink);
               setMessageOpen(true);
               resolve(null);
             }
@@ -71,7 +71,7 @@ const UploadImage = ({ calendarId, windowNr, onClose, imageUpload, setImageUploa
 
   const handleSubmit = async () => {
     if (!consentChecked) {
-      setMessage({hintConsent});
+      setMessage(hintConsent);
       setMessageOpen(true);
       return;
     }
@@ -92,14 +92,14 @@ const UploadImage = ({ calendarId, windowNr, onClose, imageUpload, setImageUploa
         if (data.success) {
           setImageUpload(!imageUpload);
           setSelectedFile(null);
-          setMessage({hintUpload});
+          setMessage(hintUpload);
           setMessageOpen(true);
         } else {
-          setMessage({hintUploadError});
+          setMessage(hintUploadError);
           setMessageOpen(true);
         }
       } catch (error) {
-        setMessage({hintUploadError});
+        setMessage(hintUploadError);
         setMessageOpen(true);
       }
     }

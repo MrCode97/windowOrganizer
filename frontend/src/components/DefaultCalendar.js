@@ -21,8 +21,8 @@ function DefaultCalendar({ id, name, additionalInfo, calendarOwner, locked, user
   const handleCopyToClipboard = () => {
     const shareableLink = `${window.location.origin}/?calendarName=${encodeURIComponent(name)}`;
     navigator.clipboard.writeText(shareableLink)
-      .then(() => setCopySuccess({hintCopy}))
-      .catch(() => setCopySuccess({hintCopyError}));
+      .then(() => setCopySuccess(hintCopy))
+      .catch(() => setCopySuccess(hintCopyError));
   };
 
   return (

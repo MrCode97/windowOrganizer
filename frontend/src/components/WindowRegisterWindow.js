@@ -36,19 +36,20 @@ function WindowRegisterWindow({ window_nr, calendar_id, onClose, token, location
         body: JSON.stringify({ calendar_id, window_nr, addressName, coords, time, locationHint, hasApero }),
       });
 
-      if (response.ok) {
-        setMessage({ hintSuccess });
-        setLocationAdded(!locationAdded);
+        if (response.ok) {
+          setMessage(hintSuccess);
+          setLocationAdded(!locationAdded);
+          setMessageOpen(true);
+          onClose();
+        } else {
+          console.error('Failed to register window hosting');
+          setMessage(hintError);
+        }
+      } catch (error) {
+        console.error('Error during window hosting registration', error);
+        setMessage(hintError);
         setMessageOpen(true);
-        onClose();
-      } else {
-        console.error('Failed to register window hosting');
-        setMessage({ hintError });
       }
-    } catch (error) {
-      console.error('Error during window hosting registration', error);
-      setMessage({ hintError });
-      setMessageOpen(true);
     }
   };
 

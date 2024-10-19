@@ -25,7 +25,7 @@ const UserSettings = ({user, token, userAdded, setUserAdded}) => {
         event.preventDefault();
 
         if (newPassword !== confirmNewPassword) {
-            setMessage({hintNotMatch});
+            setMessage(hintNotMatch);
             setNewPassword('');
             setConfirmNewPassword('');
             setMessageOpen(true);
@@ -45,18 +45,18 @@ const UserSettings = ({user, token, userAdded, setUserAdded}) => {
             if (response.ok) {
                 const { token: newToken } = await response.json();
                 login({ username: user }, newToken);
-                setMessage({hintUpdate});
+                setMessage(hintUpdate);
                 setMessageOpen(true);
                 setUserAdded(!userAdded);
             } else {
                 console.error('Password change failed');
                 setOldPassword('');
-                setMessage({hintUpdateError});
+                setMessage(hintUpdateError);
                 setMessageOpen(true);
             }
         } catch (error) {
             console.error('Error changing password!', error);
-            setMessage({hintUpdateError});
+            setMessage(hintUpdateError);
             setMessageOpen(true);
         }
     };

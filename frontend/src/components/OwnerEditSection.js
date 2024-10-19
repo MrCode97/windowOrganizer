@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Button, TextField, FormControlLabel, Checkbox, Typography } from '@mui/material';
+import { Button, TextField, FormControlLabel, Checkbox, Typography, Snackbar } from '@mui/material';
 import { translate } from './GeocodeAddress';
 import { useOwnerEditSectionStrings } from '../contexts/text';
 
@@ -10,6 +10,7 @@ const OwnerEditSection = ({ calendar_id, window_nr, onClose, setIsFree, token, l
   const [hasApero, setHasApero] = useState(false);
   const [time, setTime] = useState('');
   const [message, setMessage] = useState('');
+  const [messageOpen, setMessageOpen] = useState(false);
   const {
     hintUpdate,
     hintUpdateError,
@@ -62,17 +63,20 @@ const OwnerEditSection = ({ calendar_id, window_nr, onClose, setIsFree, token, l
         body: JSON.stringify({ calendar_id, window_nr, addressName, coords: newCoords, time, locationHint, hasApero }),
       });
 
-      if (response.ok) {
-        setMessage({hintUpdate});
-        if (setLocationAdded) { // if rendered from MyWindows, there is no globalMap so no need to reRender and parent doesn't have the property anyways
-          setLocationAdded(!locationAdded);
+        if (response.ok) {
+          setMessage(hintUpdate);
+          setMessageOpen(true);
+          if (setLocationAdded) { // if rendered from MyWindows, there is no globalMap so no need to reRender and parent doesn't have the property anyways
+            setLocationAdded(!locationAdded);
+          }
+        } else {
+          setMessage('');
         }
-      } else {
-        setMessage({});
+      } catch (error) {
+        console.error('Error updating window details:', error);
+        setMessage(hintUpdateError);
+        setMessageOpen(true);
       }
-    } catch (error) {
-      console.error('Error updating window details:', error);
-      setMessage({hintUpdateError});
     }
   };
 
@@ -85,15 +89,15 @@ const OwnerEditSection = ({ calendar_id, window_nr, onClose, setIsFree, token, l
         },
       });
       if (response.ok) {
-        setMessage({hintDelete});
+        setMessage(hintDelete);
         onClose();
         setLocationAdded(!locationAdded);
         setIsFree(true);
       } else {
-        setMessage({hintDeleteError});
+        setMessage(hintDeleteError);
       }
     } catch (error) {
-      setMessage({hintDeleteError});
+      setMessage(hintDeleteError);
     }
   };
 
@@ -137,7 +141,7 @@ const OwnerEditSection = ({ calendar_id, window_nr, onClose, setIsFree, token, l
       <Button onClick={handleDeleteWindow} variant="contained" color="secondary">
         {deleteText}
       </Button>
-      {message && <Typography variant="body1" color="error">{message}</Typography>}
+      <Snackbar open={messageOpen} autoHideDuration={3000} onClose={handleClose} message={message} />
     </form>
   );
 };

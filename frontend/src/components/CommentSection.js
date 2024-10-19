@@ -67,7 +67,7 @@ function CommentSection({ calendar_id, window_nr, token, calendarOwnerId }) {
         event.preventDefault();
 
         if (!consentChecked) {
-            setMessage({hintConsent});
+            setMessage(hintConsent);
             setMessageOpen(true);
             return;
         }
