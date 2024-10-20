@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { Typography, Box, TextField, Button, Snackbar } from '@mui/material';
 import { useAuth } from '../AuthProvider';
+import { useUserSettingsStrings } from '../contexts/text';
 
 const UserSettings = ({user, token, userAdded, setUserAdded}) => {
     const { login } = useAuth();
@@ -10,12 +11,21 @@ const UserSettings = ({user, token, userAdded, setUserAdded}) => {
     const [confirmNewPassword, setConfirmNewPassword] = useState('');
     const [message, setMessage] = useState('');
     const [messageOpen, setMessageOpen] = useState(false);
+    const {
+        hintNotMatch,
+        hintUpdate,
+        hintUpdateError,
+        old_password,
+        new_password,
+        confirm_password,
+        change
+    } = useUserSettingsStrings();
 
     const handlePasswordChange = async (event) => {
         event.preventDefault();
 
         if (newPassword !== confirmNewPassword) {
-            setMessage('New passwords do not match!');
+            setMessage(hintNotMatch);
             setNewPassword('');
             setConfirmNewPassword('');
             setMessageOpen(true);
@@ -35,18 +45,18 @@ const UserSettings = ({user, token, userAdded, setUserAdded}) => {
             if (response.ok) {
                 const { token: newToken } = await response.json();
                 login({ username: user }, newToken);
-                setMessage('Password successfully changed!');
+                setMessage(hintUpdate);
                 setMessageOpen(true);
                 setUserAdded(!userAdded);
             } else {
                 console.error('Password change failed');
                 setOldPassword('');
-                setMessage('Password not changed!');
+                setMessage(hintUpdateError);
                 setMessageOpen(true);
             }
         } catch (error) {
             console.error('Error changing password!', error);
-            setMessage('Error changing password!');
+            setMessage(hintUpdateError);
             setMessageOpen(true);
         }
     };
@@ -57,10 +67,10 @@ const UserSettings = ({user, token, userAdded, setUserAdded}) => {
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-            <Typography className='pageTitle' variant="h2" align="center">Change Password</Typography>
+            <Typography className='pageTitle' variant="h2" align="center">{change}</Typography>
             <form onSubmit={handlePasswordChange} style={{ width: '300px', marginTop: '20px' }}>
                 <TextField
-                    label="Old Password"
+                    label={old_password}
                     type="password"
                     fullWidth
                     margin="normal"
@@ -69,7 +79,7 @@ const UserSettings = ({user, token, userAdded, setUserAdded}) => {
                     required
                 />
                 <TextField
-                    label="New Password"
+                    label={new_password}
                     type="password"
                     fullWidth
                     margin="normal"
@@ -78,7 +88,7 @@ const UserSettings = ({user, token, userAdded, setUserAdded}) => {
                     required
                 />
                 <TextField
-                    label="Confirm New Password"
+                    label={confirm_password}
                     type="password"
                     fullWidth
                     margin="normal"
@@ -87,7 +97,7 @@ const UserSettings = ({user, token, userAdded, setUserAdded}) => {
                     required
                 />
                 <Button type="submit" variant="contained" color="primary" fullWidth sx={{ marginTop: '20px' }}>
-                    Change Password
+                    {change}
                 </Button>
             </form>
             <Snackbar

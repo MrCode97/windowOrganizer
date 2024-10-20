@@ -3,9 +3,11 @@ import { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
 import L from 'leaflet';
 import "leaflet/dist/leaflet.css";
+import { useOverviewMapStrings } from '../contexts/text';
 
 function OverviewMap({ calendar_id, locationAdded }) {
   const [calendarMapInfos, setCalendarMapInfos] = useState([]);
+  const { december } = useOverviewMapStrings();
 
   useEffect(() => {
     const fetchCalendarMapInfo = async () => {
@@ -66,7 +68,7 @@ function OverviewMap({ calendar_id, locationAdded }) {
             >
               <Popup>
                 <div>
-                  {window.window_nr}. Dezember, {window.time}
+                  {window.window_nr}. {december}, {window.time}
                   <br />
                   {window.address_name}
                 </div>

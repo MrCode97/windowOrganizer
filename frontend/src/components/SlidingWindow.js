@@ -7,11 +7,14 @@ import InfoSection from './InfoSection';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import OwnerEditSection from './OwnerEditSection';
+import { useSlidingWindowStrings } from '../contexts/text';
 
 function SlidingWindow({ window_nr, calendar_id, onClose, setIsFree, imageUpload, setImageUpload, locationAdded, setLocationAdded, calendarOwner, user, token }) {
   const [activeTab, setActiveTab] = useState(0);
   const [ownerUsername, setOwnerUsername] = useState('');
   const [calendarOwnerName, setCalendarOwnerName] = useState('');
+  const { information, gallery, upload, edit } = useSlidingWindowStrings();
+  
   if (user) {
     try {
       const fetchData = async () => {
@@ -66,10 +69,10 @@ function SlidingWindow({ window_nr, calendar_id, onClose, setIsFree, imageUpload
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px', }}>
         <Tabs value={activeTab} onChange={handleChangeTab}>
-          <Tab label="Window information" />
-          <Tab label="Gallery" />
-          <Tab label="Image Upload" />
-          {(user === ownerUsername || user === calendarOwnerName) && <Tab label="Edit" />}
+          <Tab label={information} />
+          <Tab label={gallery} />
+          <Tab label={upload} />
+          {(user === ownerUsername || user === calendarOwnerName) && <Tab label={edit} />}
           <IconButton onClick={onClose}><CloseIcon/></IconButton>
         </Tabs>
         <div>
@@ -80,11 +83,12 @@ function SlidingWindow({ window_nr, calendar_id, onClose, setIsFree, imageUpload
 
       <DialogContent sx={{ padding: '20px', borderRadius: '10px' }}>
         {/* Tab Content */}
-        {user && user !== ownerUsername && (
+
+        {false && user && user !== ownerUsername && (
           <h3>Host: {ownerUsername}</h3>
         )}
 
-        {user && user === ownerUsername && (
+        {false && user && user === ownerUsername && (
           <h3>Owner: {ownerUsername}</h3>
         )}
 

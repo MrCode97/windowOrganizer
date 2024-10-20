@@ -1,0 +1,21 @@
+{
+  "public": {
+    "pages": {
+      "impressum": {
+        "company": "IG Adventskalender Test",
+        "street": "Hauptstrasse 1",
+        "postalcode": "4000 Basel",
+        "country": "Schweiz",
+        "providername": "Test Provider",
+        "provideraddress": "Hauptstrasse 1, CH 4000 Basel",
+        "providercontact": "+41 00 000 00 00",
+        "lawtext": "Diese Website unterliegt dem Schweizer Recht. Alle Streitigkeiten, die sich aus der Nutzung dieser Website ergeben, unterliegen der Gerichtsbarkeit der Gerichte in Basel, Schweiz."
+      }
+    },
+    "assets": {
+      "impressum": {
+        "link": "tel:+41 00 000 00 00"
+      }
+    }
+  }
+}

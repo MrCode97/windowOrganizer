@@ -1,0 +1,196 @@
+{
+  "_lang": "en-US",
+  "public": {
+    "pages": {
+      "lang": {
+        "title": "Language",
+        "enUS": "English",
+        "deDE": "German",
+        "frFR": "French"
+      },
+      "impressum": {
+        "title": "Legal Notice (Impressum)",
+        "responsibletitle": "Identity of the Responsible Person",
+        "company": "[company]",
+        "street": "[street]]",
+        "postalcode": "[zip, city]",
+        "country": "[country]",
+        "providertitle": "Hosting Provider",
+        "providername": "[provider name]",
+        "provideraddress": "[address of the provider]",
+        "providercontact": "[contact phone or email]",
+        "iptitle": "Intellectual Property",
+        "iptext": "All content on this website, including text, images, and code, is protected by copyright law. Unauthorized use or reproduction is prohibited.",
+        "dptitle": "Data Protection and Privacy",
+        "dptext": "We are committed to protecting your privacy. As the content of this app focuses on Advent windows, we assume that no sensitive or personal data is collected. A calendar creator is obliged to delete prohibited content. A window presenter is obliged to use only their own images and when commenting, reference is made to the rules of decency. Should violations nevertheless occur, the website operator must be contacted (see above).",
+        "lawtitle": "Applicable Law",
+        "lawtext": "This website is governed by Swiss law. Any disputes arising from the use of this website will be subject to the jurisdiction of the courts in [city, country]."
+      },
+      "app": {
+        "welcome": "Welcome to the Advent Calendar",
+        "helloUser": "Hello {user}",
+        "logoutText": "Logout",
+        "info": "Info",
+        "welcomePage": "Welcome",
+        "impressum": "Impressum",
+        "calendarsText": "Calendars",
+        "search": "Search",
+        "administration": "Administration",
+        "login": "Login",
+        "registerUser": "Register a User",
+        "myCalendars": "My Calendars",
+        "myWindows": "My Windows",
+        "registerCalendar": "Register a Calendar",
+        "userSettings": "User Settings",
+        "hello": "Hello",
+        "noCalendarsFound": "No calendars found."
+      },
+      "adventCalendarRegistrationForm": {
+        "title": "Register a New Advent Calendar",
+        "name": "Advent Calendar Name",
+        "description": "Additional Information",
+        "submit": "Submit",
+        "consent": "I agree that the creator of the calendar is responsible for ensuring that no unlawful content, such as sexist, racist, religious, or offensive comments or images, is uploaded to this calendar. The creator must actively monitor and remove any problematic content.",
+        "register": "Register",
+        "hintSuccess": "Advent calendar registered successfully!",
+        "hintError": "An error occurred while registering the advent calendar.",
+        "hintConsent": "Please agree to the terms and conditions.",
+        "hintLogin": "Please log in first to register an advent calendar.",
+        "hintName": "Please enter calendar name with the 4 trailing year digits e.g. 'Mycalendar 2024'"
+      },
+      "commentSection": {
+        "comment": "Save comment",
+        "commentSuggestion": "Write a comment...",
+        "consent": "I agree that no problematic content will be tolerated, and my comment is respectful.",
+        "hintConsent": "Please agree to the terms and conditions."
+      },
+      "defaultCalendar": {
+        "hintCopy": "Link copied to clipboard.",
+        "hintCopyError": "An error occurred while copying the link to the clipboard.",
+        "hintLocked": "🔒 This calendar has been locked by the Calendar Owner. \nThis means you can only view but not modify.",
+        "share": "Share Calendar",
+        "copy": "Copy"
+      },
+      "gallery": {
+        "title": "Here you can see all the images that have been uploaded for this window.",
+        "altText": "Image"
+      },
+      "infoSection": {
+        "title": "Advent Window",
+        "apero": "Apéro",
+        "starting": "starting"
+      },
+      "login": {
+        "title": "Login",
+        "usernameText": "Username",
+        "passwordText": "Password",
+        "login": "Login",
+        "hintError": "An error occurred while logging in.",
+        "hintLoggedin": "You are already logged in."
+      },
+      "myCalendars": {
+        "title": "My Calendars",
+        "calendarName": "Calendar Name",
+        "description": "Additional Information",
+        "deleteSuccess": "Advent calendar deleted successfully!",
+        "deleteError": "Failed to delete advent calendar.",
+        "updatedSuccessfully": "Advent calendar updated successfully!",
+        "updatedUnsuccessfully": "Failed to update advent calendar",
+        "hintCopy": "Link copied to clipboard.",
+        "hintCopyError": "An error occurred while copying the link to the clipboard.",
+        "lock": "locked",
+        "unlock": "unlocked",
+        "unlockCalendar": "Unlock Calendar",
+        "lockCalendar": "Lock Calendar",
+        "deleteCalendar": "Delete Calendar",
+        "adventcalendar": "Advent Calendar",
+        "successfully": "successfully",
+        "failed": "Failed to",
+        "share": "Share Calendar",
+        "copy": "Copy",
+        "gotocalendar":  "Go to calendar",
+        "updatecalendar": "Update calendar",
+        "hintName": "Please enter calendar name with the 4 trailing year digits (e.g. 'Mycalendar 2024')"
+      },
+      "myWindows": {
+        "title": "My Windows"
+      },
+      "overviewMap": {
+        "december": "December"
+      },
+      "ownerEditSection": {
+        "title": "Advent Window",
+        "hintUpdate": "Window details updated successfully!",
+        "hintUpdateError": "An error occurred while updating the window details.",
+        "hintDelete": "Window deleted successfully!",
+        "hintDeleteError": "An error occurred while deleting the window.",
+        "addressNameText": "Address",
+        "timeText": "Time",
+        "descriptionText": "Additional Information",
+        "aperoText": "Apéro",
+        "saveText": "Save Changes",
+        "deleteText": "Delete Window",
+        "hintAddress": "Please state your full formal address: Street, house number, zip code, town/city"
+      },
+      "slidingWindow": {
+        "information": "Window Information",
+        "gallery": "Gallery",
+        "upload": "Image Upload",
+        "edit": "Edit Window"
+      },
+      "upload": {
+        "hintImgShrink": "The image size cannot be reduced below 2MB.",
+        "hintConsent": "You must agree to the terms before uploading an image.",
+        "hintUpload": "Image uploaded successfully!",
+        "hintUploadError": "An error occurred while uploading the image.",
+        "title": "Share your memories with us! Upload your photos and images.",
+        "consent": "I agree that no problematic content will be tolerated, and I have the rights to the image.",
+        "submit": "Submit Image",
+        "hintLogin": "Login to upload pictures"
+      },
+      "userRegistrationForm": {
+        "title": "Register a New User",
+        "hintSuccess": "User registered successfully!",
+        "hintError": "An error occurred while registering the user.",
+        "usernameText": "Username",
+        "passwordText": "Password",
+        "registerText": "Register",
+        "hintLoggedin": "You are already logged in."
+      },
+      "userSettings": {
+        "hintNotMatch": "The passwords do not match.",
+        "hintUpdate": "User settings updated successfully!",
+        "hintUpdateError": "An error occurred while updating the user settings.",
+        "old_password": "Old Password",
+        "new_password": "New Password",
+        "confirm_password": "Confirm New Password",
+        "change": "Change Password"
+      },
+      "welcomePage": {
+        "title": "Welcome to the Advent Calendar",
+        "p1": "Whether you’re an artist at heart wishing to adorn your window, or a cheerful wanderer         eager to explore the glowing tapestry of your community, our website is your gateway        to this festive experience. As a local organizer, you can create a calendar for your        village or district, and residents can volunteer to decorate their windows on specific        days, turning their homes into a part of a larger, communal celebration.",
+        "p2": "Visitors can use our platform to find decorated windows, plan their holiday strolls        with our interactive map, and afterwards, share their experiences and photos. It's a        wonderful way to connect, celebrate, and spread joy during the holiday season.",        
+        "p3": "If you only want to visit decorated windows, simply search for the calendar of your        community in the sidebar and click on the window of the current day. If your community        has no calendar yet or you want to organize a window yourself, please register first as        a user and then either create a new calendar by choosing the option in the sidebar or        click on a window, which is still marked as \"free\".",
+        "p4": "Join us in lighting up neighborhoods with warmth, creativity, and community spirit.        Let the holiday cheer begin!",
+        "registerCalendar": "Create Your calendar"
+      },
+      "windowRegistrationWindow": {
+        "hintSuccess": "Window registered successfully!",
+        "hintError": "An error occurred while registering the window.",
+        "title": "Register a New Window",
+        "address": "Address",
+        "timeText": "Time (hh:mm)",
+        "description": "Additional Information",
+        "apero": "Apéro",
+        "host": "Host a Window",
+        "hintLogin": "Please log in first to register a window.",
+        "hintAddress": "Please state your full formal address: Street, house number, zip code, town/city"
+      }
+    },
+    "assets": {
+      "impressum": {
+        "link": "tel:+41 00 000 00 00"
+      }
+    }
+  }
+}

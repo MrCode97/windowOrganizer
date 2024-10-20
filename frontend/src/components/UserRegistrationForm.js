@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { Typography, TextField, Button, Snackbar, Box } from '@mui/material';
+import { useUserRegistrationStrings } from '../contexts/text';
 
 function UserRegistrationForm({ token, setShowRegistration, setShowLogin }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const [messageOpen, setMessageOpen] = useState(false);
+  const { hintSuccess, hintError, hintLoggedin, usernameText, passwordText, registerText, title } = useUserRegistrationStrings();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -20,20 +22,21 @@ function UserRegistrationForm({ token, setShowRegistration, setShowLogin }) {
 
       if (response.ok) {
         setMessageOpen(true);
-        setMessage('Registered successfully!')
+        setMessage(hintSuccess)
         setUsername('');
         setPassword('');
         setShowLogin(true);
         setShowRegistration(false);
       } else {
-        console.error('Failed to register user');
+        const body = await response.json()
+        setMessage(hintError + ' (' + JSON.stringify(body.error) + ')');
         setMessageOpen(true);
         setUsername('');
         setPassword('');
       }
     } catch (error) {
       console.error('Error during user registration', error);
-      setMessage('Failed to register!')
+      setMessage(hintError + ' (' + error + ')')
       setMessageOpen(true);
     }
   };
@@ -45,28 +48,28 @@ function UserRegistrationForm({ token, setShowRegistration, setShowLogin }) {
   return (
     <div> {!token ? (
       <form onSubmit={handleSubmit}>
-        <Typography className='pageTitle' variant="h4">User Registration</Typography>
+        <Typography className='pageTitle' variant="h4">{title}</Typography>
         <TextField
-          label="Username"
+          label={usernameText}
           fullWidth
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
         <TextField
-          label="Password"
+          label={passwordText}
           type="password"
           fullWidth
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
         <Button type="submit" variant="contained" sx={{ backgroundColor: 'green', marginTop: '10px' }}>
-          Register
+          {registerText}
         </Button>
         <Snackbar open={messageOpen} autoHideDuration={3000} onClose={handleClose} message={message} />
       </form>
     ) : (
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <Typography className='welcomeParagraph' align='center'>You are already logged in!</Typography>
+        <Typography className='welcomeParagraph' align='center'>{hintLoggedin}</Typography>
       </Box>
     )}
     </div>

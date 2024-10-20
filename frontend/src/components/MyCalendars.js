@@ -2,16 +2,19 @@ import { useState, useEffect } from 'react';
 import { Typography, Box, List, ListItem, ListItemText, Button, Snackbar, TextField, Tooltip } from '@mui/material';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { useMyCalendarsStrings } from '../contexts/text';
 
-const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, user, token }) => {
+const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, setShowCalendar, user, token }) => {
   const [calendarData, setCalendarData] = useState([]);
+  const [calendarDataValid, setCalendarDataValid] = useState('');
   const [openCalendars, setOpenCalendars] = useState({});
   const [updateData, setUpdateData] = useState({});
   const [message, setMessage] = useState('');
   const [messageOpen, setMessageOpen] = useState(false);
   const [showShareLink, setShowShareLink] = useState({}); 
-  const [copySuccess, setCopySuccess] = useState('');
   const [lockState, setLockState] = useState(false);
+
+  const { title, calendarName, description, share, lockCalendar, unlockCalendar, deleteCalendar, hintCopy, hintCopyError, updatedSuccessfully, updatedUnsuccessfully, adventcalendar, lock, unlock, successfully, failed, deleteSuccess, deleteError, copy, gotocalendar, updatecalendar, hintName } = useMyCalendarsStrings();
 
   useEffect(() => {
     // Fetch owned calendars by the user
@@ -83,16 +86,16 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, use
       if (response.ok) {
         setCalendarAdded(!calendarAdded);
         updateData[calendarId] = '';
-        setMessage('Advent calendar updated successfully!');
+        setMessage(updatedSuccessfully);
         setMessageOpen(true);
       } else {
         console.error('Failed to update advent calendar');
-        setMessage('Failed to update advent calendar');
+        setMessage(updatedUnsuccessfully);
         setMessageOpen(true);
       }
     } catch (error) {
       console.error('Error during calendar update:', error);
-      setMessage('Error during calendar update');
+      setMessage(updatedUnsuccessfully);
       setMessageOpen(true);
     }
   };
@@ -100,11 +103,17 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, use
   const handleCopyToClipboard = (calendarName) => {
     const shareableLink = `${window.location.origin}/?calendarName=${encodeURIComponent(calendarName)}`;
     navigator.clipboard.writeText(shareableLink)
-      .then(() => setCopySuccess('Link copied to clipboard!'))
-      .catch(() => setCopySuccess('Failed to copy link'));
+      .then(() => {setMessage(hintCopy); setMessageOpen(true);})
+      .catch(() => {setMessage(hintCopyError); setMessageOpen(true);});
+  };
+
+  const handleGoTO = (calendarName) => {
+    const shareableLink = `${window.location.origin}/?calendarName=${encodeURIComponent(calendarName)}`;
+    window.location = shareableLink;
   };
 
   const handleLockCalendar = async (calendarId, lockState) => {
+    const locktext = lockState ? `(${lock})` : `(${unlock})`;
     try {
       const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/lockAdventCalendar`, {
         method: 'POST',
@@ -116,18 +125,19 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, use
       });
 
       if (response.ok) {
-        setMessage(`Advent calendar ${lockState ? 'locked' : 'unlocked'} successfully!`);
+        setMessage(`${adventcalendar} ${locktext} ${successfully}!`);
+
         setLockState(lockState);
         setCalendarAdded(!calendarAdded);
         setMessageOpen(true);
       } else {
-        console.error(`Failed to ${lockState ? 'lock' : 'unlock'} advent calendar`);
-        setMessage(`Failed to ${lockState ? 'lock' : 'unlock'} advent calendar`);
+        console.error(`${failed} ${locktext} ${adventcalendar}`);
+        setMessage(`Failed to ${locktext} advent calendar`);
         setMessageOpen(true);
       }
     } catch (error) {
-      console.error(`Error during calendar ${lockState ? 'lock' : 'unlock'}:`, error);
-      setMessage(`Error during calendar ${lockState ? 'lock' : 'unlock'}`);
+      console.error(`Error during calendar ${locktext}:`, error);
+      setMessage(`Error during calendar ${locktext}`);
       setMessageOpen(true);
     }
   };
@@ -145,11 +155,11 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, use
       if (response.ok) {
         setSelectedCalendar(null);
         setCalendarAdded(!calendarAdded);
-        setMessage('Advent calendar deleted successfully!');
+        setMessage(deleteSuccess);
         setMessageOpen(true);
       } else {
         console.error('Failed to delete advent calendar');
-        setMessage('Failed to delete advent calendar');
+        setMessage(deleteError);
         setMessageOpen(true);
       }
     } catch (error) {
@@ -168,7 +178,7 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, use
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <Typography className='pageTitle' variant="h2" align="center">My Calendars</Typography>
+      <Typography className='pageTitle' variant="h2" align="center">{title}</Typography>
       <List>
         {calendarData.map((calendar) => (
           <div key={calendar.id}>
@@ -181,14 +191,27 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, use
             </ListItem>
             {openCalendars[calendar.id] && (
               <Box sx={{ p: 2 }}>
-                <TextField
-                  label="Calendar Name"
+                <TextField required
+                  label={calendarName}
+                  inputProps={{
+                    pattern: "^[\\S\\W]+\\W20[\\d]{2}$/giu",
+                  }}
+                  helperText={calendarDataValid}
                   fullWidth
                   value={updateData[calendar.id]?.name || ''}
-                  onChange={(e) => handleInputChange(calendar.id, 'name', e.target.value)}
+                  onChange={(e) => {
+                      handleInputChange(calendar.id, 'name', e.target.value);
+                      const pattern = /^[\S\W]+\W20[\d]{2}$/giu;
+                      if (!pattern.test(e.target.value)) {
+                         setCalendarDataValid(hintName);
+                      } else {
+                        setCalendarDataValid('');
+                      }
+                    }
+                  }
                 />
                 <TextField
-                  label="Additional Information"
+                  label={description}
                   fullWidth
                   multiline
                   rows={4}
@@ -198,10 +221,19 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, use
                 />
                 <Button
                   variant="contained"
+                  color="primary"
                   sx={{ mt: 2, backgroundColor: 'green' }}
                   onClick={() => handleUpdateCalendar(calendar.id)}
                 >
-                  Update Calendar
+                  {updatecalendar}
+                </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  sx={{ mt: 2 }}
+                  onClick={() => handleGoTO(updateData[calendar.id]?.name || '')}
+                >
+                  {gotocalendar}
                 </Button>
 
                 <Button
@@ -210,7 +242,7 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, use
                   sx={{ mt: 2 }}
                   onClick={() => setShowShareLink((prev) => ({ ...prev, [calendar.id]: !prev[calendar.id] }))}
                 >
-                  Share Calendar
+                  {share}
                 </Button>
 
                 <Button
@@ -219,7 +251,7 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, use
                   sx={{ mt: 2 }}
                   onClick={() => handleLockCalendar(calendar.id, !calendar.locked)}
                 >
-                  {calendar.locked ? "Unlock Calendar" : "Lock Calendar"}
+                  {calendar.locked ? `${unlockCalendar}` : `${lockCalendar}` }
                 </Button>
 
                 <Button
@@ -228,7 +260,7 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, use
                   sx={{ mt: 2 }}
                   onClick={() => handleDeleteCalendar(calendar.id)}
                 >
-                  Delete Calendar
+                  {deleteCalendar}
                 </Button>
 
                 {showShareLink[calendar.id] && (
@@ -244,7 +276,7 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, use
                     />
                     <Tooltip title="Copy to Clipboard">
                       <Button onClick={() => handleCopyToClipboard(calendar.name)} variant="contained">
-                        Copy
+                        {copy}
                       </Button>
                     </Tooltip>
                   </Box>
@@ -255,7 +287,6 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, use
         ))}
       </List>
       <Snackbar open={messageOpen} autoHideDuration={3000} onClose={handleClose} message={message} />
-      {copySuccess && <Typography color="success.main">{copySuccess}</Typography>}
     </Box>
   );
 }

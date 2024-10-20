@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Grid2, Typography, Box, Button, TextField, Tooltip } from '@mui/material';
 import OverviewMap from './OverviewMap';
 import WindowTile from './WindowTile';
+import { useDefaultCalendarStrings } from '../contexts/text';
 
 function DefaultCalendar({ id, name, additionalInfo, calendarOwner, locked, user, token }) {
   const window_nrs = Array(24).fill().map((_, index) => index + 1);
@@ -9,11 +10,19 @@ function DefaultCalendar({ id, name, additionalInfo, calendarOwner, locked, user
   const [showShareLink, setShowShareLink] = useState(false);
   const [copySuccess, setCopySuccess] = useState('');
 
+  const {
+    share,
+    copy,
+    hintCopy,
+    hintCopyError,
+    hintLocked,
+  } = useDefaultCalendarStrings();
+
   const handleCopyToClipboard = () => {
     const shareableLink = `${window.location.origin}/?calendarName=${encodeURIComponent(name)}`;
     navigator.clipboard.writeText(shareableLink)
-      .then(() => setCopySuccess('Link copied to clipboard!'))
-      .catch(() => setCopySuccess('Failed to copy link'));
+      .then(() => setCopySuccess(hintCopy))
+      .catch(() => setCopySuccess(hintCopyError));
   };
 
   return (
@@ -42,8 +51,7 @@ function DefaultCalendar({ id, name, additionalInfo, calendarOwner, locked, user
           variant="body1"
           align="center"
         >
-          🔒 This calendar has been locked by the Calendar Owner.
-          This means you can only view but not modify.
+          {hintLocked}
         </Typography>
       )}
       
@@ -68,7 +76,7 @@ function DefaultCalendar({ id, name, additionalInfo, calendarOwner, locked, user
         onClick={() => setShowShareLink(!showShareLink)}
         sx={{ marginBottom: '20px' }}
       >
-        Share Calendar
+        {share}
       </Button>
 
       {showShareLink && (
@@ -84,7 +92,7 @@ function DefaultCalendar({ id, name, additionalInfo, calendarOwner, locked, user
           />
           <Tooltip title="Copy to Clipboard">
             <Button onClick={handleCopyToClipboard} variant="contained">
-              Copy
+              {copy}
             </Button>
           </Tooltip>
         </Box>

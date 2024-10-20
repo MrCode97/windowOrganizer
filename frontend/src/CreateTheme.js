@@ -23,7 +23,18 @@ const theme = createTheme({
       textAlign: 'center',
       padding: '8px 0',
       color: '#ffe1ba',
-      backgroundColor: '#515151'
+    },
+    h4: {
+      fontWeight: 'bold',
+      textAlign: 'center',
+      padding: '8px 0',
+      color: '#ffe1ba',
+    },
+    h6: {
+      fontWeight: 'bold',
+      textAlign: 'center',
+      padding: '8px 0',
+      color: '#ffe1ba',
     },
     body1: {
       fontSize: '1rem',
@@ -35,6 +46,20 @@ const theme = createTheme({
     },
   },
   components: {
+    MuiFormHelperText: {
+      styleOverrides: {
+        root: {
+          color: 'orange',
+        },
+      },
+    },
+    MuiLink: {
+      styleOverrides: {
+        root: {
+          color: '#ffe1ba',
+        },
+      },
+    },
     MuiBox: {
       styleOverrides: {
         root: {
@@ -50,6 +75,7 @@ const theme = createTheme({
           backgroundColor: '#2D2923',
           borderRadius: '8px',
           padding: '16px',
+          maxWidth: '800px',
         },
       },
     },

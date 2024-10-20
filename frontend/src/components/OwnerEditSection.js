@@ -1,14 +1,31 @@
 import { useState, useEffect } from 'react';
-import { Button, TextField, FormControlLabel, Checkbox, Typography } from '@mui/material';
+import { Button, TextField, FormControlLabel, Checkbox, Typography, Snackbar } from '@mui/material';
 import { translate } from './GeocodeAddress';
+import { useOwnerEditSectionStrings } from '../contexts/text';
 
 const OwnerEditSection = ({ calendar_id, window_nr, onClose, setIsFree, token, locationAdded, setLocationAdded }) => {
   const [addressName, setAddressName] = useState('');
+  const [addressValidation, setAddressValidation] = useState('');
   const [coordinates, setCoordinates] = useState([]);
   const [locationHint, setLocationHint] = useState('');
   const [hasApero, setHasApero] = useState(false);
   const [time, setTime] = useState('');
   const [message, setMessage] = useState('');
+  const [messageOpen, setMessageOpen] = useState(false);
+  const {
+    title,
+    hintUpdate,
+    hintUpdateError,
+    hintDelete,
+    hintDeleteError,
+    addressNameText,
+    timeText,
+    descriptionText,
+    aperoText,
+    saveText,
+    deleteText,
+    hintAddress
+  } = useOwnerEditSectionStrings();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -31,35 +48,55 @@ const OwnerEditSection = ({ calendar_id, window_nr, onClose, setIsFree, token, l
   }, [calendar_id, window_nr]);
 
   useEffect(() => {
-  }, [coordinates]);
+      const pattern = /^([\S]+)\W([\d]+[\w]*)[,\W]+([\d]+)\W([\S]+)$/giu;
+      if (!pattern.test(addressName)) {
+         setAddressValidation(hintAddress);
+      } else {
+        setAddressValidation('');
+      }
+  }, [coordinates, addressName, hintAddress]);
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setMessageOpen(false);
+  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    const pattern = /^([\S]+)\W([\d]+[\w]*)[,\W]+([\d]+)\W([\S]+)$/giu;
+    if (!pattern.test(addressName)) {
+      setMessage(hintAddress);
+      setMessageOpen(true);
+    } else {
+      try {
+        const newCoords = await translate(addressName);
+        setCoordinates(newCoords);
 
-    const newCoords = await translate(addressName);
-    setCoordinates(newCoords);
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/updateWindowHosting`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify({ calendar_id, window_nr, addressName, coords: newCoords, time, locationHint, hasApero }),
+        });
 
-    try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/updateWindowHosting`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify({ calendar_id, window_nr, addressName, coords: newCoords, time, locationHint, hasApero }),
-      });
-
-      if (response.ok) {
-        setMessage('Window details updated successfully!');
-        if (setLocationAdded) { // if rendered from MyWindows, there is no globalMap so no need to reRender and parent doesn't have the property anyways
-          setLocationAdded(!locationAdded);
+        if (response.ok) {
+          setMessage(hintUpdate);
+          setMessageOpen(true);
+          if (setLocationAdded) { // if rendered from MyWindows, there is no globalMap so no need to reRender and parent doesn't have the property anyways
+            setLocationAdded(!locationAdded);
+          }
+        } else {
+          setMessage('');
         }
-      } else {
-        setMessage('Failed to update window details.');
+      } catch (error) {
+        console.error('Error updating window details:', error);
+        setMessage(hintUpdateError + ' (' + error + ')');
+        setMessageOpen(true);
       }
-    } catch (error) {
-      console.error('Error updating window details:', error);
-      setMessage('An error occurred. Please try again.');
     }
   };
 
@@ -72,30 +109,31 @@ const OwnerEditSection = ({ calendar_id, window_nr, onClose, setIsFree, token, l
         },
       });
       if (response.ok) {
-        setMessage('Window deleted successfully');
+        setMessage(hintDelete);
         onClose();
         setLocationAdded(!locationAdded);
         setIsFree(true);
       } else {
-        setMessage('Failed to delete window');
+        setMessage(hintDeleteError);
       }
     } catch (error) {
-      setMessage('Error deleting window');
+      setMessage(hintDeleteError);
     }
   };
 
   return (
     <form onSubmit={handleSubmit}>
-      <Typography variant="h4">{window_nr}. Advent Window - Edit Mode</Typography>
-      <TextField
-        label="Address Name"
+      <Typography variant="h4">{window_nr}. {title} - Edit Mode</Typography>
+      <TextField required
+        label={addressNameText}
         value={addressName}
+        helperText={addressValidation}
         onChange={(e) => setAddressName(e.target.value)}
         fullWidth
         margin="normal"
       />
-      <TextField
-        label="Time"
+      <TextField required
+        label={timeText}
         type="time"
         value={time}
         onChange={(e) => setTime(e.target.value)}
@@ -103,7 +141,7 @@ const OwnerEditSection = ({ calendar_id, window_nr, onClose, setIsFree, token, l
         margin="normal"
       />
       <TextField
-        label="Location Hint"
+        label={descriptionText}
         value={locationHint}
         onChange={(e) => setLocationHint(e.target.value)}
         fullWidth
@@ -114,17 +152,20 @@ const OwnerEditSection = ({ calendar_id, window_nr, onClose, setIsFree, token, l
           <Checkbox
             checked={hasApero}
             onChange={(e) => setHasApero(e.target.checked)}
+            style ={{
+              color: "rgb(255, 225, 186)",
+            }}
           />
         }
-        label="Has Apéro"
+        label={aperoText}
       />
       <Button type="submit" variant="contained" color="primary">
-        Save Changes
+        {saveText}
       </Button>
       <Button onClick={handleDeleteWindow} variant="contained" color="secondary">
-        Delete/Deregister Window
+        {deleteText}
       </Button>
-      {message && <Typography variant="body1" color="error">{message}</Typography>}
+      <Snackbar open={messageOpen} autoHideDuration={3000} onClose={handleClose} message={message} />
     </form>
   );
 };

@@ -3,11 +3,13 @@ import { Typography, Box, List, ListItem, ListItemText, Collapse, Grid2 } from '
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import WindowTile from './WindowTile';
+import { useMyWindowsStrings } from '../contexts/text'; 
 
 const MyWindows = ({ user, token }) => {
   const [windowsData, setWindowsData] = useState([]);
   const [calendarDetails, setCalendarDetails] = useState({});
   const [openCalendars, setOpenCalendars] = useState({});
+  const { title } = useMyWindowsStrings();
 
   useEffect(() => {
     // Fetch windows owned by the user
@@ -71,7 +73,7 @@ const MyWindows = ({ user, token }) => {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <Typography className='pageTitle' variant="h2" align="center">My Windows</Typography>
+      <Typography className='pageTitle' variant="h2" align="center">{title}</Typography>
       <List>
         {windowsData.map((windowItem) => (
           <div key={windowItem.calendar_id}>
