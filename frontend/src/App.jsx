@@ -23,6 +23,7 @@ import MyCalendars from './components/MyCalendars';
 import MyWindows from './components/MyWindows';
 
 import { AggregateTextProvider, useAppStrings } from './contexts/text';
+import bgImage from './assets/images/blue-snow_colored.png';
 
 const Root = styled('div')({
   display: 'flex',
@@ -34,7 +35,7 @@ const MainBox = styled(Box)({
   marginTop: '64px',
   marginLeft: 0,
   mt: '64px',
-  backgroundImage: `url(${require('./assets/images/blue-snow_colored.png')})`,
+  backgroundImage: `url(${bgImage})`,
   backgroundSize: 'cover',
   backgroundRepeat: 'repeat',
   backgroundColor: '#f0f0f0',
@@ -83,7 +84,7 @@ function App() {
   useEffect(() => {
     const fetchCalendars = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/calendars`);
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/api/calendars`);
         if (!response.ok) {
           throw new Error('Failed to fetch calendars');
         }

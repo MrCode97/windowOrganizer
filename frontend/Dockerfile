@@ -1,9 +1,11 @@
-FROM node:20-alpine
+FROM node:24-alpine
 
 RUN npm install -g serve
-WORKDIR /adventscalendar/
-COPY build/ /adventscalendar
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
 
-ENV REACT_APP_BACKEND_URL=""
-
-CMD ["serve"]
+EXPOSE 3000
+CMD ["serve", "-s", "dist", "-l", "3000"]

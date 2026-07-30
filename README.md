@@ -1,56 +1,57 @@
-###### 1. The repo:
+###### Prerequisites
+- Node.js 24 (set via `nvm use` or see `.nvmrc`)
+- Docker (for DB / full compose)
+
+###### 1. Clone
 ```bash
 git clone https://github.com/MrCode97/windowOrganizer.git
 cd windowOrganizer
+nvm use
 ```
 
-###### 2. Create your own `.env` files, i.e. 
+###### 2. Environment files
 ```bash
 cp frontend/.env.example frontend/.env
 cp backend/.env.example backend/.env
+# modify values as needed
 ```
-and modify accordingly.
 
+###### 3. Database (three options)
 
-##### 3. DB:
+**Option A — Docker Compose (recommended):**
 ```bash
-# 1st terminal: windowOrganizer %
+cd compose
+docker compose up -d db
+```
+
+**Option B — standalone Docker:**
+```bash
 cd backend
 docker build -t advent_db -f ./Dockerfile.db .
-# Hit Ctrl-C to stop. Note the `--rm` flag to remove volume on close
 docker run --rm -p 5432:5432 --name adventCal advent_db
 ```
 
-##### 4. Backend:
+**Option C — local PostgreSQL:**
+Create a database named `adventcalendar` with the credentials in `backend/.env`.
+
+###### 4. Backend
 ```bash
-# 2nd terminal: windowOrganizer %
 cd backend
-npm install     # install dependencies
-export $(cat .env | xargs) # export env variables
-node index.js   # run
+npm install
+npm run dev    # starts with nodemon (auto-restart on changes)
 ```
 
+###### 5. Frontend
 ```bash
-# instead of export when using Windows
-Get-Content .env | ForEach-Object { [System.Environment]::SetEnvironmentVariable($_.Split('=')[0], $_.Split('=')[1], [System.EnvironmentVariableTarget]::Process) }
-```
-
-##### 5. Frontend:
-```bash
-# 3rd terminal: windowOrganizer %
 cd frontend
-export $(cat .env | xargs) # export env variables
-npm install     # install dependencies
-npm start       # run
+npm install
+npm run dev    # starts Vite dev server on http://localhost:3000
 ```
 
-![Alt text](image.png)
+Vite reads `.env` automatically — no manual `export` needed.
+It also proxies `/api` requests to `http://localhost:7007` so the backend URL is handled transparently.
 
-
-##### 6. Docker Compose
-As a final test before deploying to production Docker-Runtime, start all services as
-Docker-Compose installation:
-
+###### 6. Full stack with Docker Compose
 ```bash
 cd compose
 docker compose up -d

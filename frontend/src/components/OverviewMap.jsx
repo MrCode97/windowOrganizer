@@ -5,6 +5,8 @@ import L from 'leaflet';
 import "leaflet/dist/leaflet.css";
 import { useOverviewMapStrings } from '../contexts/text';
 
+const starIcons = import.meta.glob('../assets/staricons/*.png', { eager: true, query: '?url', import: 'default' });
+
 function OverviewMap({ calendar_id, locationAdded }) {
   const [calendarMapInfos, setCalendarMapInfos] = useState([]);
   const { december } = useOverviewMapStrings();
@@ -12,7 +14,7 @@ function OverviewMap({ calendar_id, locationAdded }) {
   useEffect(() => {
     const fetchCalendarMapInfo = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/locations?calendar_id=${calendar_id}`);
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/api/locations?calendar_id=${calendar_id}`);
         const data = await response.json();
         setCalendarMapInfos(data.calendarMapInfos);
       } catch (error) {
@@ -62,7 +64,7 @@ function OverviewMap({ calendar_id, locationAdded }) {
               key={index}
               position={[window.address.x, window.address.y]}
               icon={new L.icon({
-                iconUrl: require('../assets/staricons/' + window.window_nr + '.png'),
+                iconUrl: starIcons[`../assets/staricons/${window.window_nr}.png`] || starIcons[Object.keys(starIcons)[0]],
                 iconSize: [32, 32],
               })}
             >

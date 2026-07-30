@@ -73,7 +73,9 @@
       },
       "gallery": {
         "title": "Here you can see all the images that have been uploaded for this window.",
-        "altText": "Image"
+        "altText": "Image",
+        "imageCounter": "Image {current} of {total}",
+        "close": "Close"
       },
       "infoSection": {
         "title": "Advent Window",
@@ -140,6 +142,7 @@
       },
       "upload": {
         "hintImgShrink": "The image size cannot be reduced below 2MB.",
+        "hintNoFile": "Please select a file first.",
         "hintConsent": "You must agree to the terms before uploading an image.",
         "hintUpload": "Image uploaded successfully!",
         "hintUploadError": "An error occurred while uploading the image.",

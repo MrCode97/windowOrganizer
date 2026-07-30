@@ -9,6 +9,13 @@ type JsonLocalizedStrings = typeof baseLangStrings;
 const baseTextContext = createContext<JsonLocalizedStrings>(baseLangStrings);
 const TextProvidingWrapper = baseTextContext.Provider;
 
+const langModules = import.meta.glob('./*.json', { eager: true, import: 'default' }) as Record<string, JsonLocalizedStrings>;
+const langFiles: Record<string, JsonLocalizedStrings> = {};
+for (const [key, mod] of Object.entries(langModules)) {
+  const match = key.match(/\/([^/]+)\.json$/);
+  if (match) langFiles[match[1]] = mod;
+}
+
 export function useImpressumString() {
     return useContext(baseTextContext).public.pages.impressum;
 }
@@ -96,6 +103,7 @@ function isObject(item: any): boolean {
 function deepMergeWithMap(target: any, source: any, visited = new Map<any, any>()) {
     if (isObject(target) && isObject(source)) {
         for (const key in source) {
+            if (key === '__proto__' || key === 'constructor' || key === 'prototype') continue;
             if (isObject(source[key])) {
                 if (!target[key]) {
                     target[key] = {};
@@ -140,8 +148,8 @@ export function AggregateTextProvider(props: any){
                 console.log("error loading lang/vars.json " + error);
             }
             try {
-                const jsonStrings = await import(`./${props.lang}.json`) as JsonLocalizedStrings;
-                if (jsonStrings.public) {
+                const jsonStrings = langFiles[props.lang] as JsonLocalizedStrings;
+                if (jsonStrings && jsonStrings.public) {
                     var completeData = jsonStrings;
                     if (varsStrings.public) {
                         completeData = deepMergeWithMap(jsonStrings, varsStrings);

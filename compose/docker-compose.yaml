@@ -13,7 +13,7 @@ services:
       retries: 5
     restart: always
     environment:
-      - REACT_APP_BACKEND_URL=http://localhost:7007
+      - VITE_BACKEND_URL=http://localhost:7007
     depends_on:
       - backend
     links:
@@ -72,7 +72,7 @@ services:
       - intern
 
   db:
-    image: postgres:latest
+    image: postgres:17
     restart: always
     ports:
       - '5432:5432'

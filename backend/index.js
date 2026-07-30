@@ -3,8 +3,8 @@ const { Pool } = require('pg');
 const cors = require('cors');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const multer = require('multer');
-const upload = multer({ storage: multer.memoryStorage() });
+const Busboy = require('busboy');
+const rateLimit = require('express-rate-limit');
 
 const jwt_secret = process.env.JWT_SECRET;
 const dbUser = process.env.DB_USER;
@@ -13,9 +13,62 @@ const dbName = process.env.DB;
 const dbPassword = process.env.DB_PASSWORD;
 const dbPort = process.env.DB_PORT;
 
+// Rate limiting
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: { error: 'Too many attempts, please try again later.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const generalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 1000,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(generalLimiter);
+
+// Busboy middleware to replace multer
+function busboyUpload(fieldName) {
+  return (req, res, next) => {
+    if (!req.is('multipart/form-data')) {
+      return res.status(400).json({ error: 'Expected multipart/form-data' });
+    }
+
+    let bb;
+    try {
+      bb = Busboy({ headers: req.headers });
+    } catch (err) {
+      return next(err);
+    }
+
+    const chunks = [];
+    let fileInfo = null;
+
+    bb.on('file', (name, file, info) => {
+      if (name !== fieldName) {
+        file.resume();
+        return;
+      }
+      fileInfo = info;
+      file.on('data', (chunk) => chunks.push(chunk));
+    });
+
+    bb.on('finish', () => {
+      req.file = fileInfo ? { buffer: Buffer.concat(chunks), ...fileInfo } : undefined;
+      next();
+    });
+
+    bb.on('error', next);
+    req.pipe(bb);
+  };
+}
 
 const pool = new Pool({
   user: dbUser,
@@ -86,7 +139,7 @@ async function isLocked(calendar_id) {
 }
 
 // Admin User
-app.post('/api/login', async (req, res) => {
+app.post('/api/login', authLimiter, async (req, res) => {
   const { username, password } = req.body;
 
   // Basic validation
@@ -847,7 +900,7 @@ app.get('/api/locations', async (req, res) => {
 });
 
 // Data Modifications
-app.post('/api/pictures', upload.single('image'), async (req, res) => {
+app.post('/api/pictures', busboyUpload('image'), async (req, res) => {
   // TODO: maybe do some preprocessing on the image data before storing it in the database or set a limit
   // Take uploaded image for a particular window
   if (!await isValidToken(req)) {
@@ -1019,6 +1072,30 @@ app.delete('/api/delComment', async (req, res) => {
   }
 });
 
+
+// Geocoding proxy (avoids browser CORS to Nominatim)
+app.get('/api/geocode', async (req, res) => {
+  const { q } = req.query;
+  if (!q) return res.status(400).json({ error: 'Missing query parameter ?q=' });
+
+  try {
+    const response = await fetch(`https://nominatim.openstreetmap.org/search.php?q=${encodeURIComponent(q)}&format=json`, {
+      headers: { 'User-Agent': 'AdventCalendar/1.0 (local dev)' },
+    });
+    if (!response.ok) {
+      return res.status(response.status).json({ error: 'Geocoding request failed' });
+    }
+    const data = await response.json();
+    if (data.length > 0) {
+      res.json({ lat: data[0].lat, lon: data[0].lon });
+    } else {
+      res.status(404).json({ error: 'Address not found' });
+    }
+  } catch (error) {
+    console.error('Geocoding error:', error);
+    res.status(502).json({ error: 'Geocoding service unavailable' });
+  }
+});
 
 app.listen(7007, () => {
   console.log('Server listening on port 7007');

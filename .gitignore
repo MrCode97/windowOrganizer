@@ -4,6 +4,7 @@ node_modules/
 # Ignore build artifacts
 /build/
 /dist/
+/frontend/dist/
 
 # Ignore environment variables file
 #.env
@@ -69,8 +70,10 @@ __snapshots__/
 /cypress/videos/
 /cypress/screenshots/
 
-# Ignore package-lock files in the backend directory
-backend/node_modules/
+# Ignore package-lock files
 backend/package-lock.json
-backend/node_modules/*
 frontend/package-lock.json
+
+# Local project files
+.nvmrc
+CHANGELOG.md
