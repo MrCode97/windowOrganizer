@@ -3,10 +3,13 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server",
-    "dev": "nodemon server"
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "check": "node --check index.js",
+    "lint": "eslint index.js auth.js",
+    "test": "npm run lint && npm run check"
   },
   "keywords": [],
   "author": "",
@@ -17,16 +20,16 @@
     "cors": "^2.8.6",
     "express": "^5.2.1",
     "express-rate-limit": "^8.6.1",
-    "jsonwebtoken": "^9.0.3",
-    "pg": "^8.22.0"
+    "jose": "^6.2.10",
+    "pg": "^8.23.0"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "eslint": "^9.39.5",
+    "globals": "^16.0.0",
     "nodemon": "^3.1.14"
   },
   "overrides": {
-    "cookie": "0.7.2",
-    "tar": "^7",
-    "minimatch": "^10",
-    "brace-expansion": "^2"
+    "picomatch": "^2.3.2"
   }
 }
