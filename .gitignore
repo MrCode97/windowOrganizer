@@ -70,10 +70,6 @@ __snapshots__/
 /cypress/videos/
 /cypress/screenshots/
 
-# Ignore package-lock files
-backend/package-lock.json
-frontend/package-lock.json
-
 # Local project files
 .nvmrc
 CHANGELOG.md
