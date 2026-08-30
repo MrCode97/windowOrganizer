@@ -1,12 +1,11 @@
-const express = require('express');
-const { Pool } = require('pg');
-const cors = require('cors');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const Busboy = require('busboy');
-const rateLimit = require('express-rate-limit');
+import express from 'express';
+import { Pool } from 'pg';
+import cors from 'cors';
+import bcrypt from 'bcrypt';
+import Busboy from 'busboy';
+import rateLimit from 'express-rate-limit';
+import { signToken, verifyToken } from './auth.js';
 
-const jwt_secret = process.env.JWT_SECRET;
 const dbUser = process.env.DB_USER;
 const dbHost = process.env.DB_HOST;
 const dbName = process.env.DB;
@@ -86,12 +85,13 @@ async function isValidToken(req) {
     console.debug('Unauthorized. Token missing.');
     return false;
   }
+  let username = '';
   // Check if the token is valid
   try {
-    const decodedToken = jwt.verify(token.split(' ')[1], jwt_secret);
+    const decodedToken = await verifyToken(token.split(' ')[1]);
 
     if (!decodedToken) {
-      condole.debug('Unauthorized. Invalid token.');
+      console.debug('Unauthorized. Invalid token.');
       return false;
     }
     username = decodedToken.username;
@@ -161,9 +161,7 @@ app.post('/api/login', authLimiter, async (req, res) => {
     const passwordMatch = await bcrypt.compare(password, hashedPassword);
 
     if (passwordMatch) {
-      const token = jwt.sign({ username: result.rows[0].username }, jwt_secret, {
-        expiresIn: '1h',
-      });
+      const token = await signToken({ username: result.rows[0].username }, '1h');
       res.status(200).json({ message: 'Login successful!', token });
     } else {
       res.status(401).json({ error: 'Invalid credentials. Password does not match.' });
@@ -219,7 +217,7 @@ app.post('/api/user/changePassword', async (req, res) => {
 
   try {
     // Decode the token to get the username
-    const decodedToken = jwt.verify(token.split(' ')[1], jwt_secret);
+    const decodedToken = await verifyToken(token.split(' ')[1]);
     username = decodedToken.username;
   } catch (error) {
     console.error('Error decoding token', error);
@@ -243,9 +241,7 @@ app.post('/api/user/changePassword', async (req, res) => {
     const passwordMatch = await bcrypt.compare(oldPassword, hashedPassword);
 
     if (passwordMatch) {
-      const token = jwt.sign({ username: result.rows[0].username }, jwt_secret, {
-        expiresIn: '6h',
-      });
+      const token = await signToken({ username: result.rows[0].username }, '6h');
       const hashedNewPassword = await bcrypt.hash(newPassword, 12);
       await pool.query('UPDATE users SET password = $1 WHERE username = $2', [hashedNewPassword, username]);
       res.status(200).json({ message: 'Password successfully changed!', token });
@@ -265,8 +261,9 @@ app.post('/api/registerAdventCalendar', async (req, res) => {
   const token = req.headers.authorization;
   const { adventCalendarId, additionalInfo } = req.body;
 
+  let username = '';
   try {
-    const decodedToken = jwt.verify(token.split(' ')[1], jwt_secret);
+    const decodedToken = await verifyToken(token.split(' ')[1]);
     username = decodedToken.username;
   } catch (error) {
     return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
@@ -316,7 +313,7 @@ app.post('/api/updateAdventCalendar', async (req, res) => {
   let username;
 
   try {
-    const decodedToken = jwt.verify(token.split(' ')[1], jwt_secret);
+    const decodedToken = await verifyToken(token.split(' ')[1]);
     username = decodedToken.username;
   } catch (error) {
     return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
@@ -367,7 +364,7 @@ app.delete('/api/delAdventCalendar', async (req, res) => {
   let username;
 
   try {
-    const decodedToken = jwt.verify(token.split(' ')[1], jwt_secret);
+    const decodedToken = await verifyToken(token.split(' ')[1]);
     username = decodedToken.username;
   } catch (error) {
     return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
@@ -419,7 +416,7 @@ app.post('/api/lockAdventCalendar', async (req, res) => {
   let username;
 
   try {
-    const decodedToken = jwt.verify(token.split(' ')[1], jwt_secret);
+    const decodedToken = await verifyToken(token.split(' ')[1]);
     username = decodedToken.username;
   } catch (error) {
     return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
@@ -467,7 +464,7 @@ app.post('/api/registerWindowHosting', async (req, res) => {
   const token = req.headers.authorization;
 
   try {
-    const decodedToken = jwt.verify(token.split(' ')[1], jwt_secret);
+    const decodedToken = await verifyToken(token.split(' ')[1]);
     const username = decodedToken.username;
     const userIdQuery = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
     const userId = userIdQuery.rows[0].id;
@@ -509,7 +506,7 @@ app.post('/api/updateWindowHosting', async (req, res) => {
   const { calendar_id, window_nr, addressName, coords, time, locationHint, hasApero } = req.body;
 
   try {
-    const decodedToken = jwt.verify(token.split(' ')[1], jwt_secret);
+    const decodedToken = await verifyToken(token.split(' ')[1]);
     const username = decodedToken.username;
 
     const userQuery = await pool.query('SELECT id FROM users WHERE username = $1', [username]);
@@ -554,7 +551,7 @@ app.delete('/api/delWindowHosting', async (req, res) => {
 
   const { calendar_id, window_nr } = req.query;
   const token = req.headers.authorization.split(' ')[1];
-  const decodedToken = jwt.verify(token, jwt_secret);
+  const decodedToken = await verifyToken(token);
   const username = decodedToken.username;
 
   try {
@@ -909,7 +906,7 @@ app.post('/api/pictures', busboyUpload('image'), async (req, res) => {
 
   const { window_nr, calendar_id } = req.query;
   const token = req.headers.authorization.split(' ')[1];
-  const decodedToken = jwt.verify(token, jwt_secret);
+  const decodedToken = await verifyToken(token);
   const username = decodedToken.username;
 
   if (await isLocked(calendar_id)) {
@@ -943,7 +940,7 @@ app.delete('/api/delPicture', async (req, res) => {
 
   const { picture_id, calendar_id, window_nr } = req.query;
   const token = req.headers.authorization.split(' ')[1];
-  const decodedToken = jwt.verify(token, jwt_secret);
+  const decodedToken = await verifyToken(token);
   const username = decodedToken.username;
 
   try {
@@ -991,7 +988,7 @@ app.post('/api/addComment', async (req, res) => {
   }
 
   const token = req.headers.authorization.split(' ')[1];
-  const decodedToken = jwt.verify(token, jwt_secret);
+  const decodedToken = await verifyToken(token);
   const username = decodedToken.username;
 
   if (await isLocked(calendar_id)) {
@@ -1023,7 +1020,7 @@ app.delete('/api/delComment', async (req, res) => {
 
   const { comment_id, calendar_id, window_nr } = req.query;
   const token = req.headers.authorization.split(' ')[1];
-  const decodedToken = jwt.verify(token, jwt_secret);
+  const decodedToken = await verifyToken(token);
   const username = decodedToken.username;
 
   if (await isLocked(calendar_id)) {
