@@ -33,10 +33,11 @@ jobs:
         run: |
           cd frontend
           npm audit --audit-level=high
-      - name: Build Frontend
+      - name: Test and Build Frontend
         run: |
           cd frontend
           npm i
+          npm run test
           npm run build
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -91,6 +92,11 @@ jobs:
         run: |
           cd backend
           npm audit --audit-level=high
+      - name: Test Backend
+        run: |
+          cd backend
+          npm ci
+          npm test
       - name: Log in to the Container registry
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
         with:

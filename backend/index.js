@@ -265,7 +265,7 @@ app.post('/api/registerAdventCalendar', async (req, res) => {
   try {
     const decodedToken = await verifyToken(token.split(' ')[1]);
     username = decodedToken.username;
-  } catch (error) {
+  } catch {
     return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
   }
 
@@ -315,7 +315,7 @@ app.post('/api/updateAdventCalendar', async (req, res) => {
   try {
     const decodedToken = await verifyToken(token.split(' ')[1]);
     username = decodedToken.username;
-  } catch (error) {
+  } catch {
     return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
   }
 
@@ -366,7 +366,7 @@ app.delete('/api/delAdventCalendar', async (req, res) => {
   try {
     const decodedToken = await verifyToken(token.split(' ')[1]);
     username = decodedToken.username;
-  } catch (error) {
+  } catch {
     return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
   }
 
@@ -418,7 +418,7 @@ app.post('/api/lockAdventCalendar', async (req, res) => {
   try {
     const decodedToken = await verifyToken(token.split(' ')[1]);
     username = decodedToken.username;
-  } catch (error) {
+  } catch {
     return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
   }
 
@@ -613,7 +613,6 @@ app.get('/api/user/ownedCalendars', async (req, res) => {
   }
 
   const { user } = req.query;
-  const token = req.headers.authorization;
 
   try {
     const selectQuery = `
@@ -645,7 +644,6 @@ app.get('/api/user/ownedWindows', async (req, res) => {
     return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
   }
   const { user } = req.query;
-  const token = req.headers.authorization;
 
   try {
     const selectQuery = `
@@ -677,7 +675,6 @@ app.get('/api/user/idToUser', async (req, res) => {
     return res.status(401).json({ error: 'Unauthorized. Invalid token.' });
   }
   const { id } = req.query;
-  const token = req.headers.authorization;
 
   try {
     const selectQuery = `
