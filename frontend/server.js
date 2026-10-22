@@ -1,6 +1,6 @@
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
-import { join, extname } from 'node:path';
+import { join, extname, resolve, sep } from 'node:path';
 
 // Dynamische Konfiguration zur Laufzeit über Umgebungsvariablen
 const PORT = process.env.PORT || 3000;
@@ -48,7 +48,16 @@ const server = createServer(async (req, res) => {
     }
 
     // 2. STATISCHER FILE SERVER: Frontend-Dateien ausliefern (SPA-freundlich)
-    let filePath = join(DIST_DIR, req.url === '/' ? 'index.html' : req.url);
+    const requestUrl = new URL(req.url || '/', 'http://localhost');
+    const requestPath = requestUrl.pathname === '/' ? 'index.html' : requestUrl.pathname.replace(/^\/+/, '');
+    const filePath = resolve(DIST_DIR, requestPath);
+    const distRoot = resolve(DIST_DIR);
+
+    if (filePath !== distRoot && !filePath.startsWith(distRoot + sep)) {
+        res.writeHead(403, { 'Content-Type': 'text/plain' });
+        return res.end('Forbidden');
+    }
+
     let ext = extname(filePath);
 
     try {
