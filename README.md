@@ -39,6 +39,7 @@ Create a database named `adventcalendar` with the credentials in `backend/.env`.
 cd backend
 npm install
 npm run dev    # starts with nodemon (auto-restart on changes)
+npm test       # lint (eslint: no-undef, no-unused-vars) + syntax check (node --check)
 ```
 
 ###### 5. Frontend
@@ -46,6 +47,7 @@ npm run dev    # starts with nodemon (auto-restart on changes)
 cd frontend
 npm install
 npm run dev    # starts Vite dev server on http://localhost:3000
+npm test       # runs the Vitest smoke test
 ```
 
 Vite reads `.env` automatically — no manual `export` needed.
@@ -56,3 +58,5 @@ It also proxies `/api` requests to `http://localhost:7007` so the backend URL is
 cd compose
 docker compose up -d
 ```
+
+`npm test` and `npm audit` also run in CI on every push/PR (`.github/workflows/build-pipeline.yml`).
