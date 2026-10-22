@@ -73,7 +73,9 @@
       },
       "gallery": {
         "title": "Hier sehen Sie alle Bilder, die für dieses Fenster hochgeladen wurden.",
-        "altText": "Bild"
+        "altText": "Bild",
+        "imageCounter": "Bild {current} von {total}",
+        "close": "Schliessen"
       },
       "infoSection": {
         "title": "Advent Fenster",
@@ -140,6 +142,7 @@
       },
       "upload": {
         "hintImgShrink": "Die Bildgröße kann nicht unter 2 MB reduziert werden.",
+        "hintNoFile": "Bitte wählen Sie zuerst eine Datei aus.",
         "hintConsent": "Sie müssen den Bedingungen zustimmen, bevor Sie ein Bild hochladen.",
         "hintUpload": "Bild erfolgreich hochgeladen!",
         "hintUploadError": "Fehler beim Hochladen des Bildes.",

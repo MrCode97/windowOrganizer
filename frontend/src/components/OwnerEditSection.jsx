@@ -30,7 +30,7 @@ const OwnerEditSection = ({ calendar_id, window_nr, onClose, setIsFree, token, l
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/window?calendar_id=${calendar_id}&window_nr=${window_nr}`);
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/api/window?calendar_id=${calendar_id}&window_nr=${window_nr}`);
         const { windowData } = await response.json();
         const { address_name, address, apero, time, location_hint } = windowData;
 
@@ -48,7 +48,7 @@ const OwnerEditSection = ({ calendar_id, window_nr, onClose, setIsFree, token, l
   }, [calendar_id, window_nr]);
 
   useEffect(() => {
-      const pattern = /^([\S]+)\W([\d]+[\w]*)[,\W]+([\d]+)\W([\S]+)$/giu;
+      const pattern = /^(.+?)\s+(\d+\w*)\s*,\s*(\d{4})\s+(.+)$/u;
       if (!pattern.test(addressName)) {
          setAddressValidation(hintAddress);
       } else {
@@ -65,7 +65,7 @@ const OwnerEditSection = ({ calendar_id, window_nr, onClose, setIsFree, token, l
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const pattern = /^([\S]+)\W([\d]+[\w]*)[,\W]+([\d]+)\W([\S]+)$/giu;
+    const pattern = /^(.+?)\s+(\d+\w*)\s*,\s*(\d{4})\s+(.+)$/u;
     if (!pattern.test(addressName)) {
       setMessage(hintAddress);
       setMessageOpen(true);
@@ -74,7 +74,7 @@ const OwnerEditSection = ({ calendar_id, window_nr, onClose, setIsFree, token, l
         const newCoords = await translate(addressName);
         setCoordinates(newCoords);
 
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/updateWindowHosting`, {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/api/updateWindowHosting`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -102,7 +102,7 @@ const OwnerEditSection = ({ calendar_id, window_nr, onClose, setIsFree, token, l
 
   const handleDeleteWindow = async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/delWindowHosting?calendar_id=${calendar_id}&window_nr=${window_nr}`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/api/delWindowHosting?calendar_id=${calendar_id}&window_nr=${window_nr}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,

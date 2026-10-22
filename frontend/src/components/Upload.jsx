@@ -1,13 +1,14 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Button, Snackbar, Checkbox, FormControlLabel } from '@mui/material';
 import { useUploadStrings } from '../contexts/text';
 
 const UploadImage = ({ calendarId, windowNr, onClose, imageUpload, setImageUpload, token }) => {
   const [selectedFile, setSelectedFile] = useState(null);
+  const fileInputRef = useRef(null);
   const [message, setMessage] = useState('');
   const [messageOpen, setMessageOpen] = useState(false);
   const [consentChecked, setConsentChecked] = useState(false);
-  const { hintLogin, hintImgShrink, hintUpload, hintUploadError, hintConsent, title, consent, submit } = useUploadStrings();
+  const { hintLogin, hintImgShrink, hintUpload, hintUploadError, hintConsent, hintNoFile, title, consent, submit } = useUploadStrings();
 
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -76,12 +77,17 @@ const UploadImage = ({ calendarId, windowNr, onClose, imageUpload, setImageUploa
       return;
     }
 
-    if (selectedFile) {
-      const formData = new FormData();
+    if (!selectedFile) {
+      setMessage(hintNoFile);
+      setMessageOpen(true);
+      return;
+    }
+
+    const formData = new FormData();
       formData.append('image', selectedFile);
 
       try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/pictures?calendar_id=${calendarId}&window_nr=${windowNr}`, {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/api/pictures?calendar_id=${calendarId}&window_nr=${windowNr}`, {
           method: 'POST',
           headers: { 'Authorization': `Bearer ${token}`, },
           body: formData,
@@ -92,6 +98,7 @@ const UploadImage = ({ calendarId, windowNr, onClose, imageUpload, setImageUploa
         if (data.success) {
           setImageUpload(!imageUpload);
           setSelectedFile(null);
+          if (fileInputRef.current) fileInputRef.current.value = '';
           setMessage(hintUpload);
           setMessageOpen(true);
         } else {
@@ -102,7 +109,6 @@ const UploadImage = ({ calendarId, windowNr, onClose, imageUpload, setImageUploa
         setMessage(hintUploadError);
         setMessageOpen(true);
       }
-    }
   };
 
   const handleClose = (event, reason) => {
@@ -116,7 +122,7 @@ const UploadImage = ({ calendarId, windowNr, onClose, imageUpload, setImageUploa
     <div>
       {token ? (
         <>
-          <input type="file" onChange={handleFileChange} />
+          <input type="file" ref={fileInputRef} onChange={handleFileChange} />
           <p>{title}</p>
           <FormControlLabel
             control={<Checkbox

@@ -1,0 +1,10 @@
+*
+!Dockerfile
+!public
+!src
+!index.html
+!server.js
+!tsconfig.json
+!vite.config.js
+!package-lock.json
+!package.json

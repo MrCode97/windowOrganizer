@@ -1,5 +1,6 @@
 import { MapContainer, TileLayer, Marker } from 'react-leaflet'
 import L from 'leaflet';
+import starIconUrl from '../assets/staricons/star.png';
 
 const DrawMap = ({ coordinates }) => {
   if (coordinates.length > 0) {
@@ -17,7 +18,7 @@ const DrawMap = ({ coordinates }) => {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         <Marker position={[coordinates[0].x, coordinates[0].y]} icon={new L.icon({
-          iconUrl: require('../assets/staricons/star.png'),
+          iconUrl: starIconUrl,
           iconSize: [32, 32],
         })}
         >

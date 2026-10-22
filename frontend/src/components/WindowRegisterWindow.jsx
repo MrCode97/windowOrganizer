@@ -26,7 +26,7 @@ function WindowRegisterWindow({ window_nr, calendar_id, onClose, token, location
   } = useWindowRegistrationWindowStrings();
 
   useEffect(() => {
-      const pattern = /^([\S]+)\W([\d]+[\w]*)[,\W]+([\d]+)\W([\S]+)$/giu;
+      const pattern = /^(.+?)\s+(\d+\w*)\s*,\s*(\d{4})\s+(.+)$/u;
       if (!pattern.test(addressName)) {
          setAddressValidation(hintAddress);
       } else {
@@ -36,14 +36,14 @@ function WindowRegisterWindow({ window_nr, calendar_id, onClose, token, location
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const pattern = /^([\S]+)\W([\d]+[\w]*)[,\W]+([\d]+)\W([\S]+)$/giu;
+    const pattern = /^(.+?)\s+(\d+\w*)\s*,\s*(\d{4})\s+(.+)$/u;
     if (!pattern.test(addressName)) {
       setMessage(hintAddress);
       setMessageOpen(true);
     } else {
       try {
         const coords = await translate(addressName);
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/registerWindowHosting`, {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/api/registerWindowHosting`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

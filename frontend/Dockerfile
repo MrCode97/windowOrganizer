@@ -1,9 +1,24 @@
-FROM node:20-alpine
+# === Stage 1: Build ===
+FROM node:26-alpine AS build
 
-RUN npm install -g serve
-WORKDIR /adventscalendar/
-COPY build/ /adventscalendar
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
 
-ENV REACT_APP_BACKEND_URL=""
+# === Stage 2: Production (Keine node_modules Installation nötig!)
+FROM node:26-alpine
 
-CMD ["serve"]
+WORKDIR /adventscalendar
+
+# Kopiere NUR den kompilierten Frontend-Code und den nativen Server
+COPY --from=build /app/dist/ ./dist/
+COPY ./server.js ./server.js
+
+# Standard-Fallbacks für Umgebungsvariablen (können zur Laufzeit überschrieben werden)
+ENV PORT=3000
+ENV BACKEND_URL=http://localhost:7007
+
+EXPOSE 3000
+CMD ["node", "server.js"]

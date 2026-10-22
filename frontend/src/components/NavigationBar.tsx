@@ -94,6 +94,8 @@ const NavigationBar: React.FC<NavigationBarProps> = ({
                     borderRight: '2px solid #D4AF37',
                     display: 'flex',
                     flexDirection: 'column',
+                    height: 'calc(100vh - 64px)',
+                    overflowY: 'auto',
                 },
             }}
             variant="permanent"

@@ -1,11 +1,12 @@
-FROM node:20-alpine
+FROM node:26-alpine
 
 WORKDIR /adventscalendar/
 COPY package.json /adventscalendar/package.json
 COPY package-lock.json /adventscalendar/package-lock.json
 COPY index.js /adventscalendar/index.js
+COPY auth.js /adventscalendar/auth.js
 
-RUN npm i
+RUN npm ci --omit=dev
 
 ENV JWT_SECRET=jwt_secret_sign_key
 ENV DB_USER=fwe

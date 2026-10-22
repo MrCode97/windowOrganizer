@@ -3,6 +3,8 @@
 import React, { createContext, useContext } from 'react';
 import baseLangStrings from './en-US.json';
 
+const langJsonGlob = import.meta.glob('./*.json', { import: 'default' });
+
 type LangKey = "en-US" | "de-DE";
 type JsonLocalizedStrings = typeof baseLangStrings;
 
@@ -96,6 +98,7 @@ function isObject(item: any): boolean {
 function deepMergeWithMap(target: any, source: any, visited = new Map<any, any>()) {
     if (isObject(target) && isObject(source)) {
         for (const key in source) {
+            if (key === '__proto__' || key === 'constructor' || key === 'prototype') continue;
             if (isObject(source[key])) {
                 if (!target[key]) {
                     target[key] = {};
@@ -140,7 +143,7 @@ export function AggregateTextProvider(props: any){
                 console.log("error loading lang/vars.json " + error);
             }
             try {
-                const jsonStrings = await import(`./${props.lang}.json`) as JsonLocalizedStrings;
+                const jsonStrings = await langJsonGlob[`./${props.lang}.json`]() as JsonLocalizedStrings;
                 if (jsonStrings.public) {
                     var completeData = jsonStrings;
                     if (varsStrings.public) {

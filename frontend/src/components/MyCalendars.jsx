@@ -20,7 +20,7 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, set
     // Fetch owned calendars by the user
     const fetchOwnedCalendars = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/user/ownedCalendars?user=${user}`, {
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/api/user/ownedCalendars?user=${user}`, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
@@ -46,7 +46,6 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, set
         }, {});
 
         setUpdateData(initialUpdateData);
-        setLockState(calendars.locked);
       } catch (error) {
         console.error('Error fetching calendars:', error);
       }
@@ -74,7 +73,7 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, set
 
   const handleUpdateCalendar = async (calendarId) => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/updateAdventCalendar`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/api/updateAdventCalendar`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -115,7 +114,7 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, set
   const handleLockCalendar = async (calendarId, lockState) => {
     const locktext = lockState ? `(${lock})` : `(${unlock})`;
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/lockAdventCalendar`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/api/lockAdventCalendar`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -144,7 +143,7 @@ const MyCalendars = ({ calendarAdded, setCalendarAdded, setSelectedCalendar, set
 
   const handleDeleteCalendar = async (calendarId) => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL || ''}/api/delAdventCalendar?calendar_id=${calendarId}`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL || ''}/api/delAdventCalendar?calendar_id=${calendarId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
