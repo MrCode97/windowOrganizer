@@ -1,5 +1,5 @@
 ###### Prerequisites
-- Node.js 24 (set via `nvm use` or see `.nvmrc`)
+- Node.js 26 (set via `nvm use` or see `.nvmrc`)
 - Docker (for DB / full compose)
 
 ###### 1. Clone

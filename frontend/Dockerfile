@@ -1,5 +1,5 @@
 # === Stage 1: Build ===
-FROM node:24-alpine AS build
+FROM node:26-alpine AS build
 
 WORKDIR /app
 COPY package.json package-lock.json ./
@@ -8,7 +8,7 @@ COPY . .
 RUN npm run build
 
 # === Stage 2: Production (Keine node_modules Installation nötig!)
-FROM node:24-alpine
+FROM node:26-alpine
 
 WORKDIR /adventscalendar
 
